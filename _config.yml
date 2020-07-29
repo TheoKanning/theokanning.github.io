@@ -1,0 +1,23 @@
+title: Theo Kanning
+name: theokanning.com
+email: your-email@example.com
+description: Science is Awesome
+baseurl: ""
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+
+markdown: kramdown
+remote_theme: rosario/kasper
+paginate: 10
+plugins:
+  - jekyll-feed
+    #  - jekyll-paginate
+
+exclude:
+  - run_local.sh
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
