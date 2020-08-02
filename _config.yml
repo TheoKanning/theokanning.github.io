@@ -2,22 +2,28 @@ title: Theo Kanning
 name: theokanning.com
 description: Science is Awesome
 author: Theo Kanning
-baseurl: ""
+baseurl: "/"
 url: "https://theokanning.github.io"
 
 markdown: kramdown
-remote_theme: rosario/kasper
-# remote_theme: jekyller/jasper2
+remote_theme: jekyller/jasper2
 paginate: 10
+words_per_minute: 100
+plugins_dir: [_plugins]
 plugins:
   - jekyll-paginate
 
 exclude:
+  - build.sh
   - run_local.sh
   - Gemfile
   - Gemfile.lock
+  - gulpfile.js
+  - package.json
+  - package-lock.json
   - node_modules
   - vendor/bundle/
   - vendor/cache/
   - vendor/gems/
   - vendor/ruby/
+  - .git*

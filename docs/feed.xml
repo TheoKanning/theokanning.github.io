@@ -1,0 +1,940 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.7">Jekyll</generator><link href="https://theokanning.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://theokanning.github.io/" rel="alternate" type="text/html" /><updated>2020-08-02T12:23:38-05:00</updated><id>https://theokanning.github.io/feed.xml</id><title type="html">Theo Kanning</title><subtitle>Science is Awesome</subtitle><author><name>Theo Kanning</name></author><entry><title type="html">Mapping with the MIT Racecar</title><link href="https://theokanning.github.io/mapping-with-the-mit-racecar/" rel="alternate" type="text/html" title="Mapping with the MIT Racecar" /><published>2019-08-19T20:55:24-05:00</published><updated>2019-08-19T20:55:24-05:00</updated><id>https://theokanning.github.io/mapping-with-the-mit-racecar</id><content type="html" xml:base="https://theokanning.github.io/mapping-with-the-mit-racecar/">&lt;p&gt;Now that the lidar works, it’s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rosbag&lt;/code&gt;, and generating the map offline. Here’s how it works.&lt;/p&gt;
+
+&lt;h2 id=&quot;lidar-preprocessing&quot;&gt;Lidar Preprocessing&lt;/h2&gt;
+
+&lt;p&gt;In early iterations of my experiments, I noticed that the lidar recorded collisions with the racecar frame.
+This led to the mapping algorithm leaving a little trail of obstacles as the racecar moved. Very unprofessional.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=1140&amp;#038;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-648&quot; srcset=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=660&amp;amp;ssl=1 660w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?resize=300%2C230&amp;amp;ssl=1 300w&quot; sizes=&quot;(max-width: 660px) 100vw, 660px&quot; data-recalc-dims=&quot;1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Note the two sets of black dots in the open and the red lidar points on the robot&lt;/p&gt;
+
+&lt;p&gt;To fix this, I added a box filter using the &lt;a href=&quot;https://wiki.ros.org/laser_filters&quot;&gt;laser_filters&lt;/a&gt; package. A box filter removes any scans within a specific rectangle, so I filtered out all scans within the racecar itself. Then I updated the lidar node to publish to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scan_raw&lt;/code&gt;, and created a filter node to read that topic and publish to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scan&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Here are the changes I made:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yml&quot; data-lang=&quot;yml&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# sensors.yml&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;laser_filter&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;tf_message_filter_target_frame&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;laser&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;scan_filter_chain&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;box&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;laser_filters/LaserScanBoxFilter&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;box_frame&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;base_link&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;min_x&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;-0.05&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;max_x&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.15&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;min_y&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;-0.15&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;max_y&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.15&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;min_z&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;-0.2&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;max_z&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;0.2&amp;lt;/pre&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;# sensors.launch.xml
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!-- laser filter --&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;node&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;pkg=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;laser_filters&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan_to_scan_filter_chain&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;laser_filter&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;remap&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;from=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;to=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan_raw&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;remap&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;from=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan_filtered&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;to=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/node&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;gathering-data&quot;&gt;Gathering Data&lt;/h2&gt;
+
+&lt;p&gt;Once the lidar data looked good, I recorded a run through my apartment to generate a map. High pitch angles can warp 2D lidar data, so I focused on making the robot move smoothly. I used &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rosbag&lt;/code&gt; to record the lidar data.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rosbag record -O apartment.bag /scan&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;I didn’t have to record the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tf&lt;/code&gt; topic because the mapping launch file includes the static transform publishers. In fact, mapping failed when I recorded &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tf&lt;/code&gt; because the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; needs to generate its own &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;odom&lt;/code&gt; frame data.&lt;/p&gt;
+
+&lt;h2 id=&quot;mapping&quot;&gt;Mapping&lt;/h2&gt;
+
+&lt;p&gt;The actual mapping process uses three different packages: &lt;a href=&quot;https://wiki.ros.org/laser_scan_matcher&quot;&gt;laser_scan_matcher&lt;/a&gt;, &lt;a href=&quot;https://wiki.ros.org/hector_mapping&quot;&gt;hector_mapping&lt;/a&gt;, and &lt;a href=&quot;http://%20http//wiki.ros.org/gmapping&quot;&gt;gmapping&lt;/a&gt;. Note that the static transforms are included too.&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807-1024x665.png?resize=1024%2C665&amp;#038;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-649&quot; srcset=&quot;https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=1024%2C665&amp;amp;ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=300%2C195&amp;amp;ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=768%2C499&amp;amp;ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?w=1447&amp;amp;ssl=1 1447w&quot; sizes=&quot;(max-width: 1024px) 100vw, 1024px&quot; data-recalc-dims=&quot;1&quot; /&gt; &amp;lt;figcaption&amp;gt;Note that the hector namespace only publishes frames&amp;lt;/figcaption&amp;gt;&amp;lt;/figure&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;First, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; compares the lidar scan history to estimate the robot’s movement and publish a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scan_match&lt;/code&gt; frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.&lt;/p&gt;
+
+&lt;p&gt;Second, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hector_mapping&lt;/code&gt; takes the lidar data and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scan_match&lt;/code&gt; frame and creates its own odom estimate on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hector_map&lt;/code&gt; frame. This second layer creates a slightly better odometry estimate.&lt;/p&gt;
+
+&lt;p&gt;Last, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; takes the refined &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hector_map&lt;/code&gt; odometry estimate and generates a map from the lidar data. Using multiple mapping systems allows &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; to work with a high quality odometry estimate and make the best map possible.&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/map.png?fit=1024%2C781&amp;amp;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-651&quot; /&gt; &amp;lt;figcaption&amp;gt;My apartment looks really weird from 10 inches off the ground&amp;lt;/figcaption&amp;gt;&amp;lt;/figure&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;next-steps&quot;&gt;Next Steps&lt;/h2&gt;
+
+&lt;p&gt;Even though I made a great map of my apartment, the mapping launch file still doesn’t use the IMU. Since it explicitly remaps the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;imu&lt;/code&gt; topic, I assume that updating it to use the IMU correctly is part of the actual MIT class. I keep seeing weird quirks like that in this repo, and I’m never sure what’s deliberate and what’s part of an assignment.&lt;/p&gt;
+
+&lt;p&gt;I considered getting rid of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hector_mapping&lt;/code&gt; completely. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; seems to generate a great odometry estimate on its own, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; works great by itself. Using fewer packages and tuning them better would be easier to understand too.&lt;/p&gt;
+
+&lt;h2 id=&quot;notes-on-installing-packages&quot;&gt;Notes on Installing Packages&lt;/h2&gt;
+
+&lt;p&gt;Most of the packages I used aren’t officially supported on Melodic yet (they all worked fine for me!), I had to clone their git repos and build them locally.&lt;/p&gt;
+
+&lt;h3 id=&quot;hector_mapping-gmapping-and-laser_filters&quot;&gt;hector_mapping, gmapping, and laser_filters&lt;/h3&gt;
+
+&lt;p&gt;The MIT racecar uses a combination of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hector_mapping&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmapping&lt;/code&gt;, neither of which is officially supported on Melodic.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;cd ~/racecar_ws/src
+git clone https://github.com/ros-perception/slam_gmapping.git
+git clone https://github.com/ros-perception/openslam_gmapping.git
+git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
+git clone https://github.com/ros-perception/laser_filters.git
+cd ..
+rosdep install --from-paths src --ignore-src -r -y&lt;/pre&gt;
+
+&lt;h3 id=&quot;laser_scan_matcher&quot;&gt;laser_scan_matcher&lt;/h3&gt;
+
+&lt;p&gt;I had to install &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; from source as well, and I built its csm dependency following the instructions &lt;a href=&quot;https://github.com/ccny-ros-pkg/scan_tools/issues/63&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;cd ~/racecar_ws
+git clone https://github.com/ccny-ros-pkg/scan_tools.git
+git clone https://github.com/AndreaCensi/csm.git
+cd csm
+cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local . 
+make 
+sudo make install&lt;/pre&gt;</content><author><name>Theo Kanning</name></author><category term="robotics" /><summary type="html">Now that the lidar works, it’s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with rosbag, and generating the map offline. Here’s how it works.</summary></entry><entry><title type="html">Using the RPLIDAR A1 on the MIT Racecar</title><link href="https://theokanning.github.io/using-the-rplidar-a1-on-the-mit-racecar/" rel="alternate" type="text/html" title="Using the RPLIDAR A1 on the MIT Racecar" /><published>2019-05-26T12:58:09-05:00</published><updated>2019-05-26T12:58:09-05:00</updated><id>https://theokanning.github.io/using-the-rplidar-a1-on-the-mit-racecar</id><content type="html" xml:base="https://theokanning.github.io/using-the-rplidar-a1-on-the-mit-racecar/">&lt;p&gt;The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead.
+The A1 has good enough accuracy for me, but if I ever want to upgrade I can get an A2 or A3 for a couple hundred dollars more.&lt;/p&gt;
+
+&lt;p&gt;Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here’s what I did.&lt;/p&gt;
+
+&lt;h2 id=&quot;connecting-to-the-a1&quot;&gt;Connecting to the A1&lt;/h2&gt;
+
+&lt;p&gt;The A1 typically appears as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/dev/ttyUSB0&lt;/code&gt;, but I gave it a more readable, consistent name using udev rules. By adding the following line to my rules file (any rules file will work, but I have one for racecar-specific rules), the A1 will always appear as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/dev/rplidar&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# etc/udev/rules.d/10-racecar.rules
+KERNEL==&quot;ttyUSB*&quot;, ATTRS{idVendor}==&quot;10c4&quot;, ATTRS{idProduct}==&quot;ea60&quot;, MODE:=&quot;0777&quot;, SYMLINK+=&quot;rplidar&quot;&lt;/pre&gt;
+
+&lt;p&gt;I found the vendor and product id via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lsusb&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ros-package&quot;&gt;ROS Package&lt;/h2&gt;
+
+&lt;p&gt;The A1 driver node connects to the lidar and converts its data into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LaserScan&lt;/code&gt; messages. A Hokuyo will publish the same &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LaserScan&lt;/code&gt; message, just with more data points included, so any navigation system using a lidar will work with either.&lt;/p&gt;
+
+&lt;p&gt;First, I cloned the ROS package to my catkin workspace:&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;cd ~/racecar_ws/src
+git clone &lt;a href=&quot;https://github.com/robopeak/rplidar_ros&quot;&gt;https://github.com/robopeak/rplidar_ros&lt;/a&gt;&lt;/pre&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# CMakeLists.txt
+catkin_package(
+    CATKIN_DEPENDS
+    rplidar
+    &amp;lt;s&amp;gt;urg_node&amp;lt;/s&amp;gt;
+    ...
+
+# package.xml
+&amp;lt;run_depend&amp;gt;rplidar&amp;lt;/run_depend&amp;gt;
+&amp;lt;s&amp;gt;&amp;lt;run_depend&amp;gt;urg_node&amp;lt;/run_depend&amp;gt;&amp;lt;/s&amp;gt;&lt;/pre&gt;
+
+&lt;p&gt;Then I updated the racecar launch files to start the RPLIDAR node instead of the Hokuyo node. I turned on angle compensation to reduce shaking, and it works really well!&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# sensors.launch
+&amp;lt;!-- laser --&amp;gt;
+&amp;lt;node pkg=&quot;rplidar_ros&quot; type=&quot;rplidarNode&quot; name=&quot;laser_node&quot;&amp;gt;
+  &amp;lt;param name=&quot;angle_compensate&quot; value=&quot;true&quot;/&amp;gt;
+&amp;lt;/node&amp;gt;
+&amp;lt;s&amp;gt;&amp;lt;node pkg=&quot;urg_node&quot; type=&quot;urg_node&quot; name=&quot;laser_node&quot; /&amp;gt;&amp;lt;/s&amp;gt;&lt;/pre&gt;
+
+&lt;p&gt;and told the node to use the new symlink I created earlier.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# sensors.yaml
+laser_node:
+  serial_port: /dev/rplidar&lt;/pre&gt;
+
+&lt;h2 id=&quot;updating-tf-data&quot;&gt;Updating TF data&lt;/h2&gt;
+
+&lt;p&gt;In order to build a map of an environment, a mapping package like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; needs to know the position of the lidar relative to the racecar base link. ROS uses a handy library called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tf2&lt;/code&gt; to publish static coordinate frame transform data like this.&lt;/p&gt;
+
+&lt;p&gt;The default racecar project already defines the default coordinate transforms between the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;base_link&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;laser&lt;/code&gt; frames.. Since the A1 doesn’t fit in the existing lidar slot, I had to moveit up 2cm and back 2cm. The exact measurements will depend on your setup.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# static_transforms.launch.xml
+&amp;lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;base_link_to_laser&quot; 
+ &amp;lt;s&amp;gt;args=&quot;0.285 0.0 0.127 0.0 0.0 0.0 1.0 /base_link /laser&quot; /&amp;gt;&amp;lt;/s&amp;gt;
+ args=&quot;0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser&quot; /&amp;gt;
+&lt;/pre&gt;
+
+&lt;h2 id=&quot;seeing-lidar-data&quot;&gt;Seeing lidar data&lt;/h2&gt;
+
+&lt;p&gt;The A1 driver includes a handy launch file to visualize the lidar data. This command starts the lidar and shows its scan data in rviz.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;roslaunch rplidar_ros view_rplidar.launch&lt;/pre&gt;
+&lt;figure class=&quot;wp-block-image&quot;&gt;
+
+&lt;img src=&quot;https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?fit=1024%2C552&amp;amp;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-587&quot; srcset=&quot;https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?w=1214&amp;amp;ssl=1 1214w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=300%2C162&amp;amp;ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=1024%2C552&amp;amp;ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=768%2C414&amp;amp;ssl=1 768w&quot; sizes=&quot;(max-width: 1140px) 100vw, 1140px&quot; /&gt; &lt;/figure&gt;
+
+&lt;h2 id=&quot;next-steps&quot;&gt;Next steps&lt;/h2&gt;
+
+&lt;p&gt;Now that the lidar works in teleop mode, the next step is to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; to build a map of my apartment. See you soon!&lt;/p&gt;</content><author><name>Theo Kanning</name></author><summary type="html">The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead. The A1 has good enough accuracy for me, but if I ever want to upgrade I can get an A2 or A3 for a couple hundred dollars more.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://theokanning.github.io/wp-content/uploads/2019/05/lidar-e1558893765961.jpg" /><media:content medium="image" url="https://theokanning.github.io/wp-content/uploads/2019/05/lidar-e1558893765961.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MIT Racecar VESC and Joystick on Ubuntu 18.04</title><link href="https://theokanning.github.io/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/" rel="alternate" type="text/html" title="MIT Racecar VESC and Joystick on Ubuntu 18.04" /><published>2019-05-18T21:27:34-05:00</published><updated>2019-05-18T21:27:34-05:00</updated><id>https://theokanning.github.io/mit-racecar-vesc-and-joystick-on-ubuntu-18-04</id><content type="html" xml:base="https://theokanning.github.io/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">&lt;p&gt;After building the MIT Racecar in my last post, I started installing all of the peripherals so I could run it in teleop mode. Unfortunately, using a new Jetson image meant that I couldn’t use the pre-compiled drivers online. Here’s how I managed to get the VESC and joystick working.&lt;/p&gt;
+
+&lt;h2 id=&quot;vesc-firmware&quot;&gt;VESC Firmware&lt;/h2&gt;
+
+&lt;p&gt;After buying the VESC from Maytech, I updated the firmware according to the &lt;a href=&quot;https://www.jetsonhacks.com/2018/02/13/racecar-j-programming-the-electronic-speed-controller/&quot;&gt;instructions&lt;/a&gt; on JetsonHacks (I had to use the instalBLDCTool script). The MIT Racecar requires a specific firmware build that allows controlling the servo via the controller, and fortunately JetsonHacks provides a copy of it.&lt;/p&gt;
+
+&lt;p&gt;Also, the new VESC-Tool that replaced BLDCTool will not accept the firmware version that JetsonHacks has available. If you want to compile the servo-out change into a newer version of the firmware, then the VESC-Tool should work.&lt;/p&gt;
+
+&lt;h2 id=&quot;connecting-to-the-vesc&quot;&gt;Connecting to the VESC&lt;/h2&gt;
+
+&lt;p&gt;The VESC uses the USB Abstract Control Module protocol, which requires a special cdc_acm driver. I couldn’t find a compiled version for kernel version 4.9.140, so I had to build the 4.9.140 kernel on the Jetson and include the cdc-acm module.&lt;/p&gt;
+
+&lt;p&gt;As usual, &lt;a href=&quot;https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/&quot;&gt;JetsonHacks&lt;/a&gt; has great instructions on how to build the kernel, but I had to modify their &lt;a href=&quot;https://github.com/TheoKanning/buildJetsonTX2Kernel&quot;&gt;scripts&lt;/a&gt; to work for 4.9.140. Here’s a link to my compiled cdc-acm driver in case it helps someone.&lt;/p&gt;
+
+&lt;div class=&quot;wp-block-file&quot;&gt;
+  &lt;a href=&quot;https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip&quot;&gt;4.9.140 cdc-acm driver&lt;/a&gt;&lt;a href=&quot;https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip&quot; class=&quot;wp-block-file__button&quot; download=&quot;&quot;&gt;Download&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;p&gt;To install the cdc-acm driver, I copied it from the compiled kernel output into live &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/lib/modules/4.9.140/kernel/drivers/usb/class&lt;/code&gt; folder.&lt;/p&gt;
+
+&lt;p&gt;I had to add the following line to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/modules&lt;/code&gt; to load cdc-acm automatically.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# /etc/modules
+cdc-acm&lt;/pre&gt;
+
+&lt;p&gt;And the following line to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/udev/rules.d/10-racecar.rules&lt;/code&gt; (or any rules file) to make the VESC consistently appear as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/dev/vesc&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# /etc/udev/rules.d/10-racecar.rules
+ACTION==&quot;add&quot;, ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;5740&quot;, SYMLINK+=&quot;vesc&quot;&lt;/pre&gt;
+
+&lt;h2 id=&quot;connection-to-the-joystick&quot;&gt;Connection to the Joystick&lt;/h2&gt;
+
+&lt;p&gt;In order to use the Logitech F710 joystick, I had to install xboxdrv and run it on startup in daemon mode.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;sudo apt-get install xboxdrv&lt;/pre&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# /etc/init/xboxdrv.conf&lt;br /&gt;exec xboxdrv -D -d --silent&lt;/pre&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;That’s everything required to run the racecar in teleop mode! Build the catkin workspace then run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;roslaunch racecar teleop.launch&lt;/code&gt; to drive it around!&lt;/p&gt;</content><author><name>Theo Kanning</name></author><summary type="html">After building the MIT Racecar in my last post, I started installing all of the peripherals so I could run it in teleop mode. Unfortunately, using a new Jetson image meant that I couldn’t use the pre-compiled drivers online. Here’s how I managed to get the VESC and joystick working.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://theokanning.github.io/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190523213628844_COVER-e1558926616341.jpg" /><media:content medium="image" url="https://theokanning.github.io/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190523213628844_COVER-e1558926616341.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MIT Racecar Build</title><link href="https://theokanning.github.io/mit-racecar-build/" rel="alternate" type="text/html" title="MIT Racecar Build" /><published>2019-05-05T16:30:40-05:00</published><updated>2019-05-05T16:30:40-05:00</updated><id>https://theokanning.github.io/mit-racecar-build</id><content type="html" xml:base="https://theokanning.github.io/mit-racecar-build/">&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;img src=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?fit=1024%2C768&amp;amp;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-557&quot; srcset=&quot;https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=4032&amp;amp;ssl=1 4032w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=300%2C225&amp;amp;ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=1024%2C768&amp;amp;ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=768%2C576&amp;amp;ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=2280&amp;amp;ssl=1 2280w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=3420&amp;amp;ssl=1 3420w&quot; sizes=&quot;(max-width: 1140px) 100vw, 1140px&quot; /&gt;&lt;/figure&gt;
+
+&lt;p&gt;Ever since taking Udacity’s Robotics Nanodegree last year, I’ve wanted to try to build the &lt;a href=&quot;http://fast.scripts.mit.edu/racecar/hardware/&quot;&gt;MIT Racecar&lt;/a&gt;, a powerful robotics development platform based on an actual MIT class. Its real strength is the number of helpful resources online (most notably &lt;a href=&quot;http://www.jetsonhacks.com&quot;&gt;Jetson Hacks&lt;/a&gt;&lt;a href=&quot;https://racecarj.com/&quot;&gt;J&lt;/a&gt;) that make the undertaking much easier.&lt;/p&gt;
+
+&lt;p&gt;The full racecar is a pretty serious project; it includes a Hokuyo lidar and two(!) 3D cameras. I decided to get a much cheaper lidar and skip the 3D cameras for now.&lt;/p&gt;
+
+&lt;p&gt;JetsonHacks already has great videos on how to assemble the racecar, so I won’t go into detail about that. However, I did have some difficulty finding a battery to power the Jetson, and I’ll share my solution here.&lt;/p&gt;
+
+&lt;h2 id=&quot;standard-parts&quot;&gt;Standard Parts&lt;/h2&gt;
+
+&lt;p&gt;Most of the parts I used were straight off of the JetsonHacks &lt;a href=&quot;https://www.jetsonhacks.com/racecar-j/&quot;&gt;tutorials&lt;/a&gt;. These include:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;TRAXXAS Slash 4×4 Platinum Truck – &lt;a href=&quot;https://traxxas.com/products/models/electric/6804Rslash4x4platinum&quot;&gt;traxxas&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Jetson TX2 – &lt;a href=&quot;https://developer.nvidia.com/embedded/buy/jetson-tx2&quot;&gt;nvidia&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;VESC (Speed Controller) – &lt;a href=&quot;https://www.alibaba.com/product-detail/Maytech-VESC-4-12-Motor-controller_60532388864.html&quot;&gt;alibaba&lt;/a&gt; – Made by Maytech&lt;/li&gt;
+  &lt;li&gt;USB 3.0 Hub – &lt;a href=&quot;https://www.amazon.com/AmazonBasics-Port-2-5A-power-adapter/dp/B00DQFGH80&quot;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Mounting Hardware – &lt;a href=&quot;https://racecarj.com/products/mechanical-hardware&quot;&gt;racecarj&lt;/a&gt; – Technically you could buy these screws on your own, but I didn’t feel like it&lt;/li&gt;
+  &lt;li&gt;Spring Upgrade – &lt;a href=&quot;https://racecarj.com/products/spring-upgrade&quot;&gt;racecarj&lt;/a&gt; – Necessary or the car will scrape the ground with all the added weight&lt;/li&gt;
+  &lt;li&gt;Sparkfun 9DoF IMU – &lt;a href=&quot;https://www.sparkfun.com/products/14001&quot;&gt;sparkfun&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;3000 mAh NiMH Battery – Any hobby store will have this&lt;/li&gt;
+  &lt;li&gt;E-Stop Button – &lt;a href=&quot;https://www.amazon.com/gp/product/B00SDX0GD2/ref=ppx_yo_dt_b_asin_title_o02_s00?ie=UTF8&amp;amp;psc=1&quot;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I also used 3M dual-lock tape to hold everything down.&lt;/p&gt;
+
+&lt;h2 id=&quot;modifications&quot;&gt;Modifications&lt;/h2&gt;
+
+&lt;h4 id=&quot;lidar&quot;&gt;Lidar&lt;/h4&gt;
+
+&lt;p&gt;Since the Hokuyo lidar costs well over $1,000, I decided to buy the $100 RPLIDAR-A1 (&lt;a href=&quot;http://www.slamtec.com/en/lidar/a1&quot;&gt;slamtech.com&lt;/a&gt;) instead. It has a much smaller range, but I think it will work fine for now. If I have to upgrade later I’ll probably go for the A2.&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?fit=1024%2C768&amp;amp;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-558&quot; srcset=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=4032&amp;amp;ssl=1 4032w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=300%2C225&amp;amp;ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=1024%2C768&amp;amp;ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=768%2C576&amp;amp;ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=2280&amp;amp;ssl=1 2280w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=3420&amp;amp;ssl=1 3420w&quot; sizes=&quot;(max-width: 1140px) 100vw, 1140px&quot; /&gt; &amp;lt;figcaption&amp;gt; The A1 barely has room, even with two extra standoffs&amp;lt;/figcaption&amp;gt;&amp;lt;/figure&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;Because the A1 doesn’t fit into the hole in the frame, it actually sticks up higher than the Hokuyo, and I had to add extra standoffs to move the top level up.&lt;/p&gt;
+
+&lt;h4 id=&quot;battery&quot;&gt;Battery&lt;/h4&gt;
+
+&lt;p&gt;The Jetson needs a separate battery to power it and all of the USB devices. JetsonHacks recommends the Energizer XP18000AB, which has a 19V output for the Jetson and a 12V output for the USB hub. Unfortunately, I couldn’t find it for sale anywhere online, or any other power pack with 19V and 12V outputs, so I had to get creative.&lt;figure class=&quot;wp-block-image is-resized&quot;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?fit=1024%2C768&amp;amp;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-577&quot; width=&quot;1008&quot; height=&quot;756&quot; srcset=&quot;https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=4032&amp;amp;ssl=1 4032w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=300%2C225&amp;amp;ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=1024%2C768&amp;amp;ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=768%2C576&amp;amp;ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=2280&amp;amp;ssl=1 2280w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=3420&amp;amp;ssl=1 3420w&quot; sizes=&quot;(max-width: 1008px) 100vw, 1008px&quot; /&gt; &amp;lt;figcaption&amp;gt;My battery setup. USB hub power on the left, Jetson power on the right.&amp;lt;/figcaption&amp;gt;&amp;lt;/figure&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;My solution was to buy a PowerAdd Pilot Pro (&lt;a href=&quot;https://www.amazon.com/gp/product/B00DN0KBXU/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&amp;amp;psc=1&quot;&gt;amazon&lt;/a&gt;), use its 19V output for the Jetson, and get a USB to barrel jack adapter to power the USB hub. I ended up getting a 2.1mm &lt;a href=&quot;https://www.amazon.com/CCYC-Barrel-Wireless-Router-Speakers/dp/B079K2DS3H/ref=asc_df_B079K2DS3H/&quot;&gt;connector&lt;/a&gt; and using the 4.75 x 1.7 HP laptop adapter included with the battery to connect it to the USB hub.&lt;/p&gt;
+
+&lt;h4 id=&quot;frame&quot;&gt;Frame&lt;/h4&gt;
+
+&lt;p&gt;I received a free RacecarJ frame from another Udacity ND student, but it didn’t exactly match the two versions available online. I’m not sure if I got a prototype or what, but I’m not complaining.&lt;/p&gt;
+
+&lt;p&gt;I had to drill a few holes in it to mount the lidar and and IMU, but it wasn’t a big deal.&lt;/p&gt;
+
+&lt;h2 id=&quot;thats-all&quot;&gt;That’s All&lt;/h2&gt;
+
+&lt;p&gt;I had to drill a few holes and get creative with zip ties to mount everything together, but overall it was really enjoyable. Now let’s see if I can get it running!&lt;/p&gt;</content><author><name>Theo Kanning</name></author><summary type="html">Borbs</summary></entry><entry><title type="html">Dexter the Two-Wheeled Balancing Robot</title><link href="https://theokanning.github.io/balancing-robot/" rel="alternate" type="text/html" title="Dexter the Two-Wheeled Balancing Robot" /><published>2019-03-16T11:17:39-05:00</published><updated>2019-03-16T11:17:39-05:00</updated><id>https://theokanning.github.io/balancing-robot</id><content type="html" xml:base="https://theokanning.github.io/balancing-robot/">&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;img src=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=768%2C1024&amp;#038;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-522&quot; srcset=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=768%2C1024&amp;amp;ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=225%2C300&amp;amp;ssl=1 225w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?w=1518&amp;amp;ssl=1 1518w&quot; sizes=&quot;(max-width: 768px) 100vw, 768px&quot; data-recalc-dims=&quot;1&quot; /&gt;&lt;figcaption&gt;Introducing Dexter: the cutest balancing robot ever made  
+&lt;/figcaption&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;dexter&quot;&gt;Dexter&lt;/h2&gt;
+
+&lt;p&gt;Dexter is a two-wheeled balancing robot controlled by an Android App. I originally created Dexter as a modified version of the &lt;a href=&quot;https://theokanning.com/wifi-rover/&quot;&gt;wifi-rover&lt;/a&gt; project that I made a few years ago. This time I was looking for a bigger challenge and for something to do with the stepper motors I had lying around.&lt;/p&gt;
+
+&lt;h2 id=&quot;hardware&quot;&gt;Hardware&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Teensy LC Microncontroller &lt;a href=&quot;https://www.pjrc.com/teensy/teensyLC.html&quot;&gt;pjrc&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;MPU-6050 IMU &lt;a href=&quot;https://www.sparkfun.com/products/11028&quot;&gt;sparkfun&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;2 A4988 Stepper Drivers &lt;a href=&quot;https://www.pololu.com/product/1182&quot;&gt;pololu&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;HC-05 Bluetooth Module &lt;a href=&quot;https://www.amazon.com/LeaningTech-HC-05-Module-Pass-Through-Communication/dp/B00INWZRNC&quot;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;2 Stepper Motors &lt;a href=&quot;https://www.sparkfun.com/products/9238&quot;&gt;sparkfun&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;1300 mAh 3S LiPo Battery&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The Teensy LC was a good fit for this project because it has 3 hardware serial lines and multiple timers. Dexter uses serial to communicate with the HC-05, and the stepper drivers each require a 16 bit timer to work.&lt;/p&gt;
+
+&lt;p&gt;I don’t know the exact model number of the motors I used, but they look pretty standard.&lt;/p&gt;
+
+&lt;p&gt;I also added some iron weight on top for added stability.&lt;/p&gt;
+
+&lt;h2 id=&quot;custom-frame-and-pcb&quot;&gt;Custom Frame and PCB&lt;/h2&gt;
+
+&lt;ul class=&quot;wp-block-gallery columns-2 is-cropped&quot;&gt;
+  &lt;li class=&quot;blocks-gallery-item&quot;&gt;
+    &lt;figure&gt;&lt;img src=&quot;https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?resize=768%2C1024&amp;#038;ssl=1&quot; alt=&quot;&quot; data-id=&quot;527&quot; data-link=&quot;https://theokanning.com/frame/&quot; class=&quot;wp-image-527&quot; srcset=&quot;https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?resize=768%2C1024&amp;amp;ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?resize=225%2C300&amp;amp;ssl=1 225w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?w=1518&amp;amp;ssl=1 1518w&quot; sizes=&quot;(max-width: 768px) 100vw, 768px&quot; data-recalc-dims=&quot;1&quot; /&gt;&lt;/figure&gt;
+  &lt;/li&gt;
+  &lt;li class=&quot;blocks-gallery-item&quot;&gt;
+    &lt;figure&gt;&lt;img src=&quot;https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?resize=768%2C1024&amp;#038;ssl=1&quot; alt=&quot;&quot; data-id=&quot;528&quot; data-link=&quot;https://theokanning.com/pcb/&quot; class=&quot;wp-image-528&quot; srcset=&quot;https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?resize=768%2C1024&amp;amp;ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?resize=225%2C300&amp;amp;ssl=1 225w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?w=1518&amp;amp;ssl=1 1518w&quot; sizes=&quot;(max-width: 768px) 100vw, 768px&quot; data-recalc-dims=&quot;1&quot; /&gt;&lt;/figure&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I designed the 3D-printed frame using Fusion 360, and designed the custom circuit board in Eagle.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://theokanning.com/wp-content/uploads/2019/03/Dexter-v1.zip&quot;&gt;Frame STP File&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://theokanning.com/wp-content/uploads/2019/03/dexter_design_block.zip&quot;&gt;PCB Eagle Design Block&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;imu&quot;&gt;IMU&lt;/h2&gt;
+
+&lt;p&gt;The MPU-6050 IMU includes a gyroscope and accelerometer, and I combined the measured angle from the accelerometer with the rate from the gyro using a basic filter. A more advanced Kalman filter would be more accurate, but IMU accuracy was not a limiting factor.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pitch = 0.99 * (pitch + G_y * dt) - 0.01 * atan2(A_x, A_z)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The rate from the gyroscope reacts quickly to changes in pitch, and the small correction from the accelerometer prevents drifting over time. The accelerometer is very sensitive to quick movements, so it can’t be used by itself.&lt;/p&gt;
+
+&lt;p&gt;IMU code was taken from the Arduino example (&lt;a href=&quot;https://playground.arduino.cc/Main/MPU-6050#sketch&quot;&gt;link&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 id=&quot;motor-drivers&quot;&gt;Motor Drivers&lt;/h2&gt;
+
+&lt;p&gt;The Teensy controls the A4988 motor drivers by sending pulses; each time the Teensy sends a pulse, the driver takes one step. To send pulses, I used the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TimerOne&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TimerThree&lt;/code&gt; libraries. These libraries trigger a callback funciton at a specified frequency, and in the callback function I send a pulse by toggling the trigger pin on and off.&lt;/p&gt;
+
+&lt;p&gt;Both motors were operated in 1/8 microstepping mode for smoother motion.&lt;/p&gt;
+
+&lt;h2 id=&quot;pid-control&quot;&gt;PID Control&lt;/h2&gt;
+
+&lt;p&gt;Dexter uses two cascading controllers. First, the ground speed PI controller calculates the desired angle based on the speed error. Second, the angle PD controller calculates the output steps per second to reach the desired angle. Since these motors don’t have encoders, the only way to measure the current ground speed is to use the steps per second value calculated by the angle controller.&lt;/p&gt;
+
+&lt;p&gt;To tune Dexter, I added a basic &lt;a href=&quot;https://www.youtube.com/watch?v=2uQ2BSzDvXs&quot;&gt;Twiddle&lt;/a&gt; function. If Dexter receives the letter “t” over bluetooth, he will drive forward for a few seconds, stop, drive back, and report the total error during the trip. All of the PID constants can be changed over bluetooth and optimized to reduce the twiddle error.&lt;/p&gt;
+
+&lt;h2 id=&quot;android-app&quot;&gt;Android App&lt;/h2&gt;
+
+&lt;p&gt;The included Android app steers Dexter by reading the accelerometer. In order to tune the PID constants, I used a bluetooth terminal app (&lt;a href=&quot;https://play.google.com/store/apps/details?id=com.giumig.apps.bluetoothserialmonitor&amp;amp;hl=en_US&quot;&gt;Play Store Link&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 id=&quot;github&quot;&gt;Github&lt;/h2&gt;
+
+&lt;p&gt;Android and Arduino source code &lt;a href=&quot;https://github.com/TheoKanning/Dexter&quot;&gt;link&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;&lt;a href=&quot;https://github.com/TheoKanning/Dexter#sources&quot;&gt;&lt;/a&gt;References&lt;/h2&gt;
+
+&lt;p&gt;I found both of these examples to be extremely helpful&lt;br /&gt;
+&lt;a href=&quot;https://github.com/jjrobots/B-ROBOT_EVO2/tree/master/Arduino/BROBOT_EVO2&quot;&gt;jjrobots B-robot EVO 2&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;http://www.brokking.net/yabr_main.html&quot;&gt;Brokking YABR&lt;/a&gt;&lt;/p&gt;</content><author><name>Theo Kanning</name></author><summary type="html">Introducing Dexter: the cutest balancing robot ever made</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://theokanning.github.io/wp-content/uploads/2019/03/dexter-1-e1552753362695.jpg" /><media:content medium="image" url="https://theokanning.github.io/wp-content/uploads/2019/03/dexter-1-e1552753362695.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Creating a Teleop Bot with ROS</title><link href="https://theokanning.github.io/creating-a-teleop-bot-with-ros/" rel="alternate" type="text/html" title="Creating a Teleop Bot with ROS" /><published>2018-12-23T11:15:34-06:00</published><updated>2018-12-23T11:15:34-06:00</updated><id>https://theokanning.github.io/creating-a-teleop-bot-with-ros</id><content type="html" xml:base="https://theokanning.github.io/creating-a-teleop-bot-with-ros/">&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;img src=&quot;https://i0.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521-1024x684.jpg?resize=1024%2C684&amp;#038;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-465&quot; srcset=&quot;https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=1024%2C684&amp;amp;ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=300%2C200&amp;amp;ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=768%2C513&amp;amp;ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=1568%2C1047&amp;amp;ssl=1 1568w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?w=2024&amp;amp;ssl=1 2024w&quot; sizes=&quot;(max-width: 1024px) 100vw, 1024px&quot; data-recalc-dims=&quot;1&quot; /&gt;&lt;figcaption&gt;Blink-192 in all its glory. Its name comes from its bright lights and the first 3 digits of its local ip address.&lt;/figcaption&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;blink-192&quot;&gt;Blink-192&lt;/h2&gt;
+
+&lt;p&gt;This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do two things: first, it reacts to keystrokes on a computer and drives around; second, it streams video from a raspberry pi camera back to said computer.&lt;/p&gt;
+
+&lt;p&gt;Blink-192 is a great example of how ROS can help with any robotics project. ROS connects Blink-192 to a desktop to stream video and receive steering commands with minimal setup and networking.&lt;/p&gt;
+
+&lt;p&gt;All source code is available on &lt;a href=&quot;https://github.com/TheoKanning/Blink-192&quot;&gt;Github.&lt;/a&gt;&lt;br /&gt;
+This project is based on the Teleop-bot example from Programming Robots with ROS (&lt;a href=&quot;http://shop.oreilly.com/product/0636920024736.do&quot;&gt;O’Reilly Media).&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;hardware&quot;&gt;Hardware&lt;/h2&gt;
+
+&lt;p&gt;Blink-192 uses the following hardware:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Raspberry Pi 3&lt;/li&gt;
+  &lt;li&gt;Waveshare Alphabot – &lt;a href=&quot;https://www.waveshare.com/alphabot-robot.htm&quot;&gt;Waveshare&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Raspberry Pi Camera 2&lt;/li&gt;
+  &lt;li&gt;7.4V LiPo Battery&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;software&quot;&gt;Software&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Raspberry Pi Ubuntu Image – &lt;a href=&quot;https://downloads.ubiquityrobotics.com/pi.html&quot;&gt;Ubiquity Robotics&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Pi Camera ROS Node – &lt;a href=&quot;https://github.com/UbiquityRobotics/raspicam_node﻿&quot;&gt;Github&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This specific Ubuntu image isn’t required, but it comes with ROS pre-installed a creates a wifi access point automatically.&lt;/p&gt;
+
+&lt;h2 id=&quot;ros-basics&quot;&gt;ROS Basics&lt;/h2&gt;
+
+&lt;p&gt;ROS has become a nearly ubiquitous part of any serious robotics project. I first learned about it as part of the Udacity Robotics Engineer &lt;a href=&quot;https://www.udacity.com/course/robotics-software-engineer--nd209&quot;&gt;Nanodegree&lt;/a&gt; program last Summer, and I couldn’t wait to get started on my own project.&lt;/p&gt;
+
+&lt;p&gt;Despite its name, ROS isn’t actually an operating system; it runs on Ubuntu. It’s more of a messaging system that sends messages between different parts of a robot. Let’s take a deeper look at how to develop a project using ROS.&lt;/p&gt;
+
+&lt;h4 id=&quot;nodes&quot;&gt;Nodes&lt;/h4&gt;
+
+&lt;p&gt;A &lt;em&gt;node&lt;/em&gt; is defined as any executable that uses ROS to communicate. ROS will manage the lifecycle and messaging of any python script that’s run as a node, so using ROS will easily allow you to run multiple scripts simultaneously.&lt;/p&gt;
+
+&lt;h4 id=&quot;topics&quot;&gt;Topics&lt;/h4&gt;
+
+&lt;p&gt;A &lt;em&gt;topic&lt;/em&gt; is a messaging bus that ROS nodes use to exchange messages. Topics follow the publish/subscribe pattern (similar to Rx and Kafka), so each node can subscribe to any data topics it requires, and then publish whatever it wants.&lt;/p&gt;
+
+&lt;h2 id=&quot;blink-192-ros-setup&quot;&gt;Blink-192 ROS Setup&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;/figure&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/12/rosgraph-1024x177.png?resize=1024%2C177&amp;#038;ssl=1&quot; alt=&quot;&quot; class=&quot;wp-image-467&quot; srcset=&quot;https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=1024%2C177&amp;amp;ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=300%2C52&amp;amp;ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=768%2C133&amp;amp;ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?w=1042&amp;amp;ssl=1 1042w&quot; sizes=&quot;(max-width: 1024px) 100vw, 1024px&quot; data-recalc-dims=&quot;1&quot; /&gt; &amp;lt;figcaption&amp;gt;Blink-192 ROS graph: Nodes are ovals, topics are rectangles&amp;lt;/figcaption&amp;gt;&amp;lt;/figure&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;Blink-192 works using four different nodes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keyboard_driver&lt;/code&gt; – Reads keystrokes and publishes them to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/keys&lt;/code&gt; topic&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keys_to_twist&lt;/code&gt; – Subscribes to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/keys&lt;/code&gt; and publishes a velocity command to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/cmd_vel&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;motors&lt;/code&gt; – Subscribes to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/cmd_vel&lt;/code&gt; and controls motors&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;raspicam_node&lt;/code&gt; – Publishes video stream to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/raspicam_node/image&lt;/code&gt; topic&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Every node except &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keyboard_driver&lt;/code&gt; runs on Blink-192; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keyboard_driver&lt;/code&gt; runs on the desktop.&lt;/p&gt;
+
+&lt;h2 id=&quot;instructions&quot;&gt;Instructions&lt;/h2&gt;
+
+&lt;p&gt;In order to control Blink-192, ROS needs to know to network between two computers. Since Blink-192 has its own wifi access point, this is relatively straightforward.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Connect to wifi access point, my SSID starts with blink-192 – &lt;a href=&quot;https://downloads.ubiquityrobotics.com/pi.html&quot;&gt;Ubiquity&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Get desktop ip address using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ip addr show&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;export ROS_MASTER_URI=http://blink-192.local:11311&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;export ROS_IP=&amp;lt;ip address&amp;gt;&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;roslaunch blink-192 desktop.launch&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Ssh into Blink-192, and run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;roslaunch blink-192 robot.launch&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Start driving!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ROS_MASTER_URI&lt;/code&gt; variable tells the desktop where to find the ROS master node that it should use, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ROS_IP&lt;/code&gt; tells the ROS master how to connect back to it. Launch files are a convenient way of running multiple nodes at once.&lt;/p&gt;
+
+&lt;p&gt;That’s it! ROS handles all of the communication back-and-forth between Blink-192 and the desktop.&lt;/p&gt;
+
+&lt;p&gt;This is just one example of how ROS can make robotics projects easier. ROS also includes tools for simulation, visualization, parameters, and much much more. Because ROS uses common message types, you can easily add nodes that other people have written as well.&lt;/p&gt;
+
+&lt;p&gt;For more info, check out &lt;a href=&quot;http://www.ros.org/is-ros-for-me/&quot;&gt;http://www.ros.org/is-ros-for-me/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://shop.oreilly.com/product/0636920024736.do&quot;&gt;Programming Robots with ROS&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://www.udacity.com/course/robotics-software-engineer--nd209&quot;&gt;Udacity Robotics Nanodegree&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;http://www.ros.org&quot;&gt;ROS Homepage&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://github.com/TheoKanning/Blink-192&quot;&gt;Blink-192 Github Repo&lt;/a&gt;&lt;/p&gt;</content><author><name>Theo Kanning</name></author><summary type="html">This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do two things: first, it reacts to keystrokes on a computer and drives around; second, it streams video from a raspberry pi camera back to said computer.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://theokanning.github.io/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521-1568x1047.jpg" /><media:content medium="image" url="https://theokanning.github.io/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521-1568x1047.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Android Keyboard Part 4: Showing and Hiding</title><link href="https://theokanning.github.io/keyboard-part-4-showing-and-hiding/" rel="alternate" type="text/html" title="Android Keyboard Part 4: Showing and Hiding" /><published>2018-01-28T05:18:31-06:00</published><updated>2018-01-28T05:18:31-06:00</updated><id>https://theokanning.github.io/android-keyboard-part-4-showing-and-hiding</id><content type="html" xml:base="https://theokanning.github.io/keyboard-part-4-showing-and-hiding/">&lt;p&gt;Now it’s time for the final part of my Android Keyboard series, and one of the most challenging parts of UI development: showing and hiding the keyboard. What seems like a simple task can often become very complicated, but I’ll show some examples of how to get the behavior you want, and explain some of the weirdness we see along the way.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;alignnone size-full wp-image-436&quot; src=&quot;https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/01/show-and-hide.gif?resize=500%2C889&amp;#038;ssl=1&quot; alt=&quot;&quot; width=&quot;500&quot; height=&quot;889&quot; data-recalc-dims=&quot;1&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;input-method-manager&quot;&gt;Input Method Manager&lt;/h2&gt;
+
+&lt;p&gt;At the heart of all of this is the &lt;a href=&quot;https://developer.android.com/reference/android/view/inputmethod/InputMethodManager.html&quot;&gt;InputMethodManager&lt;/a&gt;, Android’s one-stop-shop for any programmatic keyboard features. InputMethodManager is responsible for the interaction between you app and whatever InputMethod (keyboard) the user’s phone is configured to use. Most of the communication to handle things like key presses, IME Actions, and switching text fields is handle automatically, so I won’t talk about it here.&lt;/p&gt;
+
+&lt;p&gt;We’re only interested in two methods right now:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;showSoftInput(View view, int flags)&lt;/li&gt;
+  &lt;li&gt;hideSoftInputFromWindow(IBinder windowToken, int flags)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Those two will cover 99% of your keyboard needs, so let’s look into them a bit more.&lt;/p&gt;
+
+&lt;h2 id=&quot;showing-the-keyboard&quot;&gt;Showing the keyboard&lt;/h2&gt;
+
+&lt;p&gt;As you might have guessed, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;InputMethodManager#showSoftInput&lt;/code&gt; is for showing the soft keyboard. It takes in a View and an integer representing a set of bit flags. The View should be the EditText that you want the user to start typing in. Note that the keyboard won’t appear unless that EditText is currently in focus!&lt;/p&gt;
+
+&lt;p&gt;The integer parameter allows you to specify whether the keyboard is being shown implicitly, or as a result of user action. Setting it to 0 works fine.&lt;/p&gt;
+
+&lt;pre class=&quot;brush: java; title: ; notranslate&quot; title=&quot;&quot;&gt;private fun showKeyboard(view : View) {
+    val inputMethodManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    view.requestFocus()
+    inputMethodManager.showSoftInput(view, 0)
+}
+&lt;/pre&gt;
+
+&lt;p&gt;There are three steps here:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Get the InputMethodManager from the Activity&lt;/li&gt;
+  &lt;li&gt;Make sure that the specified view has focus, or else the keyboard won’t appear&lt;/li&gt;
+  &lt;li&gt;Call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;showSoftInput&lt;/code&gt; with the view and all flags set to 0&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;And that’s it!&lt;/p&gt;
+
+&lt;h2 id=&quot;hiding-the-keyboard&quot;&gt;Hiding the Keyboard&lt;/h2&gt;
+
+&lt;p&gt;Hiding the keyboard follows a pretty similar pattern. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;InputMethodManager#hideSoftInputFromWindow&lt;/code&gt; takes an IBinder and another set of integer flags.&lt;/p&gt;
+
+&lt;p&gt;You might think that Android would just let you close the keyboard, but you have to provide an IBinder from an active View for security purposes. IBinder tokens are unique across the entire operating system, and Android uses them to make sure apps can’t close a keyboard that’s being used by another process.&lt;/p&gt;
+
+&lt;p&gt;Just like with showing the keyboard, the set of integer flags allows you to tell the operating system if the keyboard is being closed implicitly or by the user. This can safely be set to 0.&lt;/p&gt;
+
+&lt;pre class=&quot;brush: java; title: ; notranslate&quot; title=&quot;&quot;&gt;private fun hideKeyboard(view : View) {
+    val inputMethodManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+}
+&lt;/pre&gt;
+
+&lt;p&gt;Here we get the IBinder by calling &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;view.getWindowToken()&lt;/code&gt; on any active view.&lt;/p&gt;
+
+&lt;p&gt;That’s all you have to do! I hope you got a lot out of this keyboard series, and now it’s time to add these great features to your own apps.&lt;/p&gt;</content><author><name>Theo Kanning</name></author><summary type="html">Now it’s time for the final part of my Android Keyboard series, and one of the most challenging parts of UI development: showing and hiding the keyboard. What seems like a simple task can often become very complicated, but I’ll show some examples of how to get the behavior you want, and explain some of the weirdness we see along the way.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://theokanning.github.io/wp-content/uploads/2018/01/show-hide-featured.gif" /><media:content medium="image" url="https://theokanning.github.io/wp-content/uploads/2018/01/show-hide-featured.gif" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Android Keyboard Part 3: TextInputLayout</title><link href="https://theokanning.github.io/keyboard-part-3-textinputlayout/" rel="alternate" type="text/html" title="Android Keyboard Part 3: TextInputLayout" /><published>2018-01-26T18:41:13-06:00</published><updated>2018-01-26T18:41:13-06:00</updated><id>https://theokanning.github.io/keyboard-part-3-textinputlayout</id><content type="html" xml:base="https://theokanning.github.io/keyboard-part-3-textinputlayout/">&lt;p&gt;By now you’ve probably noticed the fancy moving hints above the text views in the last two posts. How does that work? The answer is incredibly simple: the TextInputLayout. Added as part of the Design Support Library, TextInputLayout wraps a text field and gives you a lot of nice design options that are very easy to set up. Here’s an example of what they can do.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;alignnone size-full wp-image-427&quot; src=&quot;https://i0.wp.com/theokanning.com/////wp-content/uploads/2018/01/textinputlayout.gif?resize=500%2C333&amp;#038;ssl=1&quot; alt=&quot;&quot; width=&quot;500&quot; height=&quot;333&quot; data-recalc-dims=&quot;1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There are a couple things going on here:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The password hint moves out of the way&lt;/li&gt;
+  &lt;li&gt;The wrong password error message is much prettier than what you get with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;editText.setError()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;The toggle changes to password visibility&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All of these are built in feature of TextInputLayout! Let’s see how they work&lt;/p&gt;
+
+&lt;h2 id=&quot;setting-up-a-textinputlayout&quot;&gt;Setting up a TextInputLayout&lt;/h2&gt;
+
+&lt;p&gt;Before you start, TextInputLayouts are part of this design support library, so add&lt;/p&gt;
+
+&lt;pre&gt;implementation 'com.android.support:design:27.0.2'&lt;/pre&gt;
+
+&lt;p&gt;to your build.gradle.&lt;/p&gt;
+
+&lt;p&gt;In order to use a TextInputLayout, simply wrap one around a &lt;a href=&quot;https://developer.android.com/reference/android/support/design/widget/TextInputEditText.html&quot;&gt;TextInputEditText&lt;/a&gt;. TextInputEditText is a special type of EditText that’s designed to work well inside a TextInputLayout, and that’s why so much of this works. Here’s the xml I used to create the password field above.&lt;/p&gt;
+
+&lt;pre class=&quot;brush: xml; title: ; notranslate&quot; title=&quot;&quot;&gt;&amp;lt;android.support.design.widget.TextInputLayout
+    android:id=&quot;@+id/passwordWrapper&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    app:passwordToggleEnabled=&quot;true&quot;
+    &amp;gt;
+
+    &amp;lt;android.support.design.widget.TextInputEditText
+        android:id=&quot;@+id/password&quot;
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;wrap_content&quot;
+        android:hint=&quot;Password&quot;
+        android:imeOptions=&quot;actionDone&quot;
+        android:inputType=&quot;textPassword&quot;
+        /&amp;gt;
+&amp;lt;/android.support.design.widget.TextInputLayout&amp;gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Because I’m using a TextInputEditText, the hint will automatically animate, no extra work required.&lt;/p&gt;
+
+&lt;p&gt;Take a look at the&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;app:passwordToggleEnabled=&quot;true&quot;&lt;/code&gt; line inside the TextInputLayout. That’s all you need to get a password toggle!&lt;/p&gt;
+
+&lt;h2 id=&quot;showing-errors&quot;&gt;Showing errors&lt;/h2&gt;
+
+&lt;p&gt;Errors are displayed using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TextInputLayout#setError(String)&lt;/code&gt;. Note that this is called on the &lt;em&gt;parent&lt;/em&gt; layout, not the text field. Here it is in Kotlin:&lt;/p&gt;
+
+&lt;pre class=&quot;brush: xml; title: ; notranslate&quot; title=&quot;&quot;&gt;private fun signIn() {
+    if(password.text.toString() == &quot;1234&quot; ) {
+        passwordWrapper.error = null
+        Toast.makeText(context, &quot;Success!&quot;, Toast.LENGTH_LONG).show()
+    } else {
+        passwordWrapper.error = &quot;Wrong password&quot;
+    }
+}
+&lt;/pre&gt;
+
+&lt;p&gt;Set the error text to display an error, or set it to null to hide it. That’s all!&lt;/p&gt;
+
+&lt;p&gt;TextInputLayouts are a great way to give your app a modern, professional feel, and they’re incredibly simple to use. Put them in all your apps!&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;</content><author><name>Theo Kanning</name></author><summary type="html">By now you’ve probably noticed the fancy moving hints above the text views in the last two posts. How does that work? The answer is incredibly simple: the TextInputLayout. Added as part of the Design Support Library, TextInputLayout wraps a text field and gives you a lot of nice design options that are very easy to set up. Here’s an example of what they can do.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://theokanning.github.io/wp-content/uploads/2018/01/textinputlayout.gif" /><media:content medium="image" url="https://theokanning.github.io/wp-content/uploads/2018/01/textinputlayout.gif" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Android Keyboart Part 2: Input Method Actions</title><link href="https://theokanning.github.io/keyboard-part-2-input-method-actions/" rel="alternate" type="text/html" title="Android Keyboart Part 2: Input Method Actions" /><published>2018-01-26T14:30:21-06:00</published><updated>2018-01-26T14:30:21-06:00</updated><id>https://theokanning.github.io/keyboard-part-2-input-method-actions</id><content type="html" xml:base="https://theokanning.github.io/keyboard-part-2-input-method-actions/">&lt;section class=&quot;l-section wpb\_row height\_medium&quot;&gt;
+
+&lt;div class=&quot;l-section-h i-cf&quot;&gt;
+  &lt;div class=&quot;g-cols vc_row type_default valign_top&quot;&gt;
+    &lt;div class=&quot;vc_col-sm-12 wpb_column vc_column_container&quot;&gt;
+      &lt;div class=&quot;vc_column-inner&quot;&gt;
+        &lt;div class=&quot;wpb_wrapper&quot;&gt;
+          &lt;div class=&quot;w-grid type_grid layout_452 cols_3 overflow_hidden&quot; id=&quot;us_grid_6&quot; data-grid-filter=&quot;false&quot;&gt;
+            &lt;div class=&quot;w-grid-list&quot;&gt;
+              &lt;article class=&quot;w-grid-item post-611 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;611&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/mapping-with-the-mit-racecar/&quot;&gt;Mapping with the MIT Racecar&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-08-20T01:55:24+00:00&quot;&gt;August 20, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-585 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;585&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/using-the-rplidar-a1-on-the-mit-racecar/&quot;&gt;Using the RPLIDAR A1 on the MIT Racecar&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-05-26T17:58:09+00:00&quot;&gt;May 26, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-562 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;562&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/&quot;&gt;MIT Racecar VESC and Joystick on Ubuntu 18.04&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-05-19T02:27:34+00:00&quot;&gt;May 19, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-556 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;556&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/mit-racecar-build/&quot;&gt;MIT Racecar Build&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-05-05T21:30:40+00:00&quot;&gt;May 5, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-521 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;521&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/balancing-robot/&quot;&gt;Dexter the Two-Wheeled Balancing Robot&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-03-16T16:17:39+00:00&quot;&gt;March 16, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-464 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;464&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/creating-a-teleop-bot-with-ros/&quot;&gt;Creating a Teleop Bot with ROS&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-12-23T17:15:34+00:00&quot;&gt;December 23, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-431 type-post status-publish format-standard has-post-thumbnail hentry category-android category-keyboard&quot; data-id=&quot;431&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/android-keyboard-part-4-showing-and-hiding/&quot;&gt;Android Keyboard Part 4: Showing and Hiding&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-01-28T11:18:31+00:00&quot;&gt;January 28, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-425 type-post status-publish format-standard has-post-thumbnail hentry category-android category-keyboard&quot; data-id=&quot;425&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/keyboard-part-3-textinputlayout/&quot;&gt;Android Keyboard Part 3: TextInputLayout&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-01-27T00:41:13+00:00&quot;&gt;January 27, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-398 type-post status-publish format-standard has-post-thumbnail hentry category-android category-keyboard&quot; data-id=&quot;398&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/keyboard-part-2-input-method-actions/&quot;&gt;Android Keyboard Part 2: Input Method Actions&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-01-26T03:08:09+00:00&quot;&gt;January 26, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&quot;w-grid-preloader&quot;&gt;
+              &lt;div class=&quot;g-preloader type_1&quot;&gt;
+                &lt;div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&quot;g-loadmore &quot;&gt;
+              &lt;div class=&quot;g-preloader type_1&quot;&gt;
+                &lt;div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              
+              &lt;a class=&quot;w-btn us-btn-style_1&quot; href=&quot;javascript:void(0)&quot;&gt; &lt;span class=&quot;w-btn-label&quot;&gt;Load More&lt;/span&gt; &lt;/a&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&quot;w-grid-json hidden&quot; onclick=&quot;return {&amp;quot;action&amp;quot;:&amp;quot;us_ajax_grid&amp;quot;,&amp;quot;ajax_url&amp;quot;:&amp;quot;https:\/\/theokanning.com\/wp-admin\/admin-ajax.php&amp;quot;,&amp;quot;infinite_scroll&amp;quot;:true,&amp;quot;max_num_pages&amp;quot;:3,&amp;quot;pagination&amp;quot;:&amp;quot;ajax&amp;quot;,&amp;quot;permalink_url&amp;quot;:&amp;quot;https:\/\/theokanning.com&amp;quot;,&amp;quot;template_vars&amp;quot;:{&amp;quot;columns&amp;quot;:&amp;quot;3&amp;quot;,&amp;quot;exclude_items&amp;quot;:&amp;quot;none&amp;quot;,&amp;quot;img_size&amp;quot;:&amp;quot;default&amp;quot;,&amp;quot;items_layout&amp;quot;:&amp;quot;452&amp;quot;,&amp;quot;items_offset&amp;quot;:&amp;quot;1&amp;quot;,&amp;quot;overriding_link&amp;quot;:&amp;quot;none&amp;quot;,&amp;quot;post_id&amp;quot;:775,&amp;quot;query_args&amp;quot;:{&amp;quot;post_type&amp;quot;:[&amp;quot;post&amp;quot;],&amp;quot;post_status&amp;quot;:[&amp;quot;publish&amp;quot;,&amp;quot;private&amp;quot;],&amp;quot;orderby&amp;quot;:{&amp;quot;date&amp;quot;:&amp;quot;DESC&amp;quot;},&amp;quot;posts_per_page&amp;quot;:&amp;quot;9&amp;quot;},&amp;quot;type&amp;quot;:&amp;quot;grid&amp;quot;,&amp;quot;us_grid_ajax_index&amp;quot;:1,&amp;quot;us_grid_filter_params&amp;quot;:null,&amp;quot;us_grid_index&amp;quot;:6,&amp;quot;_us_grid_post_type&amp;quot;:&amp;quot;post&amp;quot;}}&quot;&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;</content><author><name>admin</name></author><summary type="html"></summary></entry><entry><title type="html">Android Keyboard Part 1: Input Types</title><link href="https://theokanning.github.io/keyboard-part-1-input-types/" rel="alternate" type="text/html" title="Android Keyboard Part 1: Input Types" /><published>2018-01-24T14:29:34-06:00</published><updated>2018-01-24T14:29:34-06:00</updated><id>https://theokanning.github.io/keyboard-part-1-input-types</id><content type="html" xml:base="https://theokanning.github.io/keyboard-part-1-input-types/">&lt;section class=&quot;l-section wpb\_row height\_medium&quot;&gt;
+
+&lt;div class=&quot;l-section-h i-cf&quot;&gt;
+  &lt;div class=&quot;g-cols vc_row type_default valign_top&quot;&gt;
+    &lt;div class=&quot;vc_col-sm-12 wpb_column vc_column_container&quot;&gt;
+      &lt;div class=&quot;vc_column-inner&quot;&gt;
+        &lt;div class=&quot;wpb_wrapper&quot;&gt;
+          &lt;div class=&quot;w-grid type_grid layout_452 cols_3 overflow_hidden&quot; id=&quot;us_grid_5&quot; data-grid-filter=&quot;false&quot;&gt;
+            &lt;div class=&quot;w-grid-list&quot;&gt;
+              &lt;article class=&quot;w-grid-item post-611 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;611&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/mapping-with-the-mit-racecar/&quot;&gt;Mapping with the MIT Racecar&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-08-20T01:55:24+00:00&quot;&gt;August 20, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-585 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;585&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/using-the-rplidar-a1-on-the-mit-racecar/&quot;&gt;Using the RPLIDAR A1 on the MIT Racecar&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-05-26T17:58:09+00:00&quot;&gt;May 26, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-562 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;562&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/&quot;&gt;MIT Racecar VESC and Joystick on Ubuntu 18.04&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-05-19T02:27:34+00:00&quot;&gt;May 19, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-556 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;556&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/mit-racecar-build/&quot;&gt;MIT Racecar Build&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-05-05T21:30:40+00:00&quot;&gt;May 5, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-521 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;521&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/balancing-robot/&quot;&gt;Dexter the Two-Wheeled Balancing Robot&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2019-03-16T16:17:39+00:00&quot;&gt;March 16, 2019&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-464 type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized&quot; data-id=&quot;464&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/creating-a-teleop-bot-with-ros/&quot;&gt;Creating a Teleop Bot with ROS&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-12-23T17:15:34+00:00&quot;&gt;December 23, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-431 type-post status-publish format-standard has-post-thumbnail hentry category-android category-keyboard&quot; data-id=&quot;431&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/android-keyboard-part-4-showing-and-hiding/&quot;&gt;Android Keyboard Part 4: Showing and Hiding&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-01-28T11:18:31+00:00&quot;&gt;January 28, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-425 type-post status-publish format-standard has-post-thumbnail hentry category-android category-keyboard&quot; data-id=&quot;425&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/keyboard-part-3-textinputlayout/&quot;&gt;Android Keyboard Part 3: TextInputLayout&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-01-27T00:41:13+00:00&quot;&gt;January 27, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-398 type-post status-publish format-standard has-post-thumbnail hentry category-android category-keyboard&quot; data-id=&quot;398&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/keyboard-part-2-input-method-actions/&quot;&gt;Android Keyboard Part 2: Input Method Actions&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-01-26T03:08:09+00:00&quot;&gt;January 26, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt; &lt;article class=&quot;w-grid-item post-394 type-post status-publish format-standard has-post-thumbnail hentry category-android category-keyboard&quot; data-id=&quot;394&quot;&gt; 
+              
+              &lt;div class=&quot;w-grid-item-h&quot;&gt;
+                &lt;div class=&quot;w-vwrapper usg_vwrapper_1 align_left valign_top &quot;&gt;
+                  &lt;h2 class=&quot;w-post-elm post_title usg_post_title_1 entry-title color_link_inherit&quot;&gt;
+                    &lt;a href=&quot;https://theokanning.com/keyboard-part-1-input-types/&quot;&gt;Android Keyboard Part 1: Input Types&lt;/a&gt;
+                  &lt;/h2&gt;
+                  
+                  &lt;div class=&quot;w-hwrapper usg_hwrapper_1 align_left valign_top wrap &quot;&gt;
+                    &lt;time class=&quot;w-post-elm post_date usg_post_date_1 entry-date published&quot; datetime=&quot;2018-01-24T02:22:41+00:00&quot;&gt;January 24, 2018&lt;/time&gt;
+                    
+                    &lt;div class=&quot;w-post-elm post_author usg_post_author_1 color_link_inherit vcard author&quot;&gt;
+                      &lt;div class=&quot;post-author-meta&quot;&gt;
+                        &lt;a class=&quot;post-author-name fn&quot; href=&quot;https://theokanning.com/author/theokanning/&quot;&gt;Theo Kanning&lt;/a&gt;&amp;lt;/a&amp;gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;&lt;/article&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&quot;w-grid-preloader&quot;&gt;
+              &lt;div class=&quot;g-preloader type_1&quot;&gt;
+                &lt;div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&quot;w-grid-json hidden&quot; onclick=&quot;return {&amp;quot;action&amp;quot;:&amp;quot;us_ajax_grid&amp;quot;,&amp;quot;ajax_url&amp;quot;:&amp;quot;https:\/\/theokanning.com\/wp-admin\/admin-ajax.php&amp;quot;,&amp;quot;infinite_scroll&amp;quot;:0,&amp;quot;max_num_pages&amp;quot;:3,&amp;quot;pagination&amp;quot;:&amp;quot;none&amp;quot;,&amp;quot;permalink_url&amp;quot;:&amp;quot;https:\/\/theokanning.com&amp;quot;,&amp;quot;template_vars&amp;quot;:{&amp;quot;columns&amp;quot;:&amp;quot;3&amp;quot;,&amp;quot;exclude_items&amp;quot;:&amp;quot;none&amp;quot;,&amp;quot;img_size&amp;quot;:&amp;quot;default&amp;quot;,&amp;quot;items_layout&amp;quot;:&amp;quot;452&amp;quot;,&amp;quot;items_offset&amp;quot;:&amp;quot;1&amp;quot;,&amp;quot;overriding_link&amp;quot;:&amp;quot;none&amp;quot;,&amp;quot;post_id&amp;quot;:774,&amp;quot;query_args&amp;quot;:{&amp;quot;post_type&amp;quot;:[&amp;quot;post&amp;quot;],&amp;quot;post_status&amp;quot;:[&amp;quot;publish&amp;quot;,&amp;quot;private&amp;quot;],&amp;quot;orderby&amp;quot;:{&amp;quot;date&amp;quot;:&amp;quot;DESC&amp;quot;},&amp;quot;posts_per_page&amp;quot;:&amp;quot;10&amp;quot;},&amp;quot;type&amp;quot;:&amp;quot;grid&amp;quot;,&amp;quot;us_grid_ajax_index&amp;quot;:1,&amp;quot;us_grid_filter_params&amp;quot;:null,&amp;quot;us_grid_index&amp;quot;:5,&amp;quot;_us_grid_post_type&amp;quot;:&amp;quot;post&amp;quot;}}&quot;&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;</content><author><name>admin</name></author><summary type="html"></summary></entry></feed>

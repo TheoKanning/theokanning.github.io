@@ -6,6 +6,8 @@ author: Theo Kanning
 layout: post
 guid: https://theokanning.com/?p=611
 permalink: /mapping-with-the-mit-racecar/
+tags:
+  - robotics
 categories:
   - robotics
 ---
