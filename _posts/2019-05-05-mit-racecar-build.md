@@ -1,35 +1,13 @@
 ---
-id: 556
 title: MIT Racecar Build
 date: 2019-05-05T21:30:40+00:00
-author: Theo Kanning
 layout: post
-guid: https://theokanning.com/?p=556
 permalink: /mit-racecar-build/
-us_og_image:
-  - ""
-us_post_preview_layout:
-  - ""
-us_header_sticky_pos:
-  - ""
-us_titlebar_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER-1-e1557092151558.jpg
+excerpt: Borbs
 categories:
   - Uncategorized
 ---
+
 <figure class="wp-block-image"><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?fit=1024%2C768&ssl=1" alt="" class="wp-image-557" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=4032&ssl=1 4032w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=300%2C225&ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=1024%2C768&ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=768%2C576&ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=2280&ssl=1 2280w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=3420&ssl=1 3420w" sizes="(max-width: 1140px) 100vw, 1140px" /></figure> 
 
 Ever since taking Udacity&#8217;s Robotics Nanodegree last year, I&#8217;ve wanted to try to build the [MIT Racecar](http://fast.scripts.mit.edu/racecar/hardware/), a powerful robotics development platform based on an actual MIT class. Its real strength is the number of helpful resources online (most notably [Jetson Hacks](http://www.jetsonhacks.com)[J](https://racecarj.com/)) that make the undertaking much easier.

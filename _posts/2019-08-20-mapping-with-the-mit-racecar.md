@@ -6,43 +6,26 @@ author: Theo Kanning
 layout: post
 guid: https://theokanning.com/?p=611
 permalink: /mapping-with-the-mit-racecar/
-us_og_image:
-  - ""
-us_post_preview_layout:
-  - ""
-us_header_sticky_pos:
-  - ""
-us_titlebar_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2019/08/map-e1566266179588.png
 categories:
-  - Uncategorized
+  - robotics
 ---
+
 Now that the lidar works, it&#8217;s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with `rosbag`, and generating the map offline. Here&#8217;s how it works.
 
 ## Lidar Preprocessing
 
-In early iterations of my experiments, I noticed that the lidar recorded collisions with the racecar frame. This led to the mapping algorithm leaving a little trail of obstacles as the racecar moved. Very unprofessional. <figure class="wp-block-image">
+In early iterations of my experiments, I noticed that the lidar recorded collisions with the racecar frame.
+This led to the mapping algorithm leaving a little trail of obstacles as the racecar moved. Very unprofessional.
 
-<img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=1140&#038;ssl=1" alt="" class="wp-image-648" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=660&ssl=1 660w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?resize=300%2C230&ssl=1 300w" sizes="(max-width: 660px) 100vw, 660px" data-recalc-dims="1" /> <figcaption>Note the two sets of black dots in the open and the red lidar points on the robot</figcaption></figure> 
+<img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=1140&#038;ssl=1" alt="" class="wp-image-648" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=660&ssl=1 660w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?resize=300%2C230&ssl=1 300w" sizes="(max-width: 660px) 100vw, 660px" data-recalc-dims="1" />
+
+Note the two sets of black dots in the open and the red lidar points on the robot
 
 To fix this, I added a box filter using the [laser_filters](https://wiki.ros.org/laser_filters) package. A box filter removes any scans within a specific rectangle, so I filtered out all scans within the racecar itself. Then I updated the lidar node to publish to `scan_raw`, and created a filter node to read that topic and publish to `scan`.
 
 Here are the changes I made:
-
-<pre class="wp-block-preformatted"># sensors.yml
+{% highlight yml %}
+# sensors.yml
 laser_filter:
   tf_message_filter_target_frame: laser
   scan_filter_chain:
@@ -56,13 +39,16 @@ laser_filter:
       max_y: 0.15
       min_z: -0.2
       max_z: 0.2</pre>
+{% endhighlight %}
 
-<pre class="wp-block-preformatted"># sensors.launch.xml  
-&lt;!-- laser filter --&gt;
-&lt;node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter"&gt;
-    &lt;remap from="scan" to="scan_raw" /&gt;
-    &lt;remap from="scan_filtered" to="scan" /&gt;
-&lt;/node&gt;</pre>
+{% highlight xml %}
+# sensors.launch.xml
+<!-- laser filter -->
+<node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+    <remap from="scan" to="scan_raw" />
+    <remap from="scan_filtered" to="scan" />
+</node>
+{% endhighlight %}
 
 ## Gathering Data
 

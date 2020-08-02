@@ -5,7 +5,7 @@ date: 2018-01-28T11:18:31+00:00
 author: Theo Kanning
 layout: post
 guid: https://theokanning.com////?p=431
-permalink: /android-keyboard-part-4-showing-and-hiding/
+permalink: /keyboard-part-4-showing-and-hiding/
 us_og_image:
   - https://theokanning.com/////wp-content/uploads/2018/01/show-and-hide.gif
   - https://theokanning.com/////wp-content/uploads/2018/01/show-and-hide.gif
