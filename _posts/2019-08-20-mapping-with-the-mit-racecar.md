@@ -1,10 +1,8 @@
 ---
-id: 611
 title: Mapping with the MIT Racecar
 date: 2019-08-20T01:55:24+00:00
-author: Theo Kanning
+author: theo
 layout: post
-guid: https://theokanning.com/?p=611
 permalink: /mapping-with-the-mit-racecar/
 tags:
   - robotics

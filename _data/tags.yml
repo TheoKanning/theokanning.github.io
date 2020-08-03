@@ -1,0 +1,4 @@
+robotics:
+    name: robotics
+    description: My work on robotics projects
+    cover: False
