@@ -192,7 +192,7 @@ into the {body} of the default.hbs template -->
 
 <p>The MPU-6050 IMU includes a gyroscope and accelerometer, and I combined the measured angle from the accelerometer with the rate from the gyro using a basic filter. A more advanced Kalman filter would be more accurate, but IMU accuracy was not a limiting factor.</p>
 
-<p><code class="language-plaintext highlighter-rouge">pitch = 0.99 * (pitch + G_y * dt) - 0.01 * atan2(A_x, A_z)</code></p>
+<p><code class="highlighter-rouge">pitch = 0.99 * (pitch + G_y * dt) - 0.01 * atan2(A_x, A_z)</code></p>
 
 <p>The rate from the gyroscope reacts quickly to changes in pitch, and the small correction from the accelerometer prevents drifting over time. The accelerometer is very sensitive to quick movements, so it can’t be used by itself.</p>
 
@@ -200,7 +200,7 @@ into the {body} of the default.hbs template -->
 
 <h2 id="motor-drivers">Motor Drivers</h2>
 
-<p>The Teensy controls the A4988 motor drivers by sending pulses; each time the Teensy sends a pulse, the driver takes one step. To send pulses, I used the <code class="language-plaintext highlighter-rouge">TimerOne</code> and <code class="language-plaintext highlighter-rouge">TimerThree</code> libraries. These libraries trigger a callback funciton at a specified frequency, and in the callback function I send a pulse by toggling the trigger pin on and off.</p>
+<p>The Teensy controls the A4988 motor drivers by sending pulses; each time the Teensy sends a pulse, the driver takes one step. To send pulses, I used the <code class="highlighter-rouge">TimerOne</code> and <code class="highlighter-rouge">TimerThree</code> libraries. These libraries trigger a callback funciton at a specified frequency, and in the callback function I send a pulse by toggling the trigger pin on and off.</p>
 
 <p>Both motors were operated in 1/8 microstepping mode for smoother motion.</p>
 
@@ -233,6 +233,8 @@ into the {body} of the default.hbs template -->
             <footer class="post-full-footer">
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
+                
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -274,6 +276,8 @@ into the {body} of the default.hbs template -->
             </a>
             <footer class="post-card-meta">
                 
+                    
+                
                 <span class="reading-time">
                     
                     
@@ -306,6 +310,8 @@ into the {body} of the default.hbs template -->
                 </section>
             </a>
             <footer class="post-card-meta">
+                
+                    
                 
                 <span class="reading-time">
                     

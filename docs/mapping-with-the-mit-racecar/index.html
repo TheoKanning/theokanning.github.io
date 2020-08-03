@@ -47,7 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/mapping-with-the-mit-racecar/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
-    <meta property="article:tag" content="robotics" />
+    <meta property="article:tag" content="Robotics" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Mapping with the MIT Racecar" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -56,7 +56,7 @@
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
     <meta name="twitter:label2" content="Filed under" />
-    <meta name="twitter:data2" content="robotics" />
+    <meta name="twitter:data2" content="Robotics" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -158,7 +158,7 @@ into the {body} of the default.hbs template -->
 
             <section class="post-full-content">
                 <div class="kg-card-markdown">
-                    <p>Now that the lidar works, it’s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with <code class="language-plaintext highlighter-rouge">rosbag</code>, and generating the map offline. Here’s how it works.</p>
+                    <p>Now that the lidar works, it’s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with <code class="highlighter-rouge">rosbag</code>, and generating the map offline. Here’s how it works.</p>
 
 <h2 id="lidar-preprocessing">Lidar Preprocessing</h2>
 
@@ -169,7 +169,7 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
 
 <p>Note the two sets of black dots in the open and the red lidar points on the robot</p>
 
-<p>To fix this, I added a box filter using the <a href="https://wiki.ros.org/laser_filters">laser_filters</a> package. A box filter removes any scans within a specific rectangle, so I filtered out all scans within the racecar itself. Then I updated the lidar node to publish to <code class="language-plaintext highlighter-rouge">scan_raw</code>, and created a filter node to read that topic and publish to <code class="language-plaintext highlighter-rouge">scan</code>.</p>
+<p>To fix this, I added a box filter using the <a href="https://wiki.ros.org/laser_filters">laser_filters</a> package. A box filter removes any scans within a specific rectangle, so I filtered out all scans within the racecar itself. Then I updated the lidar node to publish to <code class="highlighter-rouge">scan_raw</code>, and created a filter node to read that topic and publish to <code class="highlighter-rouge">scan</code>.</p>
 
 <p>Here are the changes I made:</p>
 
@@ -197,11 +197,11 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
 
 <h2 id="gathering-data">Gathering Data</h2>
 
-<p>Once the lidar data looked good, I recorded a run through my apartment to generate a map. High pitch angles can warp 2D lidar data, so I focused on making the robot move smoothly. I used <code class="language-plaintext highlighter-rouge">rosbag</code> to record the lidar data.</p>
+<p>Once the lidar data looked good, I recorded a run through my apartment to generate a map. High pitch angles can warp 2D lidar data, so I focused on making the robot move smoothly. I used <code class="highlighter-rouge">rosbag</code> to record the lidar data.</p>
 
-<p><code class="language-plaintext highlighter-rouge">rosbag record -O apartment.bag /scan</code></p>
+<p><code class="highlighter-rouge">rosbag record -O apartment.bag /scan</code></p>
 
-<p>I didn’t have to record the <code class="language-plaintext highlighter-rouge">tf</code> topic because the mapping launch file includes the static transform publishers. In fact, mapping failed when I recorded <code class="language-plaintext highlighter-rouge">tf</code> because the <code class="language-plaintext highlighter-rouge">laser_scan_matcher</code> needs to generate its own <code class="language-plaintext highlighter-rouge">odom</code> frame data.</p>
+<p>I didn’t have to record the <code class="highlighter-rouge">tf</code> topic because the mapping launch file includes the static transform publishers. In fact, mapping failed when I recorded <code class="highlighter-rouge">tf</code> because the <code class="highlighter-rouge">laser_scan_matcher</code> needs to generate its own <code class="highlighter-rouge">odom</code> frame data.</p>
 
 <h2 id="mapping">Mapping</h2>
 
@@ -209,19 +209,19 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
 
 <p><img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807-1024x665.png?resize=1024%2C665&#038;ssl=1" alt="" class="wp-image-649" srcset="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=1024%2C665&amp;ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=300%2C195&amp;ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=768%2C499&amp;ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?w=1447&amp;ssl=1 1447w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /> &lt;figcaption&gt;Note that the hector namespace only publishes frames&lt;/figcaption&gt;&lt;/figure&gt;</p>
 
-<p>First, <code class="language-plaintext highlighter-rouge">laser_scan_matcher</code> compares the lidar scan history to estimate the robot’s movement and publish a <code class="language-plaintext highlighter-rouge">scan_match</code> frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.</p>
+<p>First, <code class="highlighter-rouge">laser_scan_matcher</code> compares the lidar scan history to estimate the robot’s movement and publish a <code class="highlighter-rouge">scan_match</code> frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.</p>
 
-<p>Second, <code class="language-plaintext highlighter-rouge">hector_mapping</code> takes the lidar data and <code class="language-plaintext highlighter-rouge">scan_match</code> frame and creates its own odom estimate on the <code class="language-plaintext highlighter-rouge">hector_map</code> frame. This second layer creates a slightly better odometry estimate.</p>
+<p>Second, <code class="highlighter-rouge">hector_mapping</code> takes the lidar data and <code class="highlighter-rouge">scan_match</code> frame and creates its own odom estimate on the <code class="highlighter-rouge">hector_map</code> frame. This second layer creates a slightly better odometry estimate.</p>
 
-<p>Last, <code class="language-plaintext highlighter-rouge">gmapping</code> takes the refined <code class="language-plaintext highlighter-rouge">hector_map</code> odometry estimate and generates a map from the lidar data. Using multiple mapping systems allows <code class="language-plaintext highlighter-rouge">gmapping</code> to work with a high quality odometry estimate and make the best map possible.<figure class="wp-block-image"></figure></p>
+<p>Last, <code class="highlighter-rouge">gmapping</code> takes the refined <code class="highlighter-rouge">hector_map</code> odometry estimate and generates a map from the lidar data. Using multiple mapping systems allows <code class="highlighter-rouge">gmapping</code> to work with a high quality odometry estimate and make the best map possible.<figure class="wp-block-image"></figure></p>
 
 <p><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/map.png?fit=1024%2C781&amp;ssl=1" alt="" class="wp-image-651" /> &lt;figcaption&gt;My apartment looks really weird from 10 inches off the ground&lt;/figcaption&gt;&lt;/figure&gt;</p>
 
 <h2 id="next-steps">Next Steps</h2>
 
-<p>Even though I made a great map of my apartment, the mapping launch file still doesn’t use the IMU. Since it explicitly remaps the <code class="language-plaintext highlighter-rouge">imu</code> topic, I assume that updating it to use the IMU correctly is part of the actual MIT class. I keep seeing weird quirks like that in this repo, and I’m never sure what’s deliberate and what’s part of an assignment.</p>
+<p>Even though I made a great map of my apartment, the mapping launch file still doesn’t use the IMU. Since it explicitly remaps the <code class="highlighter-rouge">imu</code> topic, I assume that updating it to use the IMU correctly is part of the actual MIT class. I keep seeing weird quirks like that in this repo, and I’m never sure what’s deliberate and what’s part of an assignment.</p>
 
-<p>I considered getting rid of <code class="language-plaintext highlighter-rouge">hector_mapping</code> completely. The <code class="language-plaintext highlighter-rouge">laser_scan_matcher</code> seems to generate a great odometry estimate on its own, and <code class="language-plaintext highlighter-rouge">gmapping</code> works great by itself. Using fewer packages and tuning them better would be easier to understand too.</p>
+<p>I considered getting rid of <code class="highlighter-rouge">hector_mapping</code> completely. The <code class="highlighter-rouge">laser_scan_matcher</code> seems to generate a great odometry estimate on its own, and <code class="highlighter-rouge">gmapping</code> works great by itself. Using fewer packages and tuning them better would be easier to understand too.</p>
 
 <h2 id="notes-on-installing-packages">Notes on Installing Packages</h2>
 
@@ -229,7 +229,7 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
 
 <h3 id="hector_mapping-gmapping-and-laser_filters">hector_mapping, gmapping, and laser_filters</h3>
 
-<p>The MIT racecar uses a combination of <code class="language-plaintext highlighter-rouge">hector_mapping</code> and <code class="language-plaintext highlighter-rouge">gmapping</code>, neither of which is officially supported on Melodic.</p>
+<p>The MIT racecar uses a combination of <code class="highlighter-rouge">hector_mapping</code> and <code class="highlighter-rouge">gmapping</code>, neither of which is officially supported on Melodic.</p>
 
 <pre class="wp-block-preformatted">cd ~/racecar_ws/src
 git clone https://github.com/ros-perception/slam_gmapping.git
@@ -241,7 +241,7 @@ rosdep install --from-paths src --ignore-src -r -y</pre>
 
 <h3 id="laser_scan_matcher">laser_scan_matcher</h3>
 
-<p>I had to install <code class="language-plaintext highlighter-rouge">laser_scan_matcher</code> from source as well, and I built its csm dependency following the instructions <a href="https://github.com/ccny-ros-pkg/scan_tools/issues/63">here</a>.</p>
+<p>I had to install <code class="highlighter-rouge">laser_scan_matcher</code> from source as well, and I built its csm dependency following the instructions <a href="https://github.com/ccny-ros-pkg/scan_tools/issues/63">here</a>.</p>
 
 <pre class="wp-block-preformatted">cd ~/racecar_ws
 git clone https://github.com/ccny-ros-pkg/scan_tools.git
@@ -260,6 +260,23 @@ sudo make install</pre>
             <footer class="post-full-footer">
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
+                
+                    
+                        <section class="author-card">
+                            
+                                <img class="author-profile-image" src="/assets/images/ghost.png" alt="theo" />
+                            
+                            <section class="author-card-content">
+                                <h4 class="author-card-name"><a href="/author/theo">Theo Kanning</a></h4>
+                                
+                                    <p>The best person</p>
+                                
+                            </section>
+                        </section>
+                        <div class="post-full-footer-right">
+                            <a class="author-card-button" href="/author/theo">Read More</a>
+                        </div>
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -308,6 +325,8 @@ sudo make install</pre>
                 </section>
             </a>
             <footer class="post-card-meta">
+                
+                    
                 
                 <span class="reading-time">
                     

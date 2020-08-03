@@ -167,7 +167,7 @@ into the {body} of the default.hbs template -->
 
 <h2 id="showing-the-keyboard">Showing the keyboard</h2>
 
-<p>As you might have guessed, <code class="language-plaintext highlighter-rouge">InputMethodManager#showSoftInput</code> is for showing the soft keyboard. It takes in a View and an integer representing a set of bit flags. The View should be the EditText that you want the user to start typing in. Note that the keyboard won’t appear unless that EditText is currently in focus!</p>
+<p>As you might have guessed, <code class="highlighter-rouge">InputMethodManager#showSoftInput</code> is for showing the soft keyboard. It takes in a View and an integer representing a set of bit flags. The View should be the EditText that you want the user to start typing in. Note that the keyboard won’t appear unless that EditText is currently in focus!</p>
 
 <p>The integer parameter allows you to specify whether the keyboard is being shown implicitly, or as a result of user action. Setting it to 0 works fine.</p>
 
@@ -183,14 +183,14 @@ into the {body} of the default.hbs template -->
 <ul>
   <li>Get the InputMethodManager from the Activity</li>
   <li>Make sure that the specified view has focus, or else the keyboard won’t appear</li>
-  <li>Call <code class="language-plaintext highlighter-rouge">showSoftInput</code> with the view and all flags set to 0</li>
+  <li>Call <code class="highlighter-rouge">showSoftInput</code> with the view and all flags set to 0</li>
 </ul>
 
 <p>And that’s it!</p>
 
 <h2 id="hiding-the-keyboard">Hiding the Keyboard</h2>
 
-<p>Hiding the keyboard follows a pretty similar pattern. <code class="language-plaintext highlighter-rouge">InputMethodManager#hideSoftInputFromWindow</code> takes an IBinder and another set of integer flags.</p>
+<p>Hiding the keyboard follows a pretty similar pattern. <code class="highlighter-rouge">InputMethodManager#hideSoftInputFromWindow</code> takes an IBinder and another set of integer flags.</p>
 
 <p>You might think that Android would just let you close the keyboard, but you have to provide an IBinder from an active View for security purposes. IBinder tokens are unique across the entire operating system, and Android uses them to make sure apps can’t close a keyboard that’s being used by another process.</p>
 
@@ -202,7 +202,7 @@ into the {body} of the default.hbs template -->
 }
 </pre>
 
-<p>Here we get the IBinder by calling <code class="language-plaintext highlighter-rouge">view.getWindowToken()</code> on any active view.</p>
+<p>Here we get the IBinder by calling <code class="highlighter-rouge">view.getWindowToken()</code> on any active view.</p>
 
 <p>That’s all you have to do! I hope you got a lot out of this keyboard series, and now it’s time to add these great features to your own apps.</p>
 
@@ -215,6 +215,8 @@ into the {body} of the default.hbs template -->
             <footer class="post-full-footer">
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
+                
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -256,6 +258,8 @@ into the {body} of the default.hbs template -->
             </a>
             <footer class="post-card-meta">
                 
+                    
+                
                 <span class="reading-time">
                     
                     
@@ -288,6 +292,8 @@ into the {body} of the default.hbs template -->
                 </section>
             </a>
             <footer class="post-card-meta">
+                
+                    
                 
                 <span class="reading-time">
                     

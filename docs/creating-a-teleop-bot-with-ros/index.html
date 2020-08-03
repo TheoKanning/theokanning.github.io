@@ -200,13 +200,13 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
 <p>Blink-192 works using four different nodes:</p>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">keyboard_driver</code> – Reads keystrokes and publishes them to the <code class="language-plaintext highlighter-rouge">/keys</code> topic</li>
-  <li><code class="language-plaintext highlighter-rouge">keys_to_twist</code> – Subscribes to <code class="language-plaintext highlighter-rouge">/keys</code> and publishes a velocity command to <code class="language-plaintext highlighter-rouge">/cmd_vel</code></li>
-  <li><code class="language-plaintext highlighter-rouge">motors</code> – Subscribes to <code class="language-plaintext highlighter-rouge">/cmd_vel</code> and controls motors</li>
-  <li><code class="language-plaintext highlighter-rouge">raspicam_node</code> – Publishes video stream to <code class="language-plaintext highlighter-rouge">/raspicam_node/image</code> topic</li>
+  <li><code class="highlighter-rouge">keyboard_driver</code> – Reads keystrokes and publishes them to the <code class="highlighter-rouge">/keys</code> topic</li>
+  <li><code class="highlighter-rouge">keys_to_twist</code> – Subscribes to <code class="highlighter-rouge">/keys</code> and publishes a velocity command to <code class="highlighter-rouge">/cmd_vel</code></li>
+  <li><code class="highlighter-rouge">motors</code> – Subscribes to <code class="highlighter-rouge">/cmd_vel</code> and controls motors</li>
+  <li><code class="highlighter-rouge">raspicam_node</code> – Publishes video stream to <code class="highlighter-rouge">/raspicam_node/image</code> topic</li>
 </ul>
 
-<p>Every node except <code class="language-plaintext highlighter-rouge">keyboard_driver</code> runs on Blink-192; <code class="language-plaintext highlighter-rouge">keyboard_driver</code> runs on the desktop.</p>
+<p>Every node except <code class="highlighter-rouge">keyboard_driver</code> runs on Blink-192; <code class="highlighter-rouge">keyboard_driver</code> runs on the desktop.</p>
 
 <h2 id="instructions">Instructions</h2>
 
@@ -214,15 +214,15 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
 
 <ul>
   <li>Connect to wifi access point, my SSID starts with blink-192 – <a href="https://downloads.ubiquityrobotics.com/pi.html">Ubiquity</a></li>
-  <li>Get desktop ip address using <code class="language-plaintext highlighter-rouge">ip addr show</code></li>
-  <li><code class="language-plaintext highlighter-rouge">export ROS_MASTER_URI=http://blink-192.local:11311</code></li>
-  <li><code class="language-plaintext highlighter-rouge">export ROS_IP=&lt;ip address&gt;</code></li>
-  <li><code class="language-plaintext highlighter-rouge">roslaunch blink-192 desktop.launch</code></li>
-  <li>Ssh into Blink-192, and run <code class="language-plaintext highlighter-rouge">roslaunch blink-192 robot.launch</code></li>
+  <li>Get desktop ip address using <code class="highlighter-rouge">ip addr show</code></li>
+  <li><code class="highlighter-rouge">export ROS_MASTER_URI=http://blink-192.local:11311</code></li>
+  <li><code class="highlighter-rouge">export ROS_IP=&lt;ip address&gt;</code></li>
+  <li><code class="highlighter-rouge">roslaunch blink-192 desktop.launch</code></li>
+  <li>Ssh into Blink-192, and run <code class="highlighter-rouge">roslaunch blink-192 robot.launch</code></li>
   <li>Start driving!</li>
 </ul>
 
-<p>The <code class="language-plaintext highlighter-rouge">ROS_MASTER_URI</code> variable tells the desktop where to find the ROS master node that it should use, and <code class="language-plaintext highlighter-rouge">ROS_IP</code> tells the ROS master how to connect back to it. Launch files are a convenient way of running multiple nodes at once.</p>
+<p>The <code class="highlighter-rouge">ROS_MASTER_URI</code> variable tells the desktop where to find the ROS master node that it should use, and <code class="highlighter-rouge">ROS_IP</code> tells the ROS master how to connect back to it. Launch files are a convenient way of running multiple nodes at once.</p>
 
 <p>That’s it! ROS handles all of the communication back-and-forth between Blink-192 and the desktop.</p>
 
@@ -246,6 +246,8 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
             <footer class="post-full-footer">
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
+                
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -287,6 +289,8 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
             </a>
             <footer class="post-card-meta">
                 
+                    
+                
                 <span class="reading-time">
                     
                     
@@ -319,6 +323,8 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
                 </section>
             </a>
             <footer class="post-card-meta">
+                
+                    
                 
                 <span class="reading-time">
                     

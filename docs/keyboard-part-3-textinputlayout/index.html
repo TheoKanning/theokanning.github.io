@@ -156,7 +156,7 @@ into the {body} of the default.hbs template -->
 
 <ul>
   <li>The password hint moves out of the way</li>
-  <li>The wrong password error message is much prettier than what you get with <code class="language-plaintext highlighter-rouge">editText.setError()</code></li>
+  <li>The wrong password error message is much prettier than what you get with <code class="highlighter-rouge">editText.setError()</code></li>
   <li>The toggle changes to password visibility</li>
 </ul>
 
@@ -192,11 +192,11 @@ into the {body} of the default.hbs template -->
 
 <p>Because I’m using a TextInputEditText, the hint will automatically animate, no extra work required.</p>
 
-<p>Take a look at the<code class="language-plaintext highlighter-rouge">app:passwordToggleEnabled="true"</code> line inside the TextInputLayout. That’s all you need to get a password toggle!</p>
+<p>Take a look at the<code class="highlighter-rouge">app:passwordToggleEnabled="true"</code> line inside the TextInputLayout. That’s all you need to get a password toggle!</p>
 
 <h2 id="showing-errors">Showing errors</h2>
 
-<p>Errors are displayed using <code class="language-plaintext highlighter-rouge">TextInputLayout#setError(String)</code>. Note that this is called on the <em>parent</em> layout, not the text field. Here it is in Kotlin:</p>
+<p>Errors are displayed using <code class="highlighter-rouge">TextInputLayout#setError(String)</code>. Note that this is called on the <em>parent</em> layout, not the text field. Here it is in Kotlin:</p>
 
 <pre class="brush: xml; title: ; notranslate" title="">private fun signIn() {
     if(password.text.toString() == "1234" ) {
@@ -223,6 +223,8 @@ into the {body} of the default.hbs template -->
             <footer class="post-full-footer">
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
+                
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -264,6 +266,8 @@ into the {body} of the default.hbs template -->
             </a>
             <footer class="post-card-meta">
                 
+                    
+                
                 <span class="reading-time">
                     
                     
@@ -296,6 +300,8 @@ into the {body} of the default.hbs template -->
                 </section>
             </a>
             <footer class="post-card-meta">
+                
+                    
                 
                 <span class="reading-time">
                     

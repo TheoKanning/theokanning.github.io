@@ -1,38 +1,18 @@
+<!--
+This error template is used for all 404 errors, which might occur on your site.
+It's a good idea to keep this template as minimal as possible in terms of both file size and complexity.
+-->
+
 <!DOCTYPE html>
 <html>
 <head>
-
-    <!-- Document Settings -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <!-- Base Meta -->
-    <!-- dynamically fixing the title for tag/author pages -->
-
-
-
-    <title>Theo Kanning</title>
+    <title>404 - Page Not Found</title>
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Styles'n'Scripts -->
     <link rel="stylesheet" type="text/css" href="/assets/built/screen.css" />
     <link rel="stylesheet" type="text/css" href="/assets/built/screen.edited.css" />
-    <link rel="stylesheet" type="text/css" href="/assets/built/syntax.css" />
-    <!-- highlight.js -->
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-    <style>.hljs { background: none; }</style>
-
-    <!--[if IE]>
-        <style>
-            p, ol, ul{
-                width: 100%;
-            }
-            blockquote{
-                width: 100%;
-            }
-        </style>
-    <![endif]-->
-    
     <!-- This tag outputs SEO meta+structured data and other important settings -->
     <meta name="description" content="Science is Awesome" />
     <link rel="shortcut icon" href="https://theokanning.github.io/" type="image/png" />
@@ -42,13 +22,13 @@
      <!--title below is coming from _includes/dynamic_title-->
     <meta property="og:site_name" content="Theo Kanning" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Theo Kanning" />
+    <meta property="og:title" content="404 - Page Not Found" />
     <meta property="og:description" content="Science is Awesome" />
     <meta property="og:url" content="https://theokanning.github.io/404.html" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Theo Kanning" />
+    <meta name="twitter:title" content="404 - Page Not Found" />
     <meta name="twitter:description" content="Science is Awesome" />
     <meta name="twitter:url" content="https://theokanning.github.io/" />
     <meta name="twitter:image" content="https://theokanning.github.io/" />
@@ -92,108 +72,218 @@
     </script> -->
 
     <meta name="generator" content="Jekyll 3.6.2" />
-    <link rel="alternate" type="application/rss+xml" title="Theo Kanning" href="/feed.xml" />
-
+    <link rel="alternate" type="application/rss+xml" title="404 - Page Not Found" href="/feed.xml" />
 
 </head>
-<body class="home-template">
-
+<body class="error-template">
     <div class="site-wrapper">
-        <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
-        <style type="text/css" media="screen">
-  .container {
-    margin: 10px auto;
-    max-width: 600px;
-    text-align: center;
-  }
-  h1 {
-    margin: 30px 0;
-    font-size: 4em;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-</style>
 
-<div class="container">
-  <h1>404</h1>
-
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
-</div>
-
-
-        <!-- Previous/next page links - displayed on every page -->
-        
-
-        <!-- The footer at the very bottom of the screen -->
-        <footer class="site-footer outer">
-            <div class="site-footer-content inner">
-                <section class="copyright"><a href="https://theokanning.github.io/">Theo Kanning</a> &copy; 2020</section>
-                <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> &
-                    <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> using
-                    <a href="https://github.com/jekyller/jasper2" target="_blank" rel="noopener">Jasper2</a></section>
-                <nav class="site-footer-nav">
-                    <a href="/">Latest Posts</a>
+        <header class="site-header outer no-cover">
+            <div class="inner">
+                <nav class="site-nav-center">
                     
+                        <a class="site-nav-logo" href="/">Theo Kanning</a>
                     
-                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
                 </nav>
             </div>
-        </footer>
+        </header>
+
+        <main id="site-main" class="site-main outer" role="main">
+            <div class="inner">
+
+                <section class="error-message">
+                    <h1 class="error-code">404</h1>
+                    <p class="error-description">Page not found</p>
+                    <a class="error-link" href="/">Go to the front page →</a>
+                </section>
+            </div>
+        </main>
+
+        <!-- get "posts" limit="3" -->
+        <aside class="outer">
+            <div class="inner">
+                <div class="post-feed">
+                    <!-- The tag below includes the markup for each post - partials/post-card.hbs -->
+                    
+
+
+
+    
+    
+        <article class="post-card  no-image">
+            
+            <div class="post-card-content">
+                <a class="post-card-content-link" href="/mapping-with-the-mit-racecar/">
+                    <header class="post-card-header">
+                        
+                            
+                                
+                                    <span class="post-card-tags">Robotics</span>
+                                
+                            
+                        
+
+                        <h2 class="post-card-title">Mapping with the MIT Racecar</h2>
+                    </header>
+                    <section class="post-card-excerpt">
+                        
+                            <p>Now that the lidar works, it’s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with rosbag, and generating the map offline.</p>
+                        
+                    </section>
+                </a>
+                <footer class="post-card-meta">
+                    
+                        
+                            
+                            <img class="author-profile-image" src="/assets/images/ghost.png" alt="Theo Kanning" />
+                            
+                            <span class="post-card-author">
+                                <a href="/author/theo/">Theo Kanning</a>
+                            </span>
+                        
+                    
+                    <span class="reading-time">
+                        
+                        
+                          6 min read
+                        
+                    </span>
+                </footer>
+            </div>
+        </article>
+    
+
+    
+    
+        <article class="post-card  no-image">
+            
+            <div class="post-card-content">
+                <a class="post-card-content-link" href="/using-the-rplidar-a1-on-the-mit-racecar/">
+                    <header class="post-card-header">
+                        
+
+                        <h2 class="post-card-title">Using the RPLIDAR A1 on the MIT Racecar</h2>
+                    </header>
+                    <section class="post-card-excerpt">
+                        
+                            <p>The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead. The A1 has good enough accuracy for me, but if I ever</p>
+                        
+                    </section>
+                </a>
+                <footer class="post-card-meta">
+                    
+                        
+                    
+                    <span class="reading-time">
+                        
+                        
+                          4 min read
+                        
+                    </span>
+                </footer>
+            </div>
+        </article>
+    
+
+    
+    
+        <article class="post-card  no-image">
+            
+            <div class="post-card-content">
+                <a class="post-card-content-link" href="/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">
+                    <header class="post-card-header">
+                        
+
+                        <h2 class="post-card-title">MIT Racecar VESC and Joystick on Ubuntu 18.04</h2>
+                    </header>
+                    <section class="post-card-excerpt">
+                        
+                            <p>After building the MIT Racecar in my last post, I started installing all of the peripherals so I could run it in teleop mode. Unfortunately, using a new Jetson image meant that I</p>
+                        
+                    </section>
+                </a>
+                <footer class="post-card-meta">
+                    
+                        
+                    
+                    <span class="reading-time">
+                        
+                        
+                          3 min read
+                        
+                    </span>
+                </footer>
+            </div>
+        </article>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+
+                </div>
+            </div>
+        </aside>
+        <!-- /get -->
 
     </div>
-
-    <!-- The big email subscribe modal content -->
-    
-
-    <!-- highlight.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.10.0/components/prism-abap.min.js"></script>
-    <script>$(document).ready(function() {
-      $('pre code').each(function(i, block) {
-        hljs.highlightBlock(block);
-      });
-    });</script>
-
-    <!-- jQuery + Fitvids, which makes all video embeds responsive -->
-    <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous">
-    </script>
-    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
-    <script type="text/javascript" src="https://demo.ghost.io/assets/js/jquery.fitvids.js?v=724281a32e"></script>
-
-
-    <!-- Paginator increased to "infinit" in _config.yml -->
-    <!-- if paginator.posts  -->
-    <!-- <script>
-        var maxPages = parseInt('');
-    </script>
-    <script src="/assets/js/infinitescroll.js"></script> -->
-    <!-- /endif -->
-
-    
-
-
-    <!-- Add Google Analytics  -->
-    <!-- Google Analytics Tracking code -->
- <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', '', 'auto');
-  ga('send', 'pageview');
-
- </script>
-
-
-    <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
-    
-
-    <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->
-    <!-- ghost_foot -->
-
 </body>
 </html>
+

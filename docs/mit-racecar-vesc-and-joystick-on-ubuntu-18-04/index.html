@@ -166,14 +166,14 @@ into the {body} of the default.hbs template -->
   <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a><a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip" class="wp-block-file__button" download="">Download</a>
 </div>
 
-<p>To install the cdc-acm driver, I copied it from the compiled kernel output into live <code class="language-plaintext highlighter-rouge">/lib/modules/4.9.140/kernel/drivers/usb/class</code> folder.</p>
+<p>To install the cdc-acm driver, I copied it from the compiled kernel output into live <code class="highlighter-rouge">/lib/modules/4.9.140/kernel/drivers/usb/class</code> folder.</p>
 
-<p>I had to add the following line to <code class="language-plaintext highlighter-rouge">/etc/modules</code> to load cdc-acm automatically.</p>
+<p>I had to add the following line to <code class="highlighter-rouge">/etc/modules</code> to load cdc-acm automatically.</p>
 
 <pre class="wp-block-preformatted"># /etc/modules
 cdc-acm</pre>
 
-<p>And the following line to <code class="language-plaintext highlighter-rouge">/etc/udev/rules.d/10-racecar.rules</code> (or any rules file) to make the VESC consistently appear as <code class="language-plaintext highlighter-rouge">/dev/vesc</code></p>
+<p>And the following line to <code class="highlighter-rouge">/etc/udev/rules.d/10-racecar.rules</code> (or any rules file) to make the VESC consistently appear as <code class="highlighter-rouge">/dev/vesc</code></p>
 
 <pre class="wp-block-preformatted"># /etc/udev/rules.d/10-racecar.rules
 ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc"</pre>
@@ -188,7 +188,7 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>That’s everything required to run the racecar in teleop mode! Build the catkin workspace then run <code class="language-plaintext highlighter-rouge">roslaunch racecar teleop.launch</code> to drive it around!</p>
+<p>That’s everything required to run the racecar in teleop mode! Build the catkin workspace then run <code class="highlighter-rouge">roslaunch racecar teleop.launch</code> to drive it around!</p>
 
                 </div>
             </section>
@@ -199,6 +199,8 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
             <footer class="post-full-footer">
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
+                
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -240,6 +242,8 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
             </a>
             <footer class="post-card-meta">
                 
+                    
+                
                 <span class="reading-time">
                     
                     
@@ -272,6 +276,8 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
                 </section>
             </a>
             <footer class="post-card-meta">
+                
+                    
                 
                 <span class="reading-time">
                     

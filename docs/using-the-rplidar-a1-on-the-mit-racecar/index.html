@@ -155,16 +155,16 @@ The A1 has good enough accuracy for me, but if I ever want to upgrade I can get 
 
 <h2 id="connecting-to-the-a1">Connecting to the A1</h2>
 
-<p>The A1 typically appears as <code class="language-plaintext highlighter-rouge">/dev/ttyUSB0</code>, but I gave it a more readable, consistent name using udev rules. By adding the following line to my rules file (any rules file will work, but I have one for racecar-specific rules), the A1 will always appear as <code class="language-plaintext highlighter-rouge">/dev/rplidar</code></p>
+<p>The A1 typically appears as <code class="highlighter-rouge">/dev/ttyUSB0</code>, but I gave it a more readable, consistent name using udev rules. By adding the following line to my rules file (any rules file will work, but I have one for racecar-specific rules), the A1 will always appear as <code class="highlighter-rouge">/dev/rplidar</code></p>
 
 <pre class="wp-block-preformatted"># etc/udev/rules.d/10-racecar.rules
 KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0777", SYMLINK+="rplidar"</pre>
 
-<p>I found the vendor and product id via <code class="language-plaintext highlighter-rouge">lsusb</code></p>
+<p>I found the vendor and product id via <code class="highlighter-rouge">lsusb</code></p>
 
 <h2 id="ros-package">ROS Package</h2>
 
-<p>The A1 driver node connects to the lidar and converts its data into <code class="language-plaintext highlighter-rouge">LaserScan</code> messages. A Hokuyo will publish the same <code class="language-plaintext highlighter-rouge">LaserScan</code> message, just with more data points included, so any navigation system using a lidar will work with either.</p>
+<p>The A1 driver node connects to the lidar and converts its data into <code class="highlighter-rouge">LaserScan</code> messages. A Hokuyo will publish the same <code class="highlighter-rouge">LaserScan</code> message, just with more data points included, so any navigation system using a lidar will work with either.</p>
 
 <p>First, I cloned the ROS package to my catkin workspace:</p>
 
@@ -199,9 +199,9 @@ laser_node:
 
 <h2 id="updating-tf-data">Updating TF data</h2>
 
-<p>In order to build a map of an environment, a mapping package like <code class="language-plaintext highlighter-rouge">gmapping</code> needs to know the position of the lidar relative to the racecar base link. ROS uses a handy library called <code class="language-plaintext highlighter-rouge">tf2</code> to publish static coordinate frame transform data like this.</p>
+<p>In order to build a map of an environment, a mapping package like <code class="highlighter-rouge">gmapping</code> needs to know the position of the lidar relative to the racecar base link. ROS uses a handy library called <code class="highlighter-rouge">tf2</code> to publish static coordinate frame transform data like this.</p>
 
-<p>The default racecar project already defines the default coordinate transforms between the <code class="language-plaintext highlighter-rouge">base_link</code> and <code class="language-plaintext highlighter-rouge">laser</code> frames.. Since the A1 doesn’t fit in the existing lidar slot, I had to moveit up 2cm and back 2cm. The exact measurements will depend on your setup.</p>
+<p>The default racecar project already defines the default coordinate transforms between the <code class="highlighter-rouge">base_link</code> and <code class="highlighter-rouge">laser</code> frames.. Since the A1 doesn’t fit in the existing lidar slot, I had to moveit up 2cm and back 2cm. The exact measurements will depend on your setup.</p>
 
 <pre class="wp-block-preformatted"># static_transforms.launch.xml
 &lt;node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser" 
@@ -220,7 +220,7 @@ laser_node:
 
 <h2 id="next-steps">Next steps</h2>
 
-<p>Now that the lidar works in teleop mode, the next step is to use <code class="language-plaintext highlighter-rouge">gmapping</code> to build a map of my apartment. See you soon!</p>
+<p>Now that the lidar works in teleop mode, the next step is to use <code class="highlighter-rouge">gmapping</code> to build a map of my apartment. See you soon!</p>
 
                 </div>
             </section>
@@ -231,6 +231,8 @@ laser_node:
             <footer class="post-full-footer">
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
+                
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -278,6 +280,15 @@ laser_node:
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/ghost.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
+                    
+                
                 <span class="reading-time">
                     
                     
@@ -310,6 +321,8 @@ laser_node:
                 </section>
             </a>
             <footer class="post-card-meta">
+                
+                    
                 
                 <span class="reading-time">
                     
