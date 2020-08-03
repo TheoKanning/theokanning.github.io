@@ -17,9 +17,10 @@ Now that the lidar works, it&#8217;s time to map my apartment! I made the map by
 In early iterations of my experiments, I noticed that the lidar recorded collisions with the racecar frame.
 This led to the mapping algorithm leaving a little trail of obstacles as the racecar moved. Very unprofessional.
 
-<img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=1140&#038;ssl=1" alt="" class="wp-image-648" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=660&ssl=1 660w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?resize=300%2C230&ssl=1 300w" sizes="(max-width: 660px) 100vw, 660px" data-recalc-dims="1" />
-
-Note the two sets of black dots in the open and the red lidar points on the robot
+{% include image.html
+url="/assets/images/2019/mapping/lidar_interference.png"
+description="Note the two sets of black dots in the open and the red lidar points on the robot" %}
+<br>
 
 To fix this, I added a box filter using the [laser_filters](https://wiki.ros.org/laser_filters) package. A box filter removes any scans within a specific rectangle, so I filtered out all scans within the racecar itself. Then I updated the lidar node to publish to `scan_raw`, and created a filter node to read that topic and publish to `scan`.
 
@@ -38,7 +39,7 @@ laser_filter:
       min_y: -0.15
       max_y: 0.15
       min_z: -0.2
-      max_z: 0.2</pre>
+      max_z: 0.2
 {% endhighlight %}
 
 {% highlight xml %}
@@ -56,13 +57,17 @@ Once the lidar data looked good, I recorded a run through my apartment to genera
 
 `rosbag record -O apartment.bag /scan`
 
-I didn&#8217;t have to record the `tf` topic because the mapping launch file includes the static transform publishers. In fact, mapping failed when I recorded `tf` because the `laser_scan_matcher` needs to generate its own `odom` frame data.
+I didn't have to record the `tf` topic because the mapping launch file includes the static transform publishers. In fact, mapping failed when I recorded `tf` because the `laser_scan_matcher` needs to generate its own `odom` frame data.
 
 ## Mapping
 
-The actual mapping process uses three different packages: [laser\_scan\_matcher](https://wiki.ros.org/laser_scan_matcher), [hector_mapping](https://wiki.ros.org/hector_mapping), and [gmapping](http://%20http//wiki.ros.org/gmapping). Note that the static transforms are included too.<figure class="wp-block-image">
+The actual mapping process uses three different packages: [laser\_scan\_matcher](https://wiki.ros.org/laser_scan_matcher), [hector_mapping](https://wiki.ros.org/hector_mapping), and [gmapping](http://%20http//wiki.ros.org/gmapping). Note that the static transforms are included too.
 
-<img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807-1024x665.png?resize=1024%2C665&#038;ssl=1" alt="" class="wp-image-649" srcset="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=1024%2C665&ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=300%2C195&ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=768%2C499&ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?w=1447&ssl=1 1447w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /> <figcaption>Note that the hector namespace only publishes frames</figcaption></figure> 
+{% include image.html
+url="/assets/images/2019/mapping/rosgraph.png"
+description="Note that the hector namespace only publishes frames"
+%}
+<br>
 
 First, `laser_scan_matcher` compares the lidar scan history to estimate the robot&#8217;s movement and publish a `scan_match` frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.
 
@@ -70,7 +75,11 @@ Second, `hector_mapping` takes the lidar data and `scan_match` frame and creates
 
 Last, `gmapping` takes the refined `hector_map` odometry estimate and generates a map from the lidar data. Using multiple mapping systems allows `gmapping` to work with a high quality odometry estimate and make the best map possible.<figure class="wp-block-image">
 
-<img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/map.png?fit=1024%2C781&ssl=1" alt="" class="wp-image-651" /> <figcaption>My apartment looks really weird from 10 inches off the ground</figcaption></figure> 
+{% include image.html
+url="/assets/images/2019/mapping/map.png"
+description="My apartment look really weird from 10 inches off the ground"
+%}
+<br>
 
 ## Next Steps
 
@@ -86,7 +95,7 @@ Most of the packages I used aren&#8217;t officially supported on Melodic yet (th
 
 The MIT racecar uses a combination of `hector_mapping` and `gmapping`, neither of which is officially supported on Melodic.
 
-<pre class="wp-block-preformatted">cd ~/racecar_ws/src
+<pre class="wp-block-preformatted">cd ~/racecar_ws
 git clone https://github.com/ros-perception/slam_gmapping.git
 git clone https://github.com/ros-perception/openslam_gmapping.git
 git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git

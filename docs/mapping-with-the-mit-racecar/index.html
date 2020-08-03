@@ -165,9 +165,12 @@ into the {body} of the default.hbs template -->
 <p>In early iterations of my experiments, I noticed that the lidar recorded collisions with the racecar frame.
 This led to the mapping algorithm leaving a little trail of obstacles as the racecar moved. Very unprofessional.</p>
 
-<p><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=1140&#038;ssl=1" alt="" class="wp-image-648" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?w=660&amp;ssl=1 660w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/lidar_interference.png?resize=300%2C230&amp;ssl=1 300w" sizes="(max-width: 660px) 100vw, 660px" data-recalc-dims="1" /></p>
+<figure class="image">
+    <img src="/assets/images/2019/mapping/lidar_interference.png" alt="Note the two sets of black dots in the open and the red lidar points on the robot" />
+    <figcaption>Note the two sets of black dots in the open and the red lidar points on the robot</figcaption>
+</figure>
 
-<p>Note the two sets of black dots in the open and the red lidar points on the robot</p>
+<p><br /></p>
 
 <p>To fix this, I added a box filter using the <a href="https://wiki.ros.org/laser_filters">laser_filters</a> package. A box filter removes any scans within a specific rectangle, so I filtered out all scans within the racecar itself. Then I updated the lidar node to publish to <code class="highlighter-rouge">scan_raw</code>, and created a filter node to read that topic and publish to <code class="highlighter-rouge">scan</code>.</p>
 
@@ -186,7 +189,7 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
       <span class="na">min_y</span><span class="pi">:</span> <span class="s">-0.15</span>
       <span class="na">max_y</span><span class="pi">:</span> <span class="m">0.15</span>
       <span class="na">min_z</span><span class="pi">:</span> <span class="s">-0.2</span>
-      <span class="na">max_z</span><span class="pi">:</span> <span class="s">0.2&lt;/pre&gt;</span></code></pre></figure>
+      <span class="na">max_z</span><span class="pi">:</span> <span class="s">0.2</span></code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-xml" data-lang="xml"># sensors.launch.xml
 <span class="c">&lt;!-- laser filter --&gt;</span>
@@ -205,9 +208,14 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
 
 <h2 id="mapping">Mapping</h2>
 
-<p>The actual mapping process uses three different packages: <a href="https://wiki.ros.org/laser_scan_matcher">laser_scan_matcher</a>, <a href="https://wiki.ros.org/hector_mapping">hector_mapping</a>, and <a href="http://%20http//wiki.ros.org/gmapping">gmapping</a>. Note that the static transforms are included too.<figure class="wp-block-image"></figure></p>
+<p>The actual mapping process uses three different packages: <a href="https://wiki.ros.org/laser_scan_matcher">laser_scan_matcher</a>, <a href="https://wiki.ros.org/hector_mapping">hector_mapping</a>, and <a href="http://%20http//wiki.ros.org/gmapping">gmapping</a>. Note that the static transforms are included too.</p>
 
-<p><img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807-1024x665.png?resize=1024%2C665&#038;ssl=1" alt="" class="wp-image-649" srcset="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=1024%2C665&amp;ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=300%2C195&amp;ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?resize=768%2C499&amp;ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/08/rosgraph-e1566265414807.png?w=1447&amp;ssl=1 1447w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /> &lt;figcaption&gt;Note that the hector namespace only publishes frames&lt;/figcaption&gt;&lt;/figure&gt;</p>
+<figure class="image">
+    <img src="/assets/images/2019/mapping/rosgraph.png" alt="Note that the hector namespace only publishes frames" />
+    <figcaption>Note that the hector namespace only publishes frames</figcaption>
+</figure>
+
+<p><br /></p>
 
 <p>First, <code class="highlighter-rouge">laser_scan_matcher</code> compares the lidar scan history to estimate the robot’s movement and publish a <code class="highlighter-rouge">scan_match</code> frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.</p>
 
@@ -215,7 +223,12 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
 
 <p>Last, <code class="highlighter-rouge">gmapping</code> takes the refined <code class="highlighter-rouge">hector_map</code> odometry estimate and generates a map from the lidar data. Using multiple mapping systems allows <code class="highlighter-rouge">gmapping</code> to work with a high quality odometry estimate and make the best map possible.<figure class="wp-block-image"></figure></p>
 
-<p><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/08/map.png?fit=1024%2C781&amp;ssl=1" alt="" class="wp-image-651" /> &lt;figcaption&gt;My apartment looks really weird from 10 inches off the ground&lt;/figcaption&gt;&lt;/figure&gt;</p>
+<figure class="image">
+    <img src="/assets/images/2019/mapping/map.png" alt="My apartment look really weird from 10 inches off the ground" />
+    <figcaption>My apartment look really weird from 10 inches off the ground</figcaption>
+</figure>
+
+<p><br /></p>
 
 <h2 id="next-steps">Next Steps</h2>
 
@@ -231,7 +244,7 @@ This led to the mapping algorithm leaving a little trail of obstacles as the rac
 
 <p>The MIT racecar uses a combination of <code class="highlighter-rouge">hector_mapping</code> and <code class="highlighter-rouge">gmapping</code>, neither of which is officially supported on Melodic.</p>
 
-<pre class="wp-block-preformatted">cd ~/racecar_ws/src
+<pre class="wp-block-preformatted">cd ~/racecar_ws
 git clone https://github.com/ros-perception/slam_gmapping.git
 git clone https://github.com/ros-perception/openslam_gmapping.git
 git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
