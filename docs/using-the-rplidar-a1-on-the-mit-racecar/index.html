@@ -191,16 +191,16 @@ catkin_package(
     ...
 
 # package.xml
-&lt;run_depend&gt;rplidar&lt;/run_depend&gt;
+<run_depend>rplidar</run_depend>
 </pre>
 
 <p>Then I updated the racecar launch files to start the RPLIDAR node instead of the Hokuyo node. I turned on angle compensation to reduce shaking, and it works really well!</p>
 
 <pre class="wp-block-preformatted"># sensors.launch
-&lt;!-- laser --&gt;
-&lt;node pkg="rplidar_ros" type="rplidarNode" name="laser_node"&gt;
-  &lt;param name="angle_compensate" value="true"/&gt;
-&lt;/node&gt;
+<!-- laser -->
+<node pkg="rplidar_ros" type="rplidarNode" name="laser_node">
+  <param name="angle_compensate" value="true" />
+</node>
 </pre>
 
 <p>I also told the node to use the new symlink I created earlier.</p>
@@ -216,8 +216,7 @@ laser_node:
 <p>The default racecar project already defines the default coordinate transforms between the <code class="highlighter-rouge">base_link</code> and <code class="highlighter-rouge">laser</code> frames.. Since the A1 doesn’t fit in the existing lidar slot, I had to moveit up 2cm and back 2cm. The exact measurements will depend on your setup.</p>
 
 <pre class="wp-block-preformatted"># static_transforms.launch.xml
-&lt;node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser" 
- args="0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser" /&gt;
+<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser" args="0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser" />
 </pre>
 
 <h2 id="seeing-lidar-data">Seeing lidar data</h2>

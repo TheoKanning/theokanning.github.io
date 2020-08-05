@@ -1,5 +1,5 @@
 ---
-title: Dexter the Two-Wheeled Balancing Robot
+title: Dexter the Balancing Robot
 date: 2019-03-16T16:17:39+00:00
 author: theo
 layout: post
@@ -7,11 +7,10 @@ class: post-template
 permalink: /balancing-robot/
 tags:
   - arduino
-  - android
 ---
-<figure class="wp-block-image"><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=768%2C1024&#038;ssl=1" alt="" class="wp-image-522" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=768%2C1024&ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=225%2C300&ssl=1 225w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?w=1518&ssl=1 1518w" sizes="(max-width: 768px) 100vw, 768px" data-recalc-dims="1" /><figcaption>Introducing Dexter: the cutest balancing robot ever made  
-</figcaption></figure> 
+Introducing Dexter: the cutest balancing robot ever made.
 
+![](/assets/images/2019/dexter/dexter.jpg)
 ## Dexter
 
 Dexter is a two-wheeled balancing robot controlled by an Android App. I originally created Dexter as a modified version of the [wifi-rover](https://theokanning.com/wifi-rover/) project that I made a few years ago. This time I was looking for a bigger challenge and for something to do with the stepper motors I had lying around.
@@ -33,17 +32,12 @@ I also added some iron weight on top for added stability.
 
 ## Custom Frame and PCB
 
-<ul class="wp-block-gallery columns-2 is-cropped">
-  <li class="blocks-gallery-item">
-    <figure><img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?resize=768%2C1024&#038;ssl=1" alt="" data-id="527" data-link="https://theokanning.com/frame/" class="wp-image-527" srcset="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?resize=768%2C1024&ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?resize=225%2C300&ssl=1 225w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/03/frame.jpg?w=1518&ssl=1 1518w" sizes="(max-width: 768px) 100vw, 768px" data-recalc-dims="1" /></figure>
-  </li>
-  <li class="blocks-gallery-item">
-    <figure><img src="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?resize=768%2C1024&#038;ssl=1" alt="" data-id="528" data-link="https://theokanning.com/pcb/" class="wp-image-528" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?resize=768%2C1024&ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?resize=225%2C300&ssl=1 225w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/03/pcb.jpg?w=1518&ssl=1 1518w" sizes="(max-width: 768px) 100vw, 768px" data-recalc-dims="1" /></figure>
-  </li>
-</ul>
+| 3D Printed Frame  | Custom Circuit Board |
+| :---: | :---: |
+|![](/assets/images/2019/dexter/frame.jpg) | ![](/assets/images/2019/dexter/pcb.jpg)|
 
-I designed the 3D-printed frame using Fusion 360, and designed the custom circuit board in Eagle.  
-  
+I designed the 3D-printed frame using Fusion 360, and designed the custom circuit board in Eagle.
+
 [Frame STP File](https://theokanning.com/wp-content/uploads/2019/03/Dexter-v1.zip)  
 [PCB Eagle Design Block](https://theokanning.com/wp-content/uploads/2019/03/dexter_design_block.zip)
 
@@ -57,8 +51,7 @@ The rate from the gyroscope reacts quickly to changes in pitch, and the small co
 
 IMU code was taken from the Arduino example ([link](https://playground.arduino.cc/Main/MPU-6050#sketch))
 
-## Motor Drivers  
-
+## Motor Drivers
 
 The Teensy controls the A4988 motor drivers by sending pulses; each time the Teensy sends a pulse, the driver takes one step. To send pulses, I used the&nbsp;`TimerOne`&nbsp;and&nbsp;`TimerThree`&nbsp;libraries. These libraries trigger a callback funciton at a specified frequency, and in the callback function I send a pulse by toggling the trigger pin on and off.
 

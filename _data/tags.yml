@@ -6,3 +6,7 @@ android:
     name: android
     description: Android development tips and tricks.
     cover: False
+arduino:
+    name: arduino
+    description: Hobby projects with Arduino
+    cover: False
