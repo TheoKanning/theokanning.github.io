@@ -1,34 +1,13 @@
 ---
-id: 521
 title: Dexter the Two-Wheeled Balancing Robot
 date: 2019-03-16T16:17:39+00:00
-author: Theo Kanning
+author: theo
 layout: post
-guid: https://theokanning.com/?p=521
+class: post-template
 permalink: /balancing-robot/
-us_og_image:
-  - ""
-us_post_preview_layout:
-  - ""
-us_header_sticky_pos:
-  - ""
-us_titlebar_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2019/03/dexter-1-e1552753362695.jpg
-categories:
-  - Uncategorized
+tags:
+  - arduino
+  - android
 ---
 <figure class="wp-block-image"><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=768%2C1024&#038;ssl=1" alt="" class="wp-image-522" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=768%2C1024&ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?resize=225%2C300&ssl=1 225w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/03/dexter.jpg?w=1518&ssl=1 1518w" sizes="(max-width: 768px) 100vw, 768px" data-recalc-dims="1" /><figcaption>Introducing Dexter: the cutest balancing robot ever made  
 </figcaption></figure> 
@@ -48,7 +27,7 @@ Dexter is a two-wheeled balancing robot controlled by an Android App. I original
 
 The Teensy LC was a good fit for this project because it has 3 hardware serial lines and multiple timers. Dexter uses serial to communicate with the HC-05, and the stepper drivers each require a 16 bit timer to work.
 
-I don&#8217;t know the exact model number of the motors I used, but they look pretty standard.
+I don't know the exact model number of the motors I used, but they look pretty standard.
 
 I also added some iron weight on top for added stability.
 
@@ -74,7 +53,7 @@ The MPU-6050 IMU includes a gyroscope and accelerometer, and I combined the meas
 
 `pitch = 0.99 * (pitch + G_y * dt) - 0.01 * atan2(A_x, A_z)`
 
-The rate from the gyroscope reacts quickly to changes in pitch, and the small correction from the accelerometer prevents drifting over time. The accelerometer is very sensitive to quick movements, so it can&#8217;t be used by itself.
+The rate from the gyroscope reacts quickly to changes in pitch, and the small correction from the accelerometer prevents drifting over time. The accelerometer is very sensitive to quick movements, so it can't be used by itself.
 
 IMU code was taken from the Arduino example ([link](https://playground.arduino.cc/Main/MPU-6050#sketch))
 
@@ -87,7 +66,7 @@ Both motors were operated in 1/8 microstepping mode for smoother motion.
 
 ## PID Control
 
-Dexter uses two cascading controllers. First, the ground speed PI controller calculates the desired angle based on the speed error. Second, the angle PD controller calculates the output steps per second to reach the desired angle. Since these motors don&#8217;t have encoders, the only way to measure the current ground speed is to use the steps per second value calculated by the angle controller.
+Dexter uses two cascading controllers. First, the ground speed PI controller calculates the desired angle based on the speed error. Second, the angle PD controller calculates the output steps per second to reach the desired angle. Since these motors don't have encoders, the only way to measure the current ground speed is to use the steps per second value calculated by the angle controller.
 
 To tune Dexter, I added a basic&nbsp;[Twiddle](https://www.youtube.com/watch?v=2uQ2BSzDvXs)&nbsp;function. If Dexter receives the letter &#8220;t&#8221; over bluetooth, he will drive forward for a few seconds, stop, drive back, and report the total error during the trip. All of the PID constants can be changed over bluetooth and optimized to reduce the twiddle error.
 

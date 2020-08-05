@@ -8,7 +8,7 @@ permalink: /mit-racecar-vesc-and-joystick-on-ubuntu-18-04/
 tags:
   - robotics
 ---
-After building the MIT Racecar in my last post, I started installing all of the peripherals so I could run it in teleop mode. Unfortunately, using a new Jetson image meant that I couldn&#8217;t use the pre-compiled drivers online. Here&#8217;s how I managed to get the VESC and joystick working.
+After building the MIT Racecar in my last post, I started installing all of the peripherals so I could run it in teleop mode. Unfortunately, using a new Jetson image meant that I couldn't use the pre-compiled drivers online. Here's how I managed to get the VESC and joystick working.
 
 ## VESC Firmware
 
@@ -18,9 +18,9 @@ Also, the new VESC-Tool that replaced BLDCTool will not accept the firmware vers
 
 ## Connecting to the VESC
 
-The VESC uses the USB Abstract Control Module protocol, which requires a special cdc_acm driver. I couldn&#8217;t find a compiled version for kernel version 4.9.140, so I had to build the 4.9.140 kernel on the Jetson and include the cdc-acm module.
+The VESC uses the USB Abstract Control Module protocol, which requires a special cdc_acm driver. I couldn't find a compiled version for kernel version 4.9.140, so I had to build the 4.9.140 kernel on the Jetson and include the cdc-acm module.
 
-As usual, [JetsonHacks](https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/) has great instructions on how to build the kernel, but I had to modify their [scripts](https://github.com/TheoKanning/buildJetsonTX2Kernel) to work for 4.9.140. Here&#8217;s a link to my compiled cdc-acm driver in case it helps someone.
+As usual, [JetsonHacks](https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/) has great instructions on how to build the kernel, but I had to modify their [scripts](https://github.com/TheoKanning/buildJetsonTX2Kernel) to work for 4.9.140. Here's a link to my compiled cdc-acm driver in case it helps someone.
 
 <div class="wp-block-file">
   <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a>
@@ -48,4 +48,4 @@ In order to use the Logitech F710 joystick, I had to install xboxdrv and run it 
 
 ## Conclusion
 
-That&#8217;s everything required to run the racecar in teleop mode! Build the catkin workspace then run `roslaunch racecar teleop.launch` to drive it around!
+That's everything required to run the racecar in teleop mode! Build the catkin workspace then run `roslaunch racecar teleop.launch` to drive it around!

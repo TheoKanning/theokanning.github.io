@@ -1,10 +1,8 @@
 ---
-id: 198
 title: Android-Controller Wifi Rover
 date: 2016-03-06T18:40:48+00:00
-author: Theo Kanning
+author: theo
 layout: post
-guid: https://theokanning.com////?p=198
 permalink: /wifi-rover/
 us_og_image:
   - ""
@@ -41,13 +39,13 @@ categories:
 
 ## Wifi Rover
 
-Here&#8217;s one of my favorite projects so far: a wifi-controlled robot that streams video to the user. I call it the Rover because it can work over any distance as long as it&#8217;s on a wifi network, and I&nbsp;really feel like an explorer&nbsp;when I drive it around the office. This project was an absolute blast to put together, and it&#8217;s really the result of putting together a few simple ideas into a single project.
+Here's one of my favorite projects so far: a wifi-controlled robot that streams video to the user. I call it the Rover because it can work over any distance as long as it's on a wifi network, and I&nbsp;really feel like an explorer&nbsp;when I drive it around the office. This project was an absolute blast to put together, and it's really the result of putting together a few simple ideas into a single project.
 
 ## Software
 
-The rover system works by using two android devices, which I&#8217;ll call the driver phone and robot phone. The robot phone (in this case a Moto G 2nd gen) is mounted onto the rover and connects to an Arduino that controls the motors. Using a simple serial interface, this phone can send steering commands and control the robot. In addition, the robot phone records video and streams it to the driver phone. I chose QuickBlox as my streaming service, but I designed the app to switch between services with relative ease later on.
+The rover system works by using two android devices, which I'll call the driver phone and robot phone. The robot phone (in this case a Moto G 2nd gen) is mounted onto the rover and connects to an Arduino that controls the motors. Using a simple serial interface, this phone can send steering commands and control the robot. In addition, the robot phone records video and streams it to the driver phone. I chose QuickBlox as my streaming service, but I designed the app to switch between services with relative ease later on.
 
-The driver phone receives the video stream and gives the user a virtual d-pad to control the rover, and that&#8217;s all it takes to control the Rover! The actual code implementation is more complicated of course, but I think this project has a charming simplicity to it.
+The driver phone receives the video stream and gives the user a virtual d-pad to control the rover, and that's all it takes to control the Rover! The actual code implementation is more complicated of course, but I think this project has a charming simplicity to it.
 
 All code is available on my Github [page](https://github.com/TheoKanning/WiFi-Rover).
 
@@ -62,11 +60,11 @@ All code is available on my Github [page](https://github.com/TheoKanning/WiFi-Ro
 <a rel="noreferrer noopener" href="http://www.dx.com/p/micro-usb-male-to-usb-b-male-otg-data-cable-black-25cm-233994#.VtyE5pwrKUk" target="_blank">Micro Usb Male to Usb-B Male Cable</a>  
 
 
-I used a sheet of acrylic to make the platform, and a basic phone tripod from Target to hold the robot phone. The green chip on the motor shield is a bluetooth chip from another project, and it&#8217;s not necessary for the Rover to work properly.
+I used a sheet of acrylic to make the platform, and a basic phone tripod from Target to hold the robot phone. The green chip on the motor shield is a bluetooth chip from another project, and it's not necessary for the Rover to work properly.
 
 ## Demo
 
-Here&#8217;s a short video showing how it works. If you pay close attention, you&#8217;ll notice that my steering worsens considerably when the Rover gets farther away. That&#8217;s because once I have to rely entirely on the video stream, the lag makes precise handling pretty difficult, and that&#8217;s why this robot did a great job of finding all of the wifi dead zones in the office.  
+Here's a short video showing how it works. If you pay close attention, you'll notice that my steering worsens considerably when the Rover gets farther away. That's because once I have to rely entirely on the video stream, the lag makes precise handling pretty difficult, and that's why this robot did a great job of finding all of the wifi dead zones in the office.  
 <figure class="wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio">
 
 <div class="wp-block-embed__wrapper">

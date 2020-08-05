@@ -9,7 +9,7 @@ tags:
   - robotics
 ---
 
-Now that the lidar works, it&#8217;s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with `rosbag`, and generating the map offline. Here&#8217;s how it works.
+Now that the lidar works, it's time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with `rosbag`, and generating the map offline. Here's how it works.
 
 ## Lidar Preprocessing
 
@@ -68,7 +68,7 @@ description="Note that the hector namespace only publishes frames"
 %}
 <br>
 
-First, `laser_scan_matcher` compares the lidar scan history to estimate the robot&#8217;s movement and publish a `scan_match` frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.
+First, `laser_scan_matcher` compares the lidar scan history to estimate the robot's movement and publish a `scan_match` frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.
 
 Second, `hector_mapping` takes the lidar data and `scan_match` frame and creates its own odom estimate on the `hector_map` frame. This second layer creates a slightly better odometry estimate.
 
@@ -82,13 +82,13 @@ description="My apartment look really weird from 10 inches off the ground"
 
 ## Next Steps
 
-Even though I made a great map of my apartment, the mapping launch file still doesn&#8217;t use the IMU. Since it explicitly remaps the `imu` topic, I assume that updating it to use the IMU correctly is part of the actual MIT class. I keep seeing weird quirks like that in this repo, and I&#8217;m never sure what&#8217;s deliberate and what&#8217;s part of an assignment.
+Even though I made a great map of my apartment, the mapping launch file still doesn't use the IMU. Since it explicitly remaps the `imu` topic, I assume that updating it to use the IMU correctly is part of the actual MIT class. I keep seeing weird quirks like that in this repo, and I'm never sure what's deliberate and what's part of an assignment.
 
 I considered getting rid of `hector_mapping` completely. The `laser_scan_matcher` seems to generate a great odometry estimate on its own, and `gmapping` works great by itself. Using fewer packages and tuning them better would be easier to understand too.
 
 ## Notes on Installing Packages
 
-Most of the packages I used aren&#8217;t officially supported on Melodic yet (they all worked fine for me!), I had to clone their git repos and build them locally.
+Most of the packages I used aren't officially supported on Melodic yet (they all worked fine for me!), I had to clone their git repos and build them locally.
 
 ### hector\_mapping, gmapping, and laser\_filters
 

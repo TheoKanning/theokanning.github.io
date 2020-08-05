@@ -8,7 +8,7 @@ permalink: /keyboard-part-3-textinputlayout/
 tags:
   - android
 ---
-By now you&#8217;ve probably noticed the fancy moving hints above the text views in the last two posts. How does that work? The answer is incredibly simple: the TextInputLayout. Added as part of the Design Support Library, TextInputLayout wraps a text field and gives you a lot of nice design options that are very easy to set up. Here&#8217;s an example of what they can do.
+By now you've probably noticed the fancy moving hints above the text views in the last two posts. How does that work? The answer is incredibly simple: the TextInputLayout. Added as part of the Design Support Library, TextInputLayout wraps a text field and gives you a lot of nice design options that are very easy to set up. Here's an example of what they can do.
 
 {% include image.html
 url="https://i0.wp.com/theokanning.com/////wp-content/uploads/2018/01/textinputlayout.gif?resize=500%2C333&#038;ssl=1" %}
@@ -19,7 +19,7 @@ There are a couple things going on here:
 - The wrong password error message is much prettier than what you get with `editText.setError()`
 - The toggle changes to password visibility
 
-All of these are built in feature of `TextInputLayout`! Let&#8217;s see how they work
+All of these are built in feature of `TextInputLayout`! Let's see how they work
 
 ## Setting up a TextInputLayout
 
@@ -32,8 +32,8 @@ implementation 'com.android.support:design:27.0.2'
 to your `build.gradle`.
 
 In order to use a `TextInputLayout`, simply wrap one around a [TextInputEditText](https://developer.android.com/reference/android/support/design/widget/TextInputEditText.html).
-`TextInputEditText` is a special type of `EditText` that&#8217;s designed to work well inside a `TextInputLayout`, and that&#8217;s why so much of this works.
-Here&#8217;s the xml I used to create the password field above.
+`TextInputEditText` is a special type of `EditText` that's designed to work well inside a `TextInputLayout`, and that's why so much of this works.
+Here's the xml I used to create the password field above.
 
 {% highlight xml %}
 <android.support.design.widget.TextInputLayout
@@ -54,10 +54,10 @@ Here&#8217;s the xml I used to create the password field above.
 </android.support.design.widget.TextInputLayout>
 {% endhighlight %}
 
-Because I&#8217;m using a `TextInputEditText`, the hint will automatically animate, no extra work required.
+Because I'm using a `TextInputEditText`, the hint will automatically animate, no extra work required.
 
 Take a look at the`app:passwordToggleEnabled="true"` line inside the `TextInputLayout`.
-That&#8217;s all you need to get a password toggle!
+That's all you need to get a password toggle!
 
 ## Showing errors
 
@@ -74,8 +74,8 @@ private fun signIn() {
 }
 {% endhighlight %}
 
-Set the error text to display an error, or set it to null to hide it. That&#8217;s all!
+Set the error text to display an error, or set it to null to hide it. That's all!
 
 ## Summary
-TextInputLayouts are a great way to give your app a modern, professional feel, and they&#8217;re incredibly simple to use. Put them in all your apps!
+TextInputLayouts are a great way to give your app a modern, professional feel, and they're incredibly simple to use. Put them in all your apps!
 

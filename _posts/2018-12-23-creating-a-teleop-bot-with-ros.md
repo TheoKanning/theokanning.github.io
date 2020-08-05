@@ -1,11 +1,9 @@
 ---
-id: 464
 title: Creating a Teleop Bot with ROS
 date: 2018-12-23T17:15:34+00:00
-author: Theo Kanning
+author: theo
 excerpt: 'This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do two things: first, it reacts to keystrokes on a computer and drives around; second, it streams video from a raspberry pi camera back to said computer. '
 layout: post
-guid: https://theokanning.com////?p=464
 permalink: /creating-a-teleop-bot-with-ros/
 us_og_image:
   - ""
@@ -47,7 +45,7 @@ This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do tw
 Blink-192 is a great example of how ROS can help with any robotics project. ROS connects Blink-192 to a desktop to stream video and receive steering commands with minimal setup and networking.  
   
 All source code is available on [Github.](https://github.com/TheoKanning/Blink-192)  
-This project is based on the Teleop-bot example from Programming Robots with ROS ([O&#8217;Reilly Media).](http://shop.oreilly.com/product/0636920024736.do)
+This project is based on the Teleop-bot example from Programming Robots with ROS ([O'Reilly Media).](http://shop.oreilly.com/product/0636920024736.do)
 
 ## Hardware
 
@@ -63,17 +61,17 @@ Blink-192 uses the following hardware:
   * Raspberry Pi Ubuntu Image &#8211; [Ubiquity Robotics](https://downloads.ubiquityrobotics.com/pi.html)
   * Pi Camera ROS Node &#8211; [Github](https://github.com/UbiquityRobotics/raspicam_node﻿)
 
-This specific Ubuntu image isn&#8217;t required, but it comes with ROS pre-installed a creates a wifi access point automatically.
+This specific Ubuntu image isn't required, but it comes with ROS pre-installed a creates a wifi access point automatically.
 
 ## ROS Basics
 
-ROS has become a nearly ubiquitous part of any serious robotics project. I first learned about it as part of the Udacity Robotics Engineer [Nanodegree](https://www.udacity.com/course/robotics-software-engineer--nd209) program last Summer, and I couldn&#8217;t wait to get started on my own project.  
+ROS has become a nearly ubiquitous part of any serious robotics project. I first learned about it as part of the Udacity Robotics Engineer [Nanodegree](https://www.udacity.com/course/robotics-software-engineer--nd209) program last Summer, and I couldn't wait to get started on my own project.  
   
-Despite its name, ROS isn&#8217;t actually an operating system; it runs on Ubuntu. It&#8217;s more of a messaging system that sends messages between different parts of a robot. Let&#8217;s take a deeper look at how to develop a project using ROS.
+Despite its name, ROS isn't actually an operating system; it runs on Ubuntu. It's more of a messaging system that sends messages between different parts of a robot. Let's take a deeper look at how to develop a project using ROS.
 
 #### Nodes
 
-A _node_ is defined as any executable that uses ROS to communicate. ROS will manage the lifecycle and messaging of any python script that&#8217;s run as a node, so using ROS will easily allow you to run multiple scripts simultaneously.  
+A _node_ is defined as any executable that uses ROS to communicate. ROS will manage the lifecycle and messaging of any python script that's run as a node, so using ROS will easily allow you to run multiple scripts simultaneously.  
 
 
 #### Topics
@@ -107,7 +105,7 @@ In order to control Blink-192, ROS needs to know to network between two computer
 
 The `ROS_MASTER_URI` variable tells the desktop where to find the ROS master node that it should use, and `ROS_IP` tells the ROS master how to connect back to it. Launch files are a convenient way of running multiple nodes at once.  
   
-That&#8217;s it! ROS handles all of the communication back-and-forth between Blink-192 and the desktop.  
+That's it! ROS handles all of the communication back-and-forth between Blink-192 and the desktop.  
   
 This is just one example of how ROS can make robotics projects easier. ROS also includes tools for simulation, visualization, parameters, and much much more. Because ROS uses common message types, you can easily add nodes that other people have written as well.  
   

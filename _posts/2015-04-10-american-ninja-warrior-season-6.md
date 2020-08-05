@@ -1,10 +1,8 @@
 ---
-id: 308
 title: American Ninja Warrior Season 6
 date: 2015-04-10T23:41:57+00:00
-author: Theo Kanning
+author: theo
 layout: post
-guid: https://theokanning.com////?p=308
 permalink: /american-ninja-warrior-season-6/
 us_og_image:
   - ""

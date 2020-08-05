@@ -8,7 +8,7 @@ permalink: /using-the-rplidar-a1-on-the-mit-racecar/
 tags:
   - robotics
 ---
-Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here&#8217;s what I did.
+Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here's what I did.
 
 ## The RPLIDAR A1
 The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead.
@@ -41,16 +41,16 @@ catkin_package(
     ...
 
 # package.xml
-&lt;run_depend&gt;rplidar&lt;/run_depend&gt;
+<run_depend>rplidar</run_depend>
 </pre>
 
 Then I updated the racecar launch files to start the RPLIDAR node instead of the Hokuyo node. I turned on angle compensation to reduce shaking, and it works really well!
 
 <pre class="wp-block-preformatted"># sensors.launch
-&lt;!-- laser -->
-&lt;node pkg="rplidar_ros" type="rplidarNode" name="laser_node">
-  &lt;param name="angle_compensate" value="true"/>
-&lt;/node>
+<!-- laser -->
+<node pkg="rplidar_ros" type="rplidarNode" name="laser_node">
+  <param name="angle_compensate" value="true"/>
+</node>
 </pre>
 
 I also told the node to use the new symlink I created earlier.
@@ -63,11 +63,11 @@ laser_node:
 
 In order to build a map of an environment, a mapping package like `gmapping` needs to know the position of the lidar relative to the racecar base link. ROS uses a handy library called `tf2` to publish static coordinate frame transform data like this.
 
-The default racecar project already defines the default coordinate transforms between the `base_link` and `laser` frames.. Since the A1 doesn&#8217;t fit in the existing lidar slot, I had to moveit up 2cm and back 2cm. The exact measurements will depend on your setup.
+The default racecar project already defines the default coordinate transforms between the `base_link` and `laser` frames.. Since the A1 doesn't fit in the existing lidar slot, I had to moveit up 2cm and back 2cm. The exact measurements will depend on your setup.
 
 <pre class="wp-block-preformatted"># static_transforms.launch.xml
-&lt;node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser" 
- args="0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser" /&gt;
+<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser" 
+ args="0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser" />
 </pre>
 
 ## Seeing lidar data
