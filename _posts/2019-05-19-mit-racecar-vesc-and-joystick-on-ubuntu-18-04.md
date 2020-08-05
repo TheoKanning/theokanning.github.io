@@ -1,34 +1,12 @@
 ---
-id: 562
 title: MIT Racecar VESC and Joystick on Ubuntu 18.04
 date: 2019-05-19T02:27:34+00:00
-author: Theo Kanning
+author: theo
 layout: post
-guid: https://theokanning.com/?p=562
+class: post-template
 permalink: /mit-racecar-vesc-and-joystick-on-ubuntu-18-04/
-us_og_image:
-  - ""
-us_post_preview_layout:
-  - ""
-us_header_sticky_pos:
-  - ""
-us_titlebar_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190523213628844_COVER-e1558926616341.jpg
-categories:
-  - Uncategorized
+tags:
+  - robotics
 ---
 After building the MIT Racecar in my last post, I started installing all of the peripherals so I could run it in teleop mode. Unfortunately, using a new Jetson image meant that I couldn&#8217;t use the pre-compiled drivers online. Here&#8217;s how I managed to get the VESC and joystick working.
 
@@ -45,10 +23,10 @@ The VESC uses the USB Abstract Control Module protocol, which requires a special
 As usual, [JetsonHacks](https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/) has great instructions on how to build the kernel, but I had to modify their [scripts](https://github.com/TheoKanning/buildJetsonTX2Kernel) to work for 4.9.140. Here&#8217;s a link to my compiled cdc-acm driver in case it helps someone.
 
 <div class="wp-block-file">
-  <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a><a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip" class="wp-block-file__button" download>Download</a>
+  <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a>
 </div>
 
-To install the cdc-acm driver, I copied it from the compiled kernel output into live `/lib/modules/4.9.140/kernel/drivers/usb/class` folder.
+To install the cdc-acm driver, I copied it from the compiled kernel output into the `/lib/modules/4.9.140/kernel/drivers/usb/class` folder.
 
 I had to add the following line to `/etc/modules` to load cdc-acm automatically.
 

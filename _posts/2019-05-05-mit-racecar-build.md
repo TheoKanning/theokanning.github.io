@@ -1,16 +1,18 @@
 ---
 title: MIT Racecar Build
 date: 2019-05-05T21:30:40+00:00
+author: theo
 layout: post
+class: post-template
 permalink: /mit-racecar-build/
-excerpt: Borbs
-categories:
-  - Uncategorized
+tags:
+  - robotics
 ---
-
-<figure class="wp-block-image"><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?fit=1024%2C768&ssl=1" alt="" class="wp-image-557" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=4032&ssl=1 4032w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=300%2C225&ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=1024%2C768&ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=768%2C576&ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=2280&ssl=1 2280w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=3420&ssl=1 3420w" sizes="(max-width: 1140px) 100vw, 1140px" /></figure> 
-
 Ever since taking Udacity&#8217;s Robotics Nanodegree last year, I&#8217;ve wanted to try to build the [MIT Racecar](http://fast.scripts.mit.edu/racecar/hardware/), a powerful robotics development platform based on an actual MIT class. Its real strength is the number of helpful resources online (most notably [Jetson Hacks](http://www.jetsonhacks.com)[J](https://racecarj.com/)) that make the undertaking much easier.
+
+{% include image.html
+url="/assets/images/2019/racecar/racecar.jpg" %}
+<br>
 
 The full racecar is a pretty serious project; it includes a Hokuyo lidar and two(!) 3D cameras. I decided to get a much cheaper lidar and skip the 3D cameras for now. 
 
@@ -38,7 +40,10 @@ I also used 3M dual-lock tape to hold everything down.
 
 Since the Hokuyo lidar costs well over $1,000, I decided to buy the $100 RPLIDAR-A1 ([slamtech.com](http://www.slamtec.com/en/lidar/a1)) instead. It has a much smaller range, but I think it will work fine for now. If I have to upgrade later I&#8217;ll probably go for the A2.<figure class="wp-block-image">
 
-<img src="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?fit=1024%2C768&ssl=1" alt="" class="wp-image-558" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=4032&ssl=1 4032w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=300%2C225&ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=1024%2C768&ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=768%2C576&ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=2280&ssl=1 2280w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=3420&ssl=1 3420w" sizes="(max-width: 1140px) 100vw, 1140px" /> <figcaption> The A1 barely has room, even with two extra standoffs</figcaption></figure> 
+{% include image.html
+url="/assets/images/2019/racecar/lidar.jpg"
+description="The A1 barely has room, even with two extra standoffs" %}
+<br>
 
 Because the A1 doesn&#8217;t fit into the hole in the frame, it actually sticks up higher than the Hokuyo, and I had to add extra standoffs to move the top level up.
 
@@ -46,9 +51,13 @@ Because the A1 doesn&#8217;t fit into the hole in the frame, it actually sticks 
 
 The Jetson needs a separate battery to power it and all of the USB devices. JetsonHacks recommends the Energizer XP18000AB, which has a 19V output for the Jetson and a 12V output for the USB hub. Unfortunately, I couldn&#8217;t find it for sale anywhere online, or any other power pack with 19V and 12V outputs, so I had to get creative.<figure class="wp-block-image is-resized">
 
-<img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?fit=1024%2C768&ssl=1" alt="" class="wp-image-577" width="1008" height="756" srcset="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=4032&ssl=1 4032w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=300%2C225&ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=1024%2C768&ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=768%2C576&ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=2280&ssl=1 2280w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=3420&ssl=1 3420w" sizes="(max-width: 1008px) 100vw, 1008px" /> <figcaption>My battery setup. USB hub power on the left, Jetson power on the right.</figcaption></figure> 
+{% include image.html
+url="/assets/images/2019/racecar/battery.jpg"
+description="My battery setup. I've updated it to power both the Jetson and usb hub via a barrel jack splitter." %}
+<br>
 
-My solution was to buy a PowerAdd Pilot Pro ([amazon](https://www.amazon.com/gp/product/B00DN0KBXU/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&psc=1)), use its 19V output for the Jetson, and get a USB to barrel jack adapter to power the USB hub. I ended up getting a 2.1mm [connector](https://www.amazon.com/CCYC-Barrel-Wireless-Router-Speakers/dp/B079K2DS3H/ref=asc_df_B079K2DS3H/) and using the 4.75 x 1.7 HP laptop adapter included with the battery to connect it to the USB hub.
+My solution was to buy a PowerAdd Pilot Pro ([amazon](https://www.amazon.com/gp/product/B00DN0KBXU/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&psc=1)), and get a barrel jack splitter to power both the usb hub and jetson with 12V.
+I originally powered the usb hub with a usb to barrel jack cord, but it wasn't supplying enough power and the lidar would randomly stop working.
 
 #### Frame
 

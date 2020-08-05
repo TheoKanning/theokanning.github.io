@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Robotics" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="MIT Racecar VESC and Joystick on Ubuntu 18.04" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Robotics" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-robotics  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="18 May 2019">18 May 2019</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/robotics/'>ROBOTICS</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">MIT Racecar VESC and Joystick on Ubuntu 18.04</h1>
@@ -163,10 +173,10 @@ into the {body} of the default.hbs template -->
 <p>As usual, <a href="https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/">JetsonHacks</a> has great instructions on how to build the kernel, but I had to modify their <a href="https://github.com/TheoKanning/buildJetsonTX2Kernel">scripts</a> to work for 4.9.140. Here’s a link to my compiled cdc-acm driver in case it helps someone.</p>
 
 <div class="wp-block-file">
-  <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a><a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip" class="wp-block-file__button" download="">Download</a>
+  <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a>
 </div>
 
-<p>To install the cdc-acm driver, I copied it from the compiled kernel output into live <code class="highlighter-rouge">/lib/modules/4.9.140/kernel/drivers/usb/class</code> folder.</p>
+<p>To install the cdc-acm driver, I copied it from the compiled kernel output into the <code class="highlighter-rouge">/lib/modules/4.9.140/kernel/drivers/usb/class</code> folder.</p>
 
 <p>I had to add the following line to <code class="highlighter-rouge">/etc/modules</code> to load cdc-acm automatically.</p>
 
@@ -201,6 +211,21 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
                 <!-- #author-->
                 
                     
+                        <section class="author-card">
+                            
+                                <img class="author-profile-image" src="/assets/images/global/theo.png" alt="theo" />
+                            
+                            <section class="author-card-content">
+                                <h4 class="author-card-name"><a href="/author/theo">Theo Kanning</a></h4>
+                                
+                                    <p>The best person</p>
+                                
+                            </section>
+                        </section>
+                        <div class="post-full-footer-right">
+                            <a class="author-card-button" href="/author/theo">Read More</a>
+                        </div>
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -220,16 +245,124 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
     <div class="inner">
         <div class="read-next-feed">
             
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/robotics/">Robotics</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mapping-with-the-mit-racecar/">Mapping with the MIT Racecar</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/using-the-rplidar-a1-on-the-mit-racecar/">Using the RPLIDAR A1 on the MIT Racecar</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mit-racecar-build/">MIT Racecar Build</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/robotics/">
+                                
+                                    See all 3 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
+            
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/using-the-rplidar-a1-on-the-mit-racecar/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Robotics</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Using the RPLIDAR A1 on the MIT Racecar</h2>
@@ -242,6 +375,13 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/global/theo.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
                     
                 
                 <span class="reading-time">
@@ -260,11 +400,17 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/mit-racecar-build/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Robotics</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">MIT Racecar Build</h2>
@@ -277,6 +423,13 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/global/theo.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
                     
                 
                 <span class="reading-time">
@@ -402,6 +555,71 @@ ACTION=="add", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", SYMLINK+="vesc
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

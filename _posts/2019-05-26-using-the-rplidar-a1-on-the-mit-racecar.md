@@ -1,39 +1,18 @@
 ---
-id: 585
 title: Using the RPLIDAR A1 on the MIT Racecar
 date: 2019-05-26T17:58:09+00:00
-author: Theo Kanning
+author: theo
 layout: post
-guid: https://theokanning.com/?p=585
+class: post-template
 permalink: /using-the-rplidar-a1-on-the-mit-racecar/
-us_og_image:
-  - ""
-us_post_preview_layout:
-  - ""
-us_header_sticky_pos:
-  - ""
-us_titlebar_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2019/05/lidar-e1558893765961.jpg
-categories:
+tags:
   - robotics
 ---
+Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here&#8217;s what I did.
+
+## The RPLIDAR A1
 The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead.
 The A1 has good enough accuracy for me, but if I ever want to upgrade I can get an A2 or A3 for a couple hundred dollars more.
-
-Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here&#8217;s what I did.
 
 ## Connecting to the A1
 
@@ -48,21 +27,22 @@ I found the vendor and product id via `lsusb`
 
 The A1 driver node connects to the lidar and converts its data into `LaserScan` messages. A Hokuyo will publish the same `LaserScan` message, just with more data points included, so any navigation system using a lidar will work with either.
 
-First, I cloned the ROS package to my catkin workspace:
+First, I cloned the ROS package to my catkin workspace
 
 <pre class="wp-block-preformatted">cd ~/racecar_ws/src
-git clone <a href="https://github.com/robopeak/rplidar_ros">https://github.com/robopeak/rplidar_ros</a></pre>
+git clone https://github.com/robopeak/rplidar_ros</pre>
+
+and added the rplidar dependencies to my `CMakeLists.txt` and `package.xml` files.
 
 <pre class="wp-block-preformatted"># CMakeLists.txt
 catkin_package(
     CATKIN_DEPENDS
     rplidar
-    &lt;s>urg_node&lt;/s>
     ...
 
 # package.xml
 &lt;run_depend&gt;rplidar&lt;/run_depend&gt;
-&lt;s>&lt;run_depend&gt;urg_node&lt;/run_depend&gt;&lt;/s></pre>
+</pre>
 
 Then I updated the racecar launch files to start the RPLIDAR node instead of the Hokuyo node. I turned on angle compensation to reduce shaking, and it works really well!
 
@@ -71,9 +51,9 @@ Then I updated the racecar launch files to start the RPLIDAR node instead of the
 &lt;node pkg="rplidar_ros" type="rplidarNode" name="laser_node">
   &lt;param name="angle_compensate" value="true"/>
 &lt;/node>
-&lt;s>&lt;node pkg="urg_node" type="urg_node" name="laser_node" />&lt;/s></pre>
+</pre>
 
-and told the node to use the new symlink I created earlier.
+I also told the node to use the new symlink I created earlier.
 
 <pre class="wp-block-preformatted"># sensors.yaml
 laser_node:
@@ -87,7 +67,6 @@ The default racecar project already defines the default coordinate transforms be
 
 <pre class="wp-block-preformatted"># static_transforms.launch.xml
 &lt;node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser" 
- &lt;s>args="0.285 0.0 0.127 0.0 0.0 0.0 1.0 /base_link /laser" /&gt;&lt;/s>
  args="0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser" /&gt;
 </pre>
 
@@ -97,8 +76,8 @@ The A1 driver includes a handy launch file to visualize the lidar data. This com
 
 <pre class="wp-block-preformatted">roslaunch rplidar_ros view_rplidar.launch</pre><figure class="wp-block-image">
 
-<img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?fit=1024%2C552&ssl=1" alt="" class="wp-image-587" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?w=1214&ssl=1 1214w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=300%2C162&ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=1024%2C552&ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=768%2C414&ssl=1 768w" sizes="(max-width: 1140px) 100vw, 1140px" /> </figure> 
-
-## Next steps
+{% include image.html
+url="/assets/images/2019/rplidar/rviz.png" %}
+<br>
 
 Now that the lidar works in teleop mode, the next step is to use `gmapping` to build a map of my apartment. See you soon!

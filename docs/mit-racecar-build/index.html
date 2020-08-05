@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/mit-racecar-build/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Robotics" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="MIT Racecar Build" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Robotics" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-robotics  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime=" 5 May 2019"> 5 May 2019</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/robotics/'>ROBOTICS</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">MIT Racecar Build</h1>
@@ -148,9 +158,14 @@ into the {body} of the default.hbs template -->
 
             <section class="post-full-content">
                 <div class="kg-card-markdown">
-                    <figure class="wp-block-image"><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?fit=1024%2C768&amp;ssl=1" alt="" class="wp-image-557" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=4032&amp;ssl=1 4032w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=300%2C225&amp;ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=1024%2C768&amp;ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?resize=768%2C576&amp;ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=2280&amp;ssl=1 2280w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505151605141_COVER.jpg?w=3420&amp;ssl=1 3420w" sizes="(max-width: 1140px) 100vw, 1140px" /></figure>
+                    <p>Ever since taking Udacity’s Robotics Nanodegree last year, I’ve wanted to try to build the <a href="http://fast.scripts.mit.edu/racecar/hardware/">MIT Racecar</a>, a powerful robotics development platform based on an actual MIT class. Its real strength is the number of helpful resources online (most notably <a href="http://www.jetsonhacks.com">Jetson Hacks</a><a href="https://racecarj.com/">J</a>) that make the undertaking much easier.</p>
 
-<p>Ever since taking Udacity’s Robotics Nanodegree last year, I’ve wanted to try to build the <a href="http://fast.scripts.mit.edu/racecar/hardware/">MIT Racecar</a>, a powerful robotics development platform based on an actual MIT class. Its real strength is the number of helpful resources online (most notably <a href="http://www.jetsonhacks.com">Jetson Hacks</a><a href="https://racecarj.com/">J</a>) that make the undertaking much easier.</p>
+<figure class="image">
+    <img src="/assets/images/2019/racecar/racecar.jpg" alt="" />
+    <figcaption></figcaption>
+</figure>
+
+<p><br /></p>
 
 <p>The full racecar is a pretty serious project; it includes a Hokuyo lidar and two(!) 3D cameras. I decided to get a much cheaper lidar and skip the 3D cameras for now.</p>
 
@@ -180,7 +195,12 @@ into the {body} of the default.hbs template -->
 
 <p>Since the Hokuyo lidar costs well over $1,000, I decided to buy the $100 RPLIDAR-A1 (<a href="http://www.slamtec.com/en/lidar/a1">slamtech.com</a>) instead. It has a much smaller range, but I think it will work fine for now. If I have to upgrade later I’ll probably go for the A2.<figure class="wp-block-image"></figure></p>
 
-<p><img src="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?fit=1024%2C768&amp;ssl=1" alt="" class="wp-image-558" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=4032&amp;ssl=1 4032w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=300%2C225&amp;ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=1024%2C768&amp;ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?resize=768%2C576&amp;ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=2280&amp;ssl=1 2280w, https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/00100lPORTRAIT_00100_BURST20190505161249546_COVER.jpg?w=3420&amp;ssl=1 3420w" sizes="(max-width: 1140px) 100vw, 1140px" /> &lt;figcaption&gt; The A1 barely has room, even with two extra standoffs&lt;/figcaption&gt;&lt;/figure&gt;</p>
+<figure class="image">
+    <img src="/assets/images/2019/racecar/lidar.jpg" alt="The A1 barely has room, even with two extra standoffs" />
+    <figcaption>The A1 barely has room, even with two extra standoffs</figcaption>
+</figure>
+
+<p><br /></p>
 
 <p>Because the A1 doesn’t fit into the hole in the frame, it actually sticks up higher than the Hokuyo, and I had to add extra standoffs to move the top level up.</p>
 
@@ -188,9 +208,15 @@ into the {body} of the default.hbs template -->
 
 <p>The Jetson needs a separate battery to power it and all of the USB devices. JetsonHacks recommends the Energizer XP18000AB, which has a 19V output for the Jetson and a 12V output for the USB hub. Unfortunately, I couldn’t find it for sale anywhere online, or any other power pack with 19V and 12V outputs, so I had to get creative.<figure class="wp-block-image is-resized"></figure></p>
 
-<p><img src="https://i2.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?fit=1024%2C768&amp;ssl=1" alt="" class="wp-image-577" width="1008" height="756" srcset="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=4032&amp;ssl=1 4032w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=300%2C225&amp;ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=1024%2C768&amp;ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?resize=768%2C576&amp;ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=2280&amp;ssl=1 2280w, https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/IMG_20190518_171337.jpg?w=3420&amp;ssl=1 3420w" sizes="(max-width: 1008px) 100vw, 1008px" /> &lt;figcaption&gt;My battery setup. USB hub power on the left, Jetson power on the right.&lt;/figcaption&gt;&lt;/figure&gt;</p>
+<figure class="image">
+    <img src="/assets/images/2019/racecar/battery.jpg" alt="My battery setup. I've updated it to power both the Jetson and usb hub via a barrel jack splitter." />
+    <figcaption>My battery setup. I've updated it to power both the Jetson and usb hub via a barrel jack splitter.</figcaption>
+</figure>
 
-<p>My solution was to buy a PowerAdd Pilot Pro (<a href="https://www.amazon.com/gp/product/B00DN0KBXU/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&amp;psc=1">amazon</a>), use its 19V output for the Jetson, and get a USB to barrel jack adapter to power the USB hub. I ended up getting a 2.1mm <a href="https://www.amazon.com/CCYC-Barrel-Wireless-Router-Speakers/dp/B079K2DS3H/ref=asc_df_B079K2DS3H/">connector</a> and using the 4.75 x 1.7 HP laptop adapter included with the battery to connect it to the USB hub.</p>
+<p><br /></p>
+
+<p>My solution was to buy a PowerAdd Pilot Pro (<a href="https://www.amazon.com/gp/product/B00DN0KBXU/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&amp;psc=1">amazon</a>), and get a barrel jack splitter to power both the usb hub and jetson with 12V.
+I originally powered the usb hub with a usb to barrel jack cord, but it wasn’t supplying enough power and the lidar would randomly stop working.</p>
 
 <h4 id="frame">Frame</h4>
 
@@ -213,6 +239,21 @@ into the {body} of the default.hbs template -->
                 <!-- #author-->
                 
                     
+                        <section class="author-card">
+                            
+                                <img class="author-profile-image" src="/assets/images/global/theo.png" alt="theo" />
+                            
+                            <section class="author-card-content">
+                                <h4 class="author-card-name"><a href="/author/theo">Theo Kanning</a></h4>
+                                
+                                    <p>The best person</p>
+                                
+                            </section>
+                        </section>
+                        <div class="post-full-footer-right">
+                            <a class="author-card-button" href="/author/theo">Read More</a>
+                        </div>
+                    
                 
                 <!-- /author  -->
             </footer>
@@ -232,16 +273,124 @@ into the {body} of the default.hbs template -->
     <div class="inner">
         <div class="read-next-feed">
             
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/robotics/">Robotics</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mapping-with-the-mit-racecar/">Mapping with the MIT Racecar</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/using-the-rplidar-a1-on-the-mit-racecar/">Using the RPLIDAR A1 on the MIT Racecar</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">MIT Racecar VESC and Joystick on Ubuntu 18.04</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/robotics/">
+                                
+                                    See all 3 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
+            
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Robotics</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">MIT Racecar VESC and Joystick on Ubuntu 18.04</h2>
@@ -254,6 +403,13 @@ into the {body} of the default.hbs template -->
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/global/theo.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
                     
                 
                 <span class="reading-time">
@@ -414,6 +570,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

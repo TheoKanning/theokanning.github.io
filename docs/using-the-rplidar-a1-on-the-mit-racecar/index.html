@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/using-the-rplidar-a1-on-the-mit-racecar/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Robotics" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Using the RPLIDAR A1 on the MIT Racecar" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Robotics" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-robotics  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="26 May 2019">26 May 2019</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/robotics/'>ROBOTICS</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">Using the RPLIDAR A1 on the MIT Racecar</h1>
@@ -148,10 +158,11 @@ into the {body} of the default.hbs template -->
 
             <section class="post-full-content">
                 <div class="kg-card-markdown">
-                    <p>The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead.
-The A1 has good enough accuracy for me, but if I ever want to upgrade I can get an A2 or A3 for a couple hundred dollars more.</p>
+                    <p>Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here’s what I did.</p>
 
-<p>Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here’s what I did.</p>
+<h2 id="the-rplidar-a1">The RPLIDAR A1</h2>
+<p>The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead.
+The A1 has good enough accuracy for me, but if I ever want to upgrade I can get an A2 or A3 for a couple hundred dollars more.</p>
 
 <h2 id="connecting-to-the-a1">Connecting to the A1</h2>
 
@@ -166,21 +177,22 @@ KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="077
 
 <p>The A1 driver node connects to the lidar and converts its data into <code class="highlighter-rouge">LaserScan</code> messages. A Hokuyo will publish the same <code class="highlighter-rouge">LaserScan</code> message, just with more data points included, so any navigation system using a lidar will work with either.</p>
 
-<p>First, I cloned the ROS package to my catkin workspace:</p>
+<p>First, I cloned the ROS package to my catkin workspace</p>
 
 <pre class="wp-block-preformatted">cd ~/racecar_ws/src
-git clone <a href="https://github.com/robopeak/rplidar_ros">https://github.com/robopeak/rplidar_ros</a></pre>
+git clone https://github.com/robopeak/rplidar_ros</pre>
+
+<p>and added the rplidar dependencies to my <code class="highlighter-rouge">CMakeLists.txt</code> and <code class="highlighter-rouge">package.xml</code> files.</p>
 
 <pre class="wp-block-preformatted"># CMakeLists.txt
 catkin_package(
     CATKIN_DEPENDS
     rplidar
-    &lt;s&gt;urg_node&lt;/s&gt;
     ...
 
 # package.xml
 &lt;run_depend&gt;rplidar&lt;/run_depend&gt;
-&lt;s&gt;&lt;run_depend&gt;urg_node&lt;/run_depend&gt;&lt;/s&gt;</pre>
+</pre>
 
 <p>Then I updated the racecar launch files to start the RPLIDAR node instead of the Hokuyo node. I turned on angle compensation to reduce shaking, and it works really well!</p>
 
@@ -189,9 +201,9 @@ catkin_package(
 &lt;node pkg="rplidar_ros" type="rplidarNode" name="laser_node"&gt;
   &lt;param name="angle_compensate" value="true"/&gt;
 &lt;/node&gt;
-&lt;s&gt;&lt;node pkg="urg_node" type="urg_node" name="laser_node" /&gt;&lt;/s&gt;</pre>
+</pre>
 
-<p>and told the node to use the new symlink I created earlier.</p>
+<p>I also told the node to use the new symlink I created earlier.</p>
 
 <pre class="wp-block-preformatted"># sensors.yaml
 laser_node:
@@ -205,7 +217,6 @@ laser_node:
 
 <pre class="wp-block-preformatted"># static_transforms.launch.xml
 &lt;node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser" 
- &lt;s&gt;args="0.285 0.0 0.127 0.0 0.0 0.0 1.0 /base_link /laser" /&gt;&lt;/s&gt;
  args="0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser" /&gt;
 </pre>
 
@@ -216,11 +227,15 @@ laser_node:
 <pre class="wp-block-preformatted">roslaunch rplidar_ros view_rplidar.launch</pre>
 <figure class="wp-block-image">
 
-<img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?fit=1024%2C552&amp;ssl=1" alt="" class="wp-image-587" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?w=1214&amp;ssl=1 1214w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=300%2C162&amp;ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=1024%2C552&amp;ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2019/05/rviz.png?resize=768%2C414&amp;ssl=1 768w" sizes="(max-width: 1140px) 100vw, 1140px" /> </figure>
+<figure class="image">
+    <img src="/assets/images/2019/rplidar/rviz.png" alt="" />
+    <figcaption></figcaption>
+</figure>
 
-<h2 id="next-steps">Next steps</h2>
+<br />
 
-<p>Now that the lidar works in teleop mode, the next step is to use <code class="highlighter-rouge">gmapping</code> to build a map of my apartment. See you soon!</p>
+Now that the lidar works in teleop mode, the next step is to use `gmapping` to build a map of my apartment. See you soon!
+</figure>
 
                 </div>
             </section>
@@ -232,6 +247,21 @@ laser_node:
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
                 
+                    
+                        <section class="author-card">
+                            
+                                <img class="author-profile-image" src="/assets/images/global/theo.png" alt="theo" />
+                            
+                            <section class="author-card-content">
+                                <h4 class="author-card-name"><a href="/author/theo">Theo Kanning</a></h4>
+                                
+                                    <p>The best person</p>
+                                
+                            </section>
+                        </section>
+                        <div class="post-full-footer-right">
+                            <a class="author-card-button" href="/author/theo">Read More</a>
+                        </div>
                     
                 
                 <!-- /author  -->
@@ -251,6 +281,108 @@ laser_node:
 <aside class="read-next outer">
     <div class="inner">
         <div class="read-next-feed">
+            
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/robotics/">Robotics</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mapping-with-the-mit-racecar/">Mapping with the MIT Racecar</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">MIT Racecar VESC and Joystick on Ubuntu 18.04</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mit-racecar-build/">MIT Racecar Build</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/robotics/">
+                                
+                                    See all 3 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
             
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
@@ -305,11 +437,17 @@ laser_node:
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Robotics</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">MIT Racecar VESC and Joystick on Ubuntu 18.04</h2>
@@ -322,6 +460,13 @@ laser_node:
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/global/theo.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
                     
                 
                 <span class="reading-time">
@@ -447,6 +592,71 @@ laser_node:
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->
