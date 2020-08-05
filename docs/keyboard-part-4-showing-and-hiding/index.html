@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/keyboard-part-4-showing-and-hiding/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Android" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Android Keyboard Part 4: Showing and Hiding" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Android" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-android  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="28 January 2018">28 January 2018</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/android/'>ANDROID</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">Android Keyboard Part 4: Showing and Hiding</h1>
@@ -150,38 +160,44 @@ into the {body} of the default.hbs template -->
                 <div class="kg-card-markdown">
                     <p>Now it’s time for the final part of my Android Keyboard series, and one of the most challenging parts of UI development: showing and hiding the keyboard. What seems like a simple task can often become very complicated, but I’ll show some examples of how to get the behavior you want, and explain some of the weirdness we see along the way.</p>
 
-<p><img class="alignnone size-full wp-image-436" src="https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/01/show-and-hide.gif?resize=500%2C889&#038;ssl=1" alt="" width="500" height="889" data-recalc-dims="1" /></p>
+<figure class="image">
+    <img src="https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/01/show-and-hide.gif?resize=500%2C889&amp;ssl=1" alt="" />
+    <figcaption></figcaption>
+</figure>
 
 <h2 id="input-method-manager">Input Method Manager</h2>
 
-<p>At the heart of all of this is the <a href="https://developer.android.com/reference/android/view/inputmethod/InputMethodManager.html">InputMethodManager</a>, Android’s one-stop-shop for any programmatic keyboard features. InputMethodManager is responsible for the interaction between you app and whatever InputMethod (keyboard) the user’s phone is configured to use. Most of the communication to handle things like key presses, IME Actions, and switching text fields is handle automatically, so I won’t talk about it here.</p>
+<p>At the heart of all of this is the <a href="https://developer.android.com/reference/android/view/inputmethod/InputMethodManager.html">InputMethodManager</a>, Android’s one-stop-shop for any programmatic keyboard features.
+<code class="highlighter-rouge">InputMethodManager</code> is responsible for the interaction between you app and whatever InputMethod (keyboard) the user’s phone is configured to use. Most of the communication to handle things like key presses, IME Actions, and switching text fields is handle automatically, so I won’t talk about it here.</p>
 
 <p>We’re only interested in two methods right now:</p>
 
 <ul>
-  <li>showSoftInput(View view, int flags)</li>
-  <li>hideSoftInputFromWindow(IBinder windowToken, int flags)</li>
+  <li><code class="highlighter-rouge">showSoftInput(View view, int flags)</code></li>
+  <li><code class="highlighter-rouge">hideSoftInputFromWindow(IBinder windowToken, int flags)</code></li>
 </ul>
 
 <p>Those two will cover 99% of your keyboard needs, so let’s look into them a bit more.</p>
 
 <h2 id="showing-the-keyboard">Showing the keyboard</h2>
 
-<p>As you might have guessed, <code class="highlighter-rouge">InputMethodManager#showSoftInput</code> is for showing the soft keyboard. It takes in a View and an integer representing a set of bit flags. The View should be the EditText that you want the user to start typing in. Note that the keyboard won’t appear unless that EditText is currently in focus!</p>
+<p>As you might have guessed, <code class="highlighter-rouge">InputMethodManager#showSoftInput</code> is for showing the soft keyboard.
+It takes in a <code class="highlighter-rouge">View</code> and an integer representing a set of bit flags.
+The <code class="highlighter-rouge">View</code> should be the <code class="highlighter-rouge">EditText</code> that you want the user to start typing in.
+Note that the keyboard won’t appear unless that <code class="highlighter-rouge">EditText</code> is currently in focus!</p>
 
 <p>The integer parameter allows you to specify whether the keyboard is being shown implicitly, or as a result of user action. Setting it to 0 works fine.</p>
 
-<pre class="brush: java; title: ; notranslate" title="">private fun showKeyboard(view : View) {
-    val inputMethodManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    view.requestFocus()
-    inputMethodManager.showSoftInput(view, 0)
-}
-</pre>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">private</span> <span class="k">fun</span> <span class="nf">showKeyboard</span><span class="p">(</span><span class="n">view</span> <span class="p">:</span> <span class="nc">View</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="py">inputMethodManager</span> <span class="p">=</span> <span class="n">activity</span><span class="o">!!</span><span class="p">.</span><span class="nf">getSystemService</span><span class="p">(</span><span class="nc">Context</span><span class="p">.</span><span class="nc">INPUT_METHOD_SERVICE</span><span class="p">)</span> <span class="k">as</span> <span class="nc">InputMethodManager</span>
+    <span class="n">view</span><span class="p">.</span><span class="nf">requestFocus</span><span class="p">()</span>
+    <span class="n">inputMethodManager</span><span class="p">.</span><span class="nf">showSoftInput</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>There are three steps here:</p>
 
 <ul>
-  <li>Get the InputMethodManager from the Activity</li>
+  <li>Get the <code class="highlighter-rouge">InputMethodManager</code> from the <code class="highlighter-rouge">Activity</code></li>
   <li>Make sure that the specified view has focus, or else the keyboard won’t appear</li>
   <li>Call <code class="highlighter-rouge">showSoftInput</code> with the view and all flags set to 0</li>
 </ul>
@@ -190,19 +206,19 @@ into the {body} of the default.hbs template -->
 
 <h2 id="hiding-the-keyboard">Hiding the Keyboard</h2>
 
-<p>Hiding the keyboard follows a pretty similar pattern. <code class="highlighter-rouge">InputMethodManager#hideSoftInputFromWindow</code> takes an IBinder and another set of integer flags.</p>
+<p>Hiding the keyboard follows a pretty similar pattern. <code class="highlighter-rouge">InputMethodManager#hideSoftInputFromWindow</code> takes an <code class="highlighter-rouge">IBinder</code> and another set of integer flags.</p>
 
-<p>You might think that Android would just let you close the keyboard, but you have to provide an IBinder from an active View for security purposes. IBinder tokens are unique across the entire operating system, and Android uses them to make sure apps can’t close a keyboard that’s being used by another process.</p>
+<p>You might think that Android would just let you close the keyboard, but you have to provide an <code class="highlighter-rouge">IBinder</code> from an active <code class="highlighter-rouge">View</code> for security purposes.
+<code class="highlighter-rouge">IBinder</code> tokens are unique across the entire operating system, and Android uses them to make sure apps can’t close a keyboard that’s being used by another process.</p>
 
 <p>Just like with showing the keyboard, the set of integer flags allows you to tell the operating system if the keyboard is being closed implicitly or by the user. This can safely be set to 0.</p>
 
-<pre class="brush: java; title: ; notranslate" title="">private fun hideKeyboard(view : View) {
-    val inputMethodManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-}
-</pre>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">private</span> <span class="k">fun</span> <span class="nf">hideKeyboard</span><span class="p">(</span><span class="n">view</span> <span class="p">:</span> <span class="nc">View</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="py">inputMethodManager</span> <span class="p">=</span> <span class="n">activity</span><span class="o">!!</span><span class="p">.</span><span class="nf">getSystemService</span><span class="p">(</span><span class="nc">Context</span><span class="p">.</span><span class="nc">INPUT_METHOD_SERVICE</span><span class="p">)</span> <span class="k">as</span> <span class="nc">InputMethodManager</span>
+    <span class="n">inputMethodManager</span><span class="p">.</span><span class="nf">hideSoftInputFromWindow</span><span class="p">(</span><span class="n">view</span><span class="p">.</span><span class="n">windowToken</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
 
-<p>Here we get the IBinder by calling <code class="highlighter-rouge">view.getWindowToken()</code> on any active view.</p>
+<p>Here we get the <code class="highlighter-rouge">IBinder</code> by calling <code class="highlighter-rouge">view.getWindowToken()</code> on any active view.</p>
 
 <p>That’s all you have to do! I hope you got a lot out of this keyboard series, and now it’s time to add these great features to your own apps.</p>
 
@@ -216,6 +232,21 @@ into the {body} of the default.hbs template -->
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
                 
+                    
+                        <section class="author-card">
+                            
+                                <img class="author-profile-image" src="/assets/images/global/theo.png" alt="theo" />
+                            
+                            <section class="author-card-content">
+                                <h4 class="author-card-name"><a href="/author/theo">Theo Kanning</a></h4>
+                                
+                                    <p>The best person</p>
+                                
+                            </section>
+                        </section>
+                        <div class="post-full-footer-right">
+                            <a class="author-card-button" href="/author/theo">Read More</a>
+                        </div>
                     
                 
                 <!-- /author  -->
@@ -235,6 +266,108 @@ into the {body} of the default.hbs template -->
 <aside class="read-next outer">
     <div class="inner">
         <div class="read-next-feed">
+            
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/android/">Android</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/keyboard-part-3-textinputlayout/">Android Keyboard Part 3: TextInputLayout</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/keyboard-part-2-input-method-actions/">Android Keyboart Part 2: Input Method Actions</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/keyboard-part-1-input-types/">Android Keyboard Part 1: Input Types</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/android/">
+                                
+                                    See all 3 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
             
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
@@ -276,11 +409,17 @@ into the {body} of the default.hbs template -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/keyboard-part-3-textinputlayout/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Android</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Android Keyboard Part 3: TextInputLayout</h2>
@@ -293,6 +432,13 @@ into the {body} of the default.hbs template -->
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/global/theo.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
                     
                 
                 <span class="reading-time">
@@ -418,6 +564,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

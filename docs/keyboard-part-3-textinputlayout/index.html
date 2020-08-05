@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/keyboard-part-3-textinputlayout/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Android" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Android Keyboard Part 3: TextInputLayout" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Android" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-android  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="26 January 2018">26 January 2018</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/android/'>ANDROID</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">Android Keyboard Part 3: TextInputLayout</h1>
@@ -150,7 +160,10 @@ into the {body} of the default.hbs template -->
                 <div class="kg-card-markdown">
                     <p>By now you’ve probably noticed the fancy moving hints above the text views in the last two posts. How does that work? The answer is incredibly simple: the TextInputLayout. Added as part of the Design Support Library, TextInputLayout wraps a text field and gives you a lot of nice design options that are very easy to set up. Here’s an example of what they can do.</p>
 
-<p><img class="alignnone size-full wp-image-427" src="https://i0.wp.com/theokanning.com/////wp-content/uploads/2018/01/textinputlayout.gif?resize=500%2C333&#038;ssl=1" alt="" width="500" height="333" data-recalc-dims="1" /></p>
+<figure class="image">
+    <img src="https://i0.wp.com/theokanning.com/////wp-content/uploads/2018/01/textinputlayout.gif?resize=500%2C333&#038;ssl=1" alt="" />
+    <figcaption></figcaption>
+</figure>
 
 <p>There are a couple things going on here:</p>
 
@@ -160,59 +173,60 @@ into the {body} of the default.hbs template -->
   <li>The toggle changes to password visibility</li>
 </ul>
 
-<p>All of these are built in feature of TextInputLayout! Let’s see how they work</p>
+<p>All of these are built in feature of <code class="highlighter-rouge">TextInputLayout</code>! Let’s see how they work</p>
 
 <h2 id="setting-up-a-textinputlayout">Setting up a TextInputLayout</h2>
 
-<p>Before you start, TextInputLayouts are part of this design support library, so add</p>
+<p>Before you start, <code class="highlighter-rouge">TextInputLayouts</code> are part of this design support library, so add</p>
 
-<pre>implementation 'com.android.support:design:27.0.2'</pre>
+<figure class="highlight"><pre><code class="language-gradle" data-lang="gradle"><span class="n">implementation</span> <span class="s1">'com.android.support:design:27.0.2'</span></code></pre></figure>
 
-<p>to your build.gradle.</p>
+<p>to your <code class="highlighter-rouge">build.gradle</code>.</p>
 
-<p>In order to use a TextInputLayout, simply wrap one around a <a href="https://developer.android.com/reference/android/support/design/widget/TextInputEditText.html">TextInputEditText</a>. TextInputEditText is a special type of EditText that’s designed to work well inside a TextInputLayout, and that’s why so much of this works. Here’s the xml I used to create the password field above.</p>
+<p>In order to use a <code class="highlighter-rouge">TextInputLayout</code>, simply wrap one around a <a href="https://developer.android.com/reference/android/support/design/widget/TextInputEditText.html">TextInputEditText</a>.
+<code class="highlighter-rouge">TextInputEditText</code> is a special type of <code class="highlighter-rouge">EditText</code> that’s designed to work well inside a <code class="highlighter-rouge">TextInputLayout</code>, and that’s why so much of this works.
+Here’s the xml I used to create the password field above.</p>
 
-<pre class="brush: xml; title: ; notranslate" title="">&lt;android.support.design.widget.TextInputLayout
-    android:id="@+id/passwordWrapper"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:passwordToggleEnabled="true"
-    &gt;
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;android.support.design.widget.TextInputLayout</span>
+    <span class="na">android:id=</span><span class="s">"@+id/passwordWrapper"</span>
+    <span class="na">android:layout_width=</span><span class="s">"match_parent"</span>
+    <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+    <span class="na">app:passwordToggleEnabled=</span><span class="s">"true"</span>
+    <span class="nt">&gt;</span>
 
-    &lt;android.support.design.widget.TextInputEditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
-        /&gt;
-&lt;/android.support.design.widget.TextInputLayout&gt;
-</pre>
+    <span class="nt">&lt;android.support.design.widget.TextInputEditText</span>
+        <span class="na">android:id=</span><span class="s">"@+id/password"</span>
+        <span class="na">android:layout_width=</span><span class="s">"match_parent"</span>
+        <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+        <span class="na">android:hint=</span><span class="s">"Password"</span>
+        <span class="na">android:imeOptions=</span><span class="s">"actionDone"</span>
+        <span class="na">android:inputType=</span><span class="s">"textPassword"</span>
+        <span class="nt">/&gt;</span>
+<span class="nt">&lt;/android.support.design.widget.TextInputLayout&gt;</span></code></pre></figure>
 
-<p>Because I’m using a TextInputEditText, the hint will automatically animate, no extra work required.</p>
+<p>Because I’m using a <code class="highlighter-rouge">TextInputEditText</code>, the hint will automatically animate, no extra work required.</p>
 
-<p>Take a look at the<code class="highlighter-rouge">app:passwordToggleEnabled="true"</code> line inside the TextInputLayout. That’s all you need to get a password toggle!</p>
+<p>Take a look at the<code class="highlighter-rouge">app:passwordToggleEnabled="true"</code> line inside the <code class="highlighter-rouge">TextInputLayout</code>.
+That’s all you need to get a password toggle!</p>
 
 <h2 id="showing-errors">Showing errors</h2>
 
 <p>Errors are displayed using <code class="highlighter-rouge">TextInputLayout#setError(String)</code>. Note that this is called on the <em>parent</em> layout, not the text field. Here it is in Kotlin:</p>
 
-<pre class="brush: xml; title: ; notranslate" title="">private fun signIn() {
-    if(password.text.toString() == "1234" ) {
-        passwordWrapper.error = null
-        Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show()
-    } else {
-        passwordWrapper.error = "Wrong password"
-    }
-}
-</pre>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">private</span> <span class="k">fun</span> <span class="nf">signIn</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">password</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="nf">toString</span><span class="p">()</span> <span class="p">==</span> <span class="s">"1234"</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="n">passwordWrapper</span><span class="p">.</span><span class="n">error</span> <span class="p">=</span> <span class="k">null</span>
+        <span class="nc">Toast</span><span class="p">.</span><span class="nf">makeText</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s">"Success!"</span><span class="p">,</span> <span class="nc">Toast</span><span class="p">.</span><span class="nc">LENGTH_LONG</span><span class="p">).</span><span class="nf">show</span><span class="p">()</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">passwordWrapper</span><span class="p">.</span><span class="n">error</span> <span class="p">=</span> <span class="s">"Wrong password"</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Set the error text to display an error, or set it to null to hide it. That’s all!</p>
 
+<h2 id="summary">Summary</h2>
 <p>TextInputLayouts are a great way to give your app a modern, professional feel, and they’re incredibly simple to use. Put them in all your apps!</p>
 
-<p> </p>
 
                 </div>
             </section>
@@ -224,6 +238,21 @@ into the {body} of the default.hbs template -->
                 <!-- Everything inside the #author tags pulls data from the author -->
                 <!-- #author-->
                 
+                    
+                        <section class="author-card">
+                            
+                                <img class="author-profile-image" src="/assets/images/global/theo.png" alt="theo" />
+                            
+                            <section class="author-card-content">
+                                <h4 class="author-card-name"><a href="/author/theo">Theo Kanning</a></h4>
+                                
+                                    <p>The best person</p>
+                                
+                            </section>
+                        </section>
+                        <div class="post-full-footer-right">
+                            <a class="author-card-button" href="/author/theo">Read More</a>
+                        </div>
                     
                 
                 <!-- /author  -->
@@ -244,16 +273,124 @@ into the {body} of the default.hbs template -->
     <div class="inner">
         <div class="read-next-feed">
             
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/android/">Android</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/keyboard-part-4-showing-and-hiding/">Android Keyboard Part 4: Showing and Hiding</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/keyboard-part-2-input-method-actions/">Android Keyboart Part 2: Input Method Actions</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/keyboard-part-1-input-types/">Android Keyboard Part 1: Input Types</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/android/">
+                                
+                                    See all 3 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
+            
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/keyboard-part-4-showing-and-hiding/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Android</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Android Keyboard Part 4: Showing and Hiding</h2>
@@ -266,6 +403,13 @@ into the {body} of the default.hbs template -->
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/global/theo.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
                     
                 
                 <span class="reading-time">
@@ -284,11 +428,17 @@ into the {body} of the default.hbs template -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/keyboard-part-2-input-method-actions/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Android</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Android Keyboart Part 2: Input Method Actions</h2>
@@ -301,6 +451,13 @@ into the {body} of the default.hbs template -->
             </a>
             <footer class="post-card-meta">
                 
+                    
+                        
+                        <img class="author-profile-image" src="/assets/images/global/theo.png" alt="Theo Kanning" />
+                        
+                        <span class="post-card-author">
+                            <a href="/author/theo/">Theo Kanning</a>
+                        </span>
                     
                 
                 <span class="reading-time">
@@ -426,6 +583,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

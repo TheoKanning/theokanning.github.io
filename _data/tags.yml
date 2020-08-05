@@ -2,3 +2,7 @@ robotics:
     name: robotics
     description: My work on robotics projects
     cover: False
+android:
+    name: android
+    description: Android development tips and tricks.
+    cover: False
