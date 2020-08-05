@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/coilgun/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Random" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Coilgun V2" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Random" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-random  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime=" 2 January 2017"> 2 January 2017</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/random/'>RANDOM</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">Coilgun V2</h1>
@@ -150,23 +160,25 @@ into the {body} of the default.hbs template -->
                 <div class="kg-card-markdown">
                     <h2 id="some-history">Some History</h2>
 
-<p>Making a proper coilgun has been a dream of mine since high school, and senior year of college I was fortunate to receive a grant to build an exhibit at the U of M’s CSE expo, an event to show fun science projects to middle school students. I thought that a sci-fi weapon would be the perfect thing to get kids interested in science. Unfortunately, the parts that I ordered online came about two days before the actual expo, but I managed to slap something together for the kids. Here’s a video of my original coilgun.</p>
+<p>Making a proper coilgun has been a dream of mine since high school, and senior year of college I was fortunate to receive a small grant to build an exhibit for the U of M’s CSE expo, an event to show fun science projects to middle school students.
+I thought that a sci-fi weapon would be the perfect thing to get kids interested in science.</p>
 
-<p><span class="embed-youtube" style="text-align:center; display: block;"></span></p>
+<p>The parts that I ordered online came about two days before the actual expo, but I managed to slap something together for the kids. Here’s a video of my original coilgun.</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/AK9u0Jn91BE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 
 <p>What a disappointment. Not even the middle-schoolers were impressed! The technology behind it was sound, but my dream of making a sweet coilgun would take some more work. Eventually, my coilgun became a bit of a running joke in Mad Scientists Club (the engineering club I co-founded), but now I’m proud to report that V2 is up and running.</p>
 
 <h2 id="coilgun-basics">Coilgun Basics</h2>
 
-<div style="width: 610px" class="wp-caption aligncenter">
-  <img class="size-full" src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Coilgun_animation.gif" width="600" height="300" />
-  
-  <p class="wp-caption-text">
-    Example of a multi-stage coilgun. Notice how the current turns off once the projectile is inside the coil. Gif taken from Wikipedia.
-  </p>
-</div>
+<figure class="image">
+    <img src="/assets/images/2017/coilgun/coilgun.gif" alt="Example of a multi-stage coilgun. Notice how the current turns off once the projectile is inside the coil. Gif taken from Wikipedia." />
+    <figcaption>Example of a multi-stage coilgun. Notice how the current turns off once the projectile is inside the coil. Gif taken from Wikipedia.</figcaption>
+</figure>
 
-<p>A <a href="https://en.wikipedia.org/wiki/Coilgun">coilgun</a> is a type of electromagnetic accelerator that creates a powerful magnetic field through a coil to accelerate a projectile. Before you ask, coilguns are <em>not</em> the same as railguns. <a href="https://en.wikipedia.org/wiki/Railgun">Railguns</a> operate on a different electromagnetic principle and use rails instead of coils :D. Anyway, to power a coilgun, electrical energy is stored in <em>capacitors</em>, which are the large blue cylinders in the video above. Once the capacitors are charged, their energy is released through a coil, and the resulting current produces a very strong magnetic field. This fields attracts a ferromagnetic projectile (a nail) and pulls it towards the center of the coil. The magnetic field lasts for only a few milliseconds, so by the time the projectile is in the center, it continues shooting out the other side. If the magnetic fields lasts too long, it will simply hold the projectile in the coil, and no children will be impressed.</p>
+<p>A <a href="https://en.wikipedia.org/wiki/Coilgun">coilgun</a> is a type of electromagnetic accelerator that creates a powerful magnetic field through a coil to accelerate a projectile. Before you ask, coilguns are <em>not</em> the same as railguns. <a href="https://en.wikipedia.org/wiki/Railgun">Railguns</a> operate on a different electromagnetic principle and use rails instead of coils :D.</p>
+
+<p>Anyway, to power a coilgun, electrical energy is stored in <em>capacitors</em>, which are the large blue cylinders in the video above. Once the capacitors are charged, their energy is released through a coil, and the resulting current produces a very strong magnetic field. This fields attracts a ferromagnetic projectile (a nail) and pulls it towards the center of the coil. The magnetic field lasts for only a few milliseconds, so by the time the projectile is in the center, it continues shooting out the other side. If the magnetic fields lasts too long, it will simply hold the projectile in the coil, and no children will be impressed.</p>
 
 <p>Now let’s take a look at how I improved my old design!</p>
 
@@ -204,29 +216,31 @@ into the {body} of the default.hbs template -->
 
 <p>My main issue with V2 was keeping it from frying my charging circuit when firing at a high voltage. The first day I successfully fired the coilgun, it burned out the mosfet in the charging circuit. While I waited for a new one to arrive, I realized that I hadn’t heeded Barry’s warning about damping resistors.</p>
 
-<p>Coilguns create a circuit between a bank of conductors, an inductor (coil), and a small amount of internal resistance. Electrical engineering students will recognize this as the well-known and fascinating <em>RLC Circuit</em>. When an RLC circuit with low resistance discharges, its voltage will oscillate because its components are all out of phase with one another. This oscillation can damage electrolytics capacitors, and in my case it destroyed my mosfet. The chart below shows an exaggerate version of how this looks.</p>
+<p>Coilguns create a circuit between a bank of conductors, an inductor (coil), and a small amount of internal resistance.
+Electrical engineering students will recognize this as the well-known and fascinating <em>RLC Circuit</em>.
+When an RLC circuit with low resistance discharges, its voltage will oscillate because its components are all out of phase with one another.
+This oscillation can damage electrolytic capacitors, and in my case it destroyed my mosfet.</p>
 
-<div id="attachment_281" style="width: 573px" class="wp-caption aligncenter">
-  <a ref="magnificPopup" href="https://i0.wp.com/theokanning.com/////wp-content/uploads/2017/01/RLC_circuit_graph.png?ssl=1"><img aria-describedby="caption-attachment-281" class="wp-image-281 size-full" src="https://i0.wp.com/theokanning.com/////wp-content/uploads/2017/01/RLC_circuit_graph.png?resize=563%2C394&#038;ssl=1" width="563" height="394" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2017/01/RLC_circuit_graph.png?w=563&amp;ssl=1 563w, https://i1.wp.com/theokanning.com/wp-content/uploads/2017/01/RLC_circuit_graph.png?resize=300%2C210&amp;ssl=1 300w" sizes="(max-width: 563px) 100vw, 563px" data-recalc-dims="1" /></a>
-  
-  <p id="caption-attachment-281" class="wp-caption-text">
-    Capacitor discharging through an RLC circuit. My goal was to eliminate the undershoot that can damage electrical components.
-  </p>
-</div>
+<p>The chart below shows an graph of voltage in an RLC circuit.</p>
+
+<p><img src="/assets/images/2017/coilgun/rlc.png" alt="" /></p>
 
 <p>To protect my capacitors and charging circuit, I put a <a href="http://coilgun.info/theoryinductors/inductivekickback.htm">protective diode</a> over the coil. This diode allows the negative voltage to discharge safely, and requires no changes to the existing circuit. It worked very well, up until about 130 volts, when this happened.</p>
 
-<p><a ref="magnificPopup" href="https://i1.wp.com/theokanning.com/////wp-content/uploads/2015/03/diode.png?ssl=1"><img class="wp-image-284 size-medium aligncenter" src="https://i0.wp.com/theokanning.com/////wp-content/uploads/2015/03/diode-300x264.png?resize=300%2C264&#038;ssl=1" width="300" height="264" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2015/03/diode.png?resize=300%2C264&amp;ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2015/03/diode.png?resize=768%2C676&amp;ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2015/03/diode.png?resize=1024%2C901&amp;ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2015/03/diode.png?resize=1568%2C1380&amp;ssl=1 1568w" sizes="(max-width: 300px) 100vw, 300px" data-recalc-dims="1" /></a></p>
+<p><img src="/assets/images/2017/coilgun/diode.png" alt="" /></p>
 
-<p>My protection diode wasn’t tough enough, and it exploded in a shower of sparks! I was wearing safety glasses at the time, so everything was fine, but my mosfet was broken again. After I replaced the mosfet again, I decided to add a <em>damping resistor</em> instead of a protection diode. A damping resistor adds enough resistance to prevent the voltage oscillation from ever happening. For my coilgun, I calculated that I needed 0.12 Ohms of resistance, which equates to around 1.5 meters of 24 AWG copper wire. I added the extra copper wire around the coil (ignoring any added inductance), and I verified with an oscilloscope that the oscillation is gone!</p>
+<p>My protection diode wasn’t tough enough, and it exploded in a shower of sparks! I was wearing safety glasses at the time, so everything was fine, but my mosfet was broken again.</p>
+
+<p>After I replaced the mosfet again, I decided to add a <em>damping resistor</em> instead of a protection diode.
+A damping resistor adds enough resistance to prevent the voltage oscillation from ever happening. For my coilgun, I calculated that I needed 0.12 Ohms of resistance, which equates to around 1.5 meters of 24 AWG copper wire. I added the extra copper wire around the coil (ignoring any added inductance), and I verified with an oscilloscope that the oscillation is gone!</p>
 
 <h2 id="final-results">Final Results</h2>
 
-<p><img class="alignnone wp-image-286 size-full" src="https://i0.wp.com/theokanning.com/////wp-content/uploads/2015/03/IMG_20170102_112546-e1534898258117.jpg?resize=1140%2C761&#038;ssl=1" alt="" width="1140" height="761" srcset="https://i0.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20170102_112546-e1534898258117.jpg?w=2024&amp;ssl=1 2024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20170102_112546-e1534898258117.jpg?resize=300%2C200&amp;ssl=1 300w, https://i0.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20170102_112546-e1534898258117.jpg?resize=768%2C513&amp;ssl=1 768w, https://i0.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20170102_112546-e1534898258117.jpg?resize=1024%2C684&amp;ssl=1 1024w, https://i0.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20170102_112546-e1534898258117.jpg?resize=1568%2C1047&amp;ssl=1 1568w" sizes="(max-width: 1140px) 100vw, 1140px" data-recalc-dims="1" /></p>
+<p><img src="/assets/images/2017/coilgun/coilgun.jpg" alt="" /></p>
 
 <p>The new coilgun looks great! Here’s a video of it in action:</p>
 
-<p><span class="embed-youtube" style="text-align:center; display: block;"></span></p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/lTrcjJboyO4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 
 <p>Let’s see if it met my initial goals:</p>
 
@@ -239,7 +253,7 @@ into the {body} of the default.hbs template -->
 
 <p>Party time!</p>
 
-<p><img class="alignnone size-full" src="https://i1.wp.com/media.giphy.com/media/hTh9bSbUPWMWk/giphy.gif?resize=342%2C270&#038;ssl=1" width="342" height="270" data-recalc-dims="1" /></p>
+<p><img src="/assets/images/2017/coilgun/parrot.gif" alt="" /></p>
 
                 </div>
             </section>
@@ -286,16 +300,27 @@ into the {body} of the default.hbs template -->
     <div class="inner">
         <div class="read-next-feed">
             
+                
+                
+                
+                
+            
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/backflip-simulation/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Machine learning</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Neural Network Backflip Simulation</h2>
@@ -482,6 +507,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

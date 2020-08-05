@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/backflip-simulation/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Machine Learning" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Neural Network Backflip Simulation" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Machine Learning" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-machine-learning  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="15 October 2017">15 October 2017</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/machine-learning/'>MACHINE LEARNING</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">Neural Network Backflip Simulation</h1>
@@ -150,7 +160,7 @@ into the {body} of the default.hbs template -->
                 <div class="kg-card-markdown">
                     <h1 id="whats-new">What’s new?</h1>
 
-<p><img class="alignnone size-full wp-image-335" src="https://i2.wp.com/theokanning.com/////wp-content/uploads/2017/10/backflip.gif?resize=311%2C311&#038;ssl=1" alt="" width="311" height="311" data-recalc-dims="1" /></p>
+<p><img src="/assets/images/2017/jerry-backflip/backflip.gif" alt="" /></p>
 
 <p>In my first simulation <a href="https://theokanning.com/////walking-simulation/">experiment</a>, I successfully trained a human model (hereafter referred to as “Jerry”) to “walk” across the screen. Despite this success, Jerry’s motion was awkward and rigid, and the strange walking gait left me feeling unsatisfied. Here were my main issues with the initial simulation:</p>
 
@@ -234,16 +244,27 @@ into the {body} of the default.hbs template -->
     <div class="inner">
         <div class="read-next-feed">
             
+                
+                
+                
+                
+            
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/%f0%9f%98%80%e2%8c%a8%ef%b8%8f/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Android</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">😀⌨️</h2>
@@ -281,11 +302,17 @@ into the {body} of the default.hbs template -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/coilgun/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Random</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Coilgun V2</h2>
@@ -430,6 +457,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

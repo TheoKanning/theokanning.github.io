@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/creating-a-teleop-bot-with-ros/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Robotics" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Creating a Teleop Bot with ROS" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Robotics" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-robotics  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="23 December 2018">23 December 2018</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/robotics/'>ROBOTICS</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">Creating a Teleop Bot with ROS</h1>
@@ -148,7 +158,10 @@ into the {body} of the default.hbs template -->
 
             <section class="post-full-content">
                 <div class="kg-card-markdown">
-                    <figure class="wp-block-image"><img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521-1024x684.jpg?resize=1024%2C684&#038;ssl=1" alt="" class="wp-image-465" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=1024%2C684&amp;ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=300%2C200&amp;ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=768%2C513&amp;ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=1568%2C1047&amp;ssl=1 1568w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?w=2024&amp;ssl=1 2024w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /><figcaption>Blink-192 in all its glory. Its name comes from its bright lights and the first 3 digits of its local ip address.</figcaption></figure>
+                    <figure class="image">
+    <img src="/assets/images/2018/blink-192/blink-192.jpg" alt="" />
+    <figcaption></figcaption>
+</figure>
 
 <h2 id="blink-192">Blink-192</h2>
 
@@ -195,7 +208,12 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
 
 <h2 id="blink-192-ros-setup">Blink-192 ROS Setup<figure class="wp-block-image"></figure></h2>
 
-<p><img src="https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/12/rosgraph-1024x177.png?resize=1024%2C177&#038;ssl=1" alt="" class="wp-image-467" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=1024%2C177&amp;ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=300%2C52&amp;ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=768%2C133&amp;ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?w=1042&amp;ssl=1 1042w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /> &lt;figcaption&gt;Blink-192 ROS graph: Nodes are ovals, topics are rectangles&lt;/figcaption&gt;&lt;/figure&gt;</p>
+<figure class="image">
+    <img src="/assets/images/2018/blink-192/rosgraph.png" alt="Blink-192 ROS graph: Nodes are ovals, topics are rectangles" />
+    <figcaption>Blink-192 ROS graph: Nodes are ovals, topics are rectangles</figcaption>
+</figure>
+
+<p><br /></p>
 
 <p>Blink-192 works using four different nodes:</p>
 
@@ -281,6 +299,113 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
 <aside class="read-next outer">
     <div class="inner">
         <div class="read-next-feed">
+            
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/robotics/">Robotics</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mapping-with-the-mit-racecar/">Mapping with the MIT Racecar</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/using-the-rplidar-a1-on-the-mit-racecar/">Using the RPLIDAR A1 on the MIT Racecar</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">MIT Racecar VESC and Joystick on Ubuntu 18.04</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/robotics/">
+                                
+                                    See all 4 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
             
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
@@ -490,6 +615,71 @@ This project is based on the Teleop-bot example from Programming Robots with ROS
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

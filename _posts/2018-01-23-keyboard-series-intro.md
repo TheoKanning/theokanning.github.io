@@ -3,67 +3,11 @@ title: Android Keyboard Series Intro
 date: 2018-01-23T02:22:30+00:00
 author: theo
 layout: post
+class: post-template
 permalink: /keyboard-series-intro/
-us_sidebar_pos:
-  - right
-  - right
-us_footer_id:
-  - __defaults__
-  - __defaults__
-us_titlebar_image:
-  - ""
-  - ""
-us_titlebar_bg_size:
-  - ""
-  - ""
-us_titlebar_bg_repeat:
-  - ""
-  - ""
-us_titlebar_bg_position:
-  - ""
-  - ""
-us_titlebar_bg_parallax:
-  - ""
-  - ""
-us_titlebar_overlay_color:
-  - ""
-  - ""
-us_sidebar_id:
-  - __defaults__
-  - __defaults__
-us_header_sticky_pos:
-  - ""
-  - ""
-us_titlebar_subtitle:
-  - ""
-  - ""
-us_titlebar_size:
-  - ""
-  - ""
-us_titlebar_color:
-  - ""
-  - ""
-us_titlebar_breadcrumbs:
-  - ""
-  - ""
-us_og_image:
-  - ""
-  - ""
-us_post_preview_layout:
-  - ""
-  - ""
-us_header_id:
-  - __defaults__
-us_titlebar_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2018/01/intro-featured.gif
-categories:
-  - Android
-  - Keyboard
+excerpt: An overview of my four part series on the Android keyboard.
+tags:
+  - android
 ---
 ## The Keyboard
 
@@ -89,7 +33,7 @@ Drama aside, this scenario happens millions of times per day. First impressions 
 
 Now that you get why the keyboard is so important (or quit reading to add Google Sign-In), here's a list of what I'll go over in this series.
 
-  1. Input Types &#8211; How to let the user type in an email, password, phone number without any extra buttons.
-  2. IME Options &#8211; How to make the keyboard show custom buttons for specific tasks.
-  3. TextInputLayout &#8211; A five-minute way to make your app look way better
-  4. Showing and hiding &#8211; Some easy rules to make sure your keyboard is always in the right place
+  1. Input Types -  How to let the user type in an email, password, phone number without any extra buttons.
+  2. IME Options - How to make the keyboard show custom buttons for specific tasks.
+  3. TextInputLayout - A five-minute way to make your app look way better
+  4. Showing and hiding - Some easy rules to make sure your keyboard is always in the right place

@@ -2,48 +2,24 @@
 title: Creating a Teleop Bot with ROS
 date: 2018-12-23T17:15:34+00:00
 author: theo
-excerpt: 'This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do two things: first, it reacts to keystrokes on a computer and drives around; second, it streams video from a raspberry pi camera back to said computer. '
+excerpt: 'This robot, code-named Blink-192, uses the Robot Operating System (ROS) to react to keystrokes on a computer and drive around while streaming video.'
 layout: post
+class: post-template
 permalink: /creating-a-teleop-bot-with-ros/
-us_og_image:
-  - ""
-  - ""
-us_post_preview_layout:
-  - ""
-  - ""
-us_header_sticky_pos:
-  - ""
-  - ""
-us_titlebar_id:
-  - __defaults__
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-  - __defaults__
-us_sidebar_pos:
-  - right
-  - right
-us_footer_id:
-  - __defaults__
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521-1568x1047.jpg
-categories:
-  - Uncategorized
+tags:
+  - robotics
 ---
-<figure class="wp-block-image"><img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521-1024x684.jpg?resize=1024%2C684&#038;ssl=1" alt="" class="wp-image-465" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=1024%2C684&ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=300%2C200&ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=768%2C513&ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?resize=1568%2C1047&ssl=1 1568w, https://i2.wp.com/theokanning.com/wp-content/uploads/2018/12/IMG_20181212_105112-1-e1545607668521.jpg?w=2024&ssl=1 2024w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /><figcaption>Blink-192 in all its glory. Its name comes from its bright lights and the first 3 digits of its local ip address.</figcaption></figure> 
+
+{% include image.html
+url="/assets/images/2018/blink-192/blink-192.jpg"
+%}
 
 ## Blink-192
 
-This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do two things: first, it reacts to keystrokes on a computer and drives around; second, it streams video from a raspberry pi camera back to said computer.  
-  
-Blink-192 is a great example of how ROS can help with any robotics project. ROS connects Blink-192 to a desktop to stream video and receive steering commands with minimal setup and networking.  
-  
+This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do two things: first, it reacts to keystrokes on a computer and drives around; second, it streams video from a raspberry pi camera back to said computer.
+
+Blink-192 is a great example of how ROS can help with any robotics project. ROS connects Blink-192 to a desktop to stream video and receive steering commands with minimal setup and networking.
+
 All source code is available on [Github.](https://github.com/TheoKanning/Blink-192)  
 This project is based on the Teleop-bot example from Programming Robots with ROS ([O'Reilly Media).](http://shop.oreilly.com/product/0636920024736.do)
 
@@ -80,7 +56,12 @@ A _topic_ is a messaging bus that ROS nodes use to exchange messages. Topics fol
 
 ## Blink-192 ROS Setup<figure class="wp-block-image">
 
-<img src="https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/12/rosgraph-1024x177.png?resize=1024%2C177&#038;ssl=1" alt="" class="wp-image-467" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=1024%2C177&ssl=1 1024w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=300%2C52&ssl=1 300w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?resize=768%2C133&ssl=1 768w, https://i1.wp.com/theokanning.com/wp-content/uploads/2018/12/rosgraph.png?w=1042&ssl=1 1042w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /> <figcaption>Blink-192 ROS graph: Nodes are ovals, topics are rectangles</figcaption></figure> 
+{% include image.html
+url="/assets/images/2018/blink-192/rosgraph.png"
+description="Blink-192 ROS graph: Nodes are ovals, topics are rectangles"
+%}
+<br>
+
 
 Blink-192 works using four different nodes:
 

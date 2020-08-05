@@ -3,30 +3,15 @@ title: Neural Network Backflip Simulation
 date: 2017-10-15T18:04:05+00:00
 author: theo
 layout: post
+class: post-template
 permalink: /backflip-simulation/
-us_og_image:
-  - ""
-us_header_id:
-  - __defaults__
-us_titlebar_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2017/10/jerry-thumbnail-e1509592935136.png
-categories:
-  - Uncategorized
+excerpt: 'An update to my previous Jerry simulation, this time with backflips!'
+tags:
+  - machine learning
 ---
 # What's new?
 
-<img class="alignnone size-full wp-image-335" src="https://i2.wp.com/theokanning.com/////wp-content/uploads/2017/10/backflip.gif?resize=311%2C311&#038;ssl=1" alt="" width="311" height="311" data-recalc-dims="1" /> 
+![](/assets/images/2017/jerry-backflip/backflip.gif)
 
 In my first simulation [experiment](https://theokanning.com/////walking-simulation/), I successfully trained a human model (hereafter referred to as &#8220;Jerry&#8221;) to &#8220;walk&#8221; across the screen. Despite this success, Jerry's motion was awkward and rigid, and the strange walking gait left me feeling unsatisfied. Here were my main issues with the initial simulation:
 

@@ -1,12 +1,16 @@
 robotics:
     name: robotics
-    description: My work on robotics projects
+    description: Fancy robotics projects
     cover: False
 android:
     name: android
-    description: Android development tips and tricks.
+    description: Android development tips and tricks
     cover: False
 arduino:
     name: arduino
     description: Hobby projects with Arduino
+    cover: False
+random:
+    name: random
+    description: Whatever I feel like doing
     cover: False

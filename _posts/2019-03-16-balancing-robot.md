@@ -13,7 +13,7 @@ Introducing Dexter: the cutest balancing robot ever made.
 ![](/assets/images/2019/dexter/dexter.jpg)
 ## Dexter
 
-Dexter is a two-wheeled balancing robot controlled by an Android App. I originally created Dexter as a modified version of the [wifi-rover](https://theokanning.com/wifi-rover/) project that I made a few years ago. This time I was looking for a bigger challenge and for something to do with the stepper motors I had lying around.
+Dexter is a two-wheeled balancing robot controlled by an Android App. I originally created Dexter as a modified version of the [wifi-rover](https://theokanning.com/wifi-rover/) project that I made a few years ago, but this time I was looking for a bigger challenge.
 
 ## Hardware
 
