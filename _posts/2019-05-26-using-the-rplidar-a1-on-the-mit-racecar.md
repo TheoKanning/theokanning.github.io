@@ -5,6 +5,7 @@ author: theo
 layout: post
 class: post-template
 permalink: /using-the-rplidar-a1-on-the-mit-racecar/
+excerpt: Using the RPLIDAR A1 instead of the expensize Hokuyo UST-10LX
 tags:
   - robotics
 ---

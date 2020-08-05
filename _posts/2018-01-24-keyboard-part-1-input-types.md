@@ -5,6 +5,7 @@ author: theo
 layout: post
 class: post-template
 permalink: /keyboard-part-1-input-types/
+excerpt: Adding Input Types to control what characters the keyboard will display
 tags:
   - android
 ---

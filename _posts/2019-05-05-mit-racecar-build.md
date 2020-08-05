@@ -5,6 +5,7 @@ author: theo
 layout: post
 class: post-template
 permalink: /mit-racecar-build/
+excerpt: Assembling the MIT Racecar and adding some modifications of my own
 tags:
   - robotics
 ---

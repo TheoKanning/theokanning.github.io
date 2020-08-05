@@ -5,6 +5,7 @@ author: theo
 layout: post
 class: post-template
 permalink: /mit-racecar-vesc-and-joystick-on-ubuntu-18-04/
+excerpt: Getting the racecar ready to drive by setting up the speed controller and joystick
 tags:
   - robotics
 ---

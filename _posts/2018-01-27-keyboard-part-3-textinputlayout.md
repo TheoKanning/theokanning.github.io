@@ -5,6 +5,7 @@ author: theo
 layout: post
 class: post-template
 permalink: /keyboard-part-3-textinputlayout/
+excerpt: Making apps pretty with the fancy TextInputLayout
 tags:
   - android
 ---

@@ -5,6 +5,7 @@ author: theo
 layout: post
 class: post-template
 permalink: /keyboard-part-2-input-method-actions/
+excerpt: Adding Input Method Actions to provide clear keyboard functionality
 tags:
   - android
 ---

@@ -3,8 +3,9 @@ title: Mapping with the MIT Racecar
 date: 2019-08-20T01:55:24+00:00
 author: theo
 layout: post
-permalink: /mapping-with-the-mit-racecar/
 class: post-template
+permalink: /mapping-with-the-mit-racecar/
+excerpt: Mapping my apartment with ROS and the MIT Racecar
 tags:
   - robotics
 ---

@@ -5,6 +5,7 @@ author: theo
 layout: post
 class: post-template
 permalink: /keyboard-part-4-showing-and-hiding/
+excerpt: Somehow one of the most irritating parts of Android development
 tags:
   - android
 ---

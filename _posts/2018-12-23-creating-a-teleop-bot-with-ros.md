@@ -2,7 +2,7 @@
 title: Creating a Teleop Bot with ROS
 date: 2018-12-23T17:15:34+00:00
 author: theo
-excerpt: 'This robot, code-named Blink-192, uses the Robot Operating System (ROS) to react to keystrokes on a computer and drive around while streaming video.'
+excerpt: 'This robot uses ROS to drive around and stream video.'
 layout: post
 class: post-template
 permalink: /creating-a-teleop-bot-with-ros/
