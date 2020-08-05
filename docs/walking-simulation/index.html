@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/walking-simulation/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Machine Learning" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Walking with Genetic Algorithms and Neural Networks" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Machine Learning" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-machine-learning  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="28 November 2016">28 November 2016</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/machine-learning/'>MACHINE LEARNING</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">Walking with Genetic Algorithms and Neural Networks</h1>
@@ -150,20 +160,26 @@ into the {body} of the default.hbs template -->
                 <div class="kg-card-markdown">
                     <h2 id="whats-this">What’s this?</h2>
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/CSuDdG7DB4w" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
 <p>After seeing <a href="https://www.youtube.com/watch?v=qv6UVOQ0F44">MarI/O</a> and reading the paper behind the evolution algorithm that SethBling used, I wanted try to make my own simulated person and see if I could teach him how to walk. I made my own humanoid test dummy using Pymunk, and used neural networks and the NEAT algorithm to train him. This ended up being way harder than I expected, but it’s one of the coolest things I’ve ever built.</p>
 
 <h2 id="who-is-that-guy">Who is that guy?</h2>
 
 <p>It’s Jerry from Rick and Morty!</p>
 
-<p><a ref="magnificPopup" href="https://i2.wp.com/theokanning.com/////wp-content/uploads/2015/03/tumblr_nszhymnISq1ucfegyo1_500.gif?ssl=1"><img class="alignnone size-full wp-image-251" src="https://i2.wp.com/theokanning.com/////wp-content/uploads/2015/03/tumblr_nszhymnISq1ucfegyo1_500.gif?resize=500%2C281&#038;ssl=1" alt="tumblr_nszhymnisq1ucfegyo1_500" width="500" height="281" data-recalc-dims="1" /></a></p>
+<p><img src="/assets/images/2016/jerry/jerry.gif" alt="" /></p>
 
 <p>Jerry made an excellent test subject, and I couldn’t have done all this science without his tireless efforts.</p>
 
 <h2 id="physics-simulation">Physics Simulation</h2>
+<h3 id="tools">Tools</h3>
 
-<p>Simulating humanoid walking is about as difficult as it sounds, but it’s possible to get a low-accuracy prototype that’s good enough for Jerry. For the physics simulation, I used a simulator called <a href="http://www.pymunk.org/en/latest/">pymunk</a>, which is a python wrapper for the C++ Chipmunk physics engine. Chipmunk has been ported to lots of different platforms for mobile games and silly projects like this one, so it seemed like a good starting point. I used Pygame for the visualization, and as you can see it’s not the prettiest option for something like this. I unfortunately didn’t realize that until it was too late, so we’re stuck with a pixelated Jerry for now.</p>
+<p>Simulating humanoid walking is about as difficult as it sounds, but it’s possible to get a low-accuracy prototype that’s good enough for Jerry. For the physics simulation, I used a simulator called <a href="http://www.pymunk.org/en/latest/">pymunk</a>, which is a python wrapper for the C++ Chipmunk physics engine. Chipmunk has been ported to lots of different platforms for mobile games and silly projects like this one, so it seemed like a good starting point.</p>
 
+<p>I used Pygame for the visualization, and as you can see it’s not the prettiest option for something like this. I unfortunately didn’t realize that until it was too late, so we’re stuck with a pixelated Jerry for now.</p>
+
+<h3 id="human-body-model">Human Body Model</h3>
 <p>Simulations in pymunk consist of three basic objects: mass-containing bodies, colliding shapes, and constraints. Each segment of Jerry (thigh, torso etc) consists of a body to contain its mass and a shape to handle its collisions with other shapes. Each of his joints (shoulder, elbow etc) attaches two segments together using three kinds of constraints:</p>
 
 <ol>
@@ -174,13 +190,19 @@ into the {body} of the default.hbs template -->
 
 <p>I gave each joint a realistic range, and that was enough to create a pretty rough simulation of a human body. My former biomedical engineering professors would disagree, but I think the blatant inaccuracies make it more fun to watch. Good thing I’m here simulating cartoons instead of designing medical devices! Seriously though, it would be interesting to retry this using a more accurate simulator like <a href="http://opensim.stanford.edu/">OpenSim</a> and see how much of a difference it makes.</p>
 
+<h3 id="test-runs">Test Runs</h3>
 <p>Each test run starts the same way, and they all end if Jerry’s upper body touches the ground or if he goes five seconds without making any forward progress. I avoided adding arbitrary constraints to make him walk a certain way – which is obvious once you see what he came up with – because I thought it would ruin the purity of the simulation. The only concessions I made were to restrict his hip range slightly and eliminate motion of his elbows. Elbows aren’t all that useful anyway, and they were adding size to tiny his neural network brain.</p>
 
 <h2 id="neural-networks">Neural Networks</h2>
+<h3 id="overview">Overview</h3>
+<p>Neural networks are a natural choice for controlling a walking person; they can learn complex nonlinear behaviors, they’re fun, and hey, they’re how humans actually walk. At their simplest level, neural networks take a set of inputs, apply weights and biases to them through multiple layers, and produce a set of outputs. Mathematically, the weights and biases can replicate any nonlinear function, so neural networks should be a good fit for the complex control required for walking.</p>
 
-<p>Neural networks are a natural choice for controlling a walking person; they can learn complex nonlinear behaviors, they’re fun, and hey, they’re how humans actually walk. At their simplest level, neural networks take a set of inputs, apply weights and biases to them through multiple layers, and produce a set of outputs. Mathematically, the weights and biases can replicate any nonlinear function, so neural networks should be a good fit for the complex control required for walking. If you’re not familiar with neural networks, I recommend Michael Nielsen’s excellent <a href="http://neuralnetworksanddeeplearning.com/chap1.html">guide</a> (the first chapter is enough to get what I’m doing here, but I won’t be offended if you keep reading and forget this project entirely).</p>
+<p>If you’re not familiar with neural networks, I recommend Michael Nielsen’s excellent <a href="http://neuralnetworksanddeeplearning.com/chap1.html">guide</a> (the first chapter is enough to get what I’m doing here, but I won’t be offended if you keep reading and forget this project entirely).</p>
 
-<p>Now that we know what tool to use, how do we go about controlling Jerry’s joints? First let’s think about the input data we have available. We can get the angle and rate of all of his joints, and if we include the angle and rate of his torso relative to the simulation world, then he’ll know everything about his current state. However, since we control the joint rates directly, sending them as inputs doesn’t add any new information. Therefore, Jerry has 8 (joint angles) + 1 (torso angle) + 1  (torso rate) = 10 inputs.</p>
+<h3 id="controlling-jerry">Controlling Jerry</h3>
+<p>Now that we know what tool to use, how do we go about controlling Jerry’s joints?
+First let’s think about the input data we have available. We can get the angle and rate of all of his joints, and if we include the angle and rate of his torso relative to the simulation world, then he’ll know everything about his current state.
+However, since we control the joint rates directly, sending them as inputs doesn’t add any new information. Therefore, Jerry has 8 (joint angles) + 1 (torso angle) + 1  (torso rate) = 10 inputs.</p>
 
 <p>As for his outputs, Jerry can control each joint’s rate, so he has 8 outputs (elbows are still ignored).</p>
 
@@ -201,15 +223,19 @@ into the {body} of the default.hbs template -->
 
 <h2 id="neat">NEAT</h2>
 
-<p>The NeuroEvolution of Augmenting Topologies algorithm is a genetic evolution algorithm designed specifically for neural networks, and the excellent <a href="http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf">paper</a> describes all of its features in depth. I found out about <a href="https://www.youtube.com/watch?v=Hm3JodBR-vs">NEAT</a> through SethBling’s <a href="https://www.youtube.com/watch?v=qv6UVOQ0F44">MarI/O</a> experiment in which he NEAT to create a Super Mario World AI. Each block, enemy, and item in the first level of Super Mario World corresponded to an input to a neural network, and each output corresponded to one the the buttons on the controller. After many generations, the neural network correctly associates inputs with actions, and Mario finally makes it to the end of the level.</p>
+<p>The NeuroEvolution of Augmenting Topologies algorithm is a genetic evolution algorithm designed specifically for neural networks, and the excellent <a href="http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf">paper</a> describes all of its features in depth. I found out about <a href="https://www.youtube.com/watch?v=Hm3JodBR-vs">NEAT</a> through SethBling’s <a href="https://www.youtube.com/watch?v=qv6UVOQ0F44">MarI/O</a> experiment in which he uses NEAT to create a Super Mario World AI.</p>
+
+<p>Each block, enemy, and item in the first level of Super Mario World corresponded to an input to a neural network, and each output corresponded to one the the buttons on the controller. After many generations, the neural network correctly associates inputs with actions, and Mario finally makes it to the end of the level.</p>
 
 <p>NEAT’s advantages are very subtle, but its main advantage is that it describes how to combine, mutate, and create neural networks to create a <em>minimal</em> solution. A minimal solution uses as few connections as possible, and it’s best to keep neural networks as simple as possible so that no extraneous signals are interfering with normal operation. We’ll be using <a href="http://neat-python.readthedocs.io/en/latest/">NEAT-python</a>, an excellent Python implementation of the NEAT algorithm. NEAT-python will create and update the neural network population for us, and all we have to do is take a single neural network and calculate its fitness. Sounds pretty neat!</p>
 
 <p>Sorry.</p>
 
-<h2 id="hold-on-how-do-we-calculate-fitness">Hold on, how do we calculate fitness?</h2>
+<h2 id="calculating-fitness">Calculating Fitness</h2>
 
-<p>In a genetic algorithm, fitness is basically a score that is calculated for each individual, and a higher fitness means a higher chance of surviving to the next generation. Since we’re trying to teach Jerry to walk, we need a fitness function that rewards walking. The fitness function has a huge effect on the kind of solutions a genetic algorithm will generate, so it’s important to pick one that incentivizes the correct behavior. My fitness function changed over time as I found problems with it, and here’s a general history.</p>
+<p>In a genetic algorithm, fitness is basically a score that is calculated for each individual, and a higher fitness means a higher chance of surviving to the next generation. Since we’re trying to teach Jerry to walk, we need a fitness function that rewards walking. The fitness function has a huge effect on the kind of solutions a genetic algorithm will generate, so it’s important to pick one that incentivizes the correct behavior.</p>
+
+<p>My fitness function changed over time as I found problems with it, and here’s a general history.</p>
 
 <ol>
   <li>Reward distance traveled to the right.
@@ -237,9 +263,13 @@ into the {body} of the default.hbs template -->
 
 <p>Now it’s time to set Jerry free and see how he does! I used an initial population of 100 Jerry’s and let the simulation run for a while. The initial population was very bad, mostly falling over. Over time, he started to fall forward, and then he started to stay upright. Here’s a clip of his best run so far.</p>
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/dVgcb00HR6k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
 <p>Not only did Jerry successfully walking across the entire simulation, he even created a new, better method of walking! Okay, maybe his sliding dance bounce isn’t the best way to walk, but I’m still very happy with the results here. This really shows the importance of the fitness function; Jerry isn’t rewarded for putting one foot in front of the other, so he learns the simplest way to move first.</p>
 
-<p>I looked around at some other examples of using neural networks to learn walking, and I was unable to find an experiment that didn’t impose <em>any</em>  artificial constraints to make the subject follow a normal human gait. All examples either rewarded putting one foot in front of the other or used separate logic for difference phases of walking. I didn’t want to to enforce any arbitrary constraints like this because they felt like cheating (and they’re more work), but I humans technically  learn to walk by watching others, so I think it’s worth trying.</p>
+<p>I looked around at some other examples of using neural networks to learn walking, and I was unable to find an experiment that didn’t impose <em>any</em>  artificial constraints to make the subject follow a normal human gait.
+All examples either rewarded putting one foot in front of the other or used separate logic for difference phases of walking.
+I didn’t want to to enforce any arbitrary constraints like this because they felt like cheating (and they’re more work), but I humans technically  learn to walk by watching others, so I think it’s worth trying.</p>
 
 <h2 id="further-work">Further Work</h2>
 
@@ -256,15 +286,12 @@ into the {body} of the default.hbs template -->
 
 <p>I think it would be fun to make Jerry do a backflip or something too.</p>
 
-<p><a ref="magnificPopup" href="https://i2.wp.com/theokanning.com/////wp-content/uploads/2016/11/giphy.gif?ssl=1"><img class="alignnone size-full wp-image-268" src="https://i2.wp.com/theokanning.com/////wp-content/uploads/2016/11/giphy.gif?resize=320%2C269&#038;ssl=1" alt="can do" width="320" height="269" data-recalc-dims="1" /></a></p>
+<p><img src="/assets/images/2016/jerry/meeseeks.gif" alt="" /></p>
 
 <h2 id="thanks">Thanks!</h2>
 
 <p>Thanks for reading about Jerry’s journey, and I hope you enjoyed all of this science! All code is available on <a href="https://github.com/TheoKanning/Walking-with-Neural-Networks">Github</a>, and I’ll be happy to answer any questions you might have.</p>
 
-<p> </p>
-
-<p> </p>
 
                 </div>
             </section>
@@ -310,6 +337,104 @@ into the {body} of the default.hbs template -->
 <aside class="read-next outer">
     <div class="inner">
         <div class="read-next-feed">
+            
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/machine-learning/">Machine learning</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/backflip-simulation/">Neural Network Backflip Simulation</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/my-first-attempt-at-imagenet/">My First Attempt at ImageNet</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/building-the-tensorflow-android-demo/">Building the TensorFlow Android Demo</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/machine-learning/">
+                                
+                                    See all 3 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
             
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
@@ -364,11 +489,17 @@ into the {body} of the default.hbs template -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/my-first-attempt-at-imagenet/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Machine learning</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">My First Attempt at ImageNet</h2>
@@ -513,6 +644,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

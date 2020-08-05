@@ -3,43 +3,17 @@ title: Android-Controller Wifi Rover
 date: 2016-03-06T18:40:48+00:00
 author: theo
 layout: post
+class: post-template
 permalink: /wifi-rover/
-us_og_image:
-  - ""
-  - ""
-us_post_preview_layout:
-  - ""
-  - ""
-us_header_sticky_pos:
-  - ""
-  - ""
-us_titlebar_id:
-  - __defaults__
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-  - __defaults__
-us_sidebar_pos:
-  - right
-  - right
-us_footer_id:
-  - __defaults__
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2015/03/IMG_20160306_123117231_HDR-e1534898697852-1568x1049.jpg
-categories:
-  - Uncategorized
+excerpt: Building a wifi-connected rover to explore the office!
+tags:
+  - arduino
 ---
-<figure class="wp-block-image"><img src="https://i0.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123117231_HDR-e1534898697852-1024x685.jpg?resize=1024%2C685&#038;ssl=1" alt="" class="wp-image-201" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123117231_HDR-e1534898697852.jpg?resize=1024%2C685&ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123117231_HDR-e1534898697852.jpg?resize=300%2C201&ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123117231_HDR-e1534898697852.jpg?resize=768%2C514&ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123117231_HDR-e1534898697852.jpg?resize=1568%2C1049&ssl=1 1568w, https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123117231_HDR-e1534898697852.jpg?w=1980&ssl=1 1980w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /></figure> 
+![](/assets/images/2016/rover/rover.jpg)
 
 ## Wifi Rover
 
-Here's one of my favorite projects so far: a wifi-controlled robot that streams video to the user. I call it the Rover because it can work over any distance as long as it's on a wifi network, and I&nbsp;really feel like an explorer&nbsp;when I drive it around the office. This project was an absolute blast to put together, and it's really the result of putting together a few simple ideas into a single project.
+Here's one of my favorite projects so far: a wifi-controlled robot that streams video to the user. I call it the Rover because it can work over any distance as long as it's on a wifi network, and I really feel like an explorer when I drive it around the office. This project was an absolute blast to put together, and it's really the result of putting together a few simple ideas into a single project.
 
 ## Software
 
@@ -49,9 +23,8 @@ The driver phone receives the video stream and gives the user a virtual d-pad to
 
 All code is available on my Github [page](https://github.com/TheoKanning/WiFi-Rover).
 
-## Hardware<figure class="wp-block-image">
-
-<img src="https://i1.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123136917-e1534898779417-1024x576.jpg?resize=1024%2C576&#038;ssl=1" alt="" class="wp-image-203" srcset="https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123136917-e1534898779417.jpg?resize=1024%2C576&ssl=1 1024w, https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123136917-e1534898779417.jpg?resize=300%2C169&ssl=1 300w, https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123136917-e1534898779417.jpg?resize=768%2C432&ssl=1 768w, https://i2.wp.com/theokanning.com/wp-content/uploads/2015/03/IMG_20160306_123136917-e1534898779417.jpg?resize=1568%2C882&ssl=1 1568w" sizes="(max-width: 1024px) 100vw, 1024px" data-recalc-dims="1" /> </figure> 
+## Hardware
+![](/assets/images/2016/rover/rover-close.jpg)
 
 <a rel="noreferrer noopener" href="https://www.sparkfun.com/products/12090" target="_blank">Sparkfun 4WD Multi-Chassis</a>  
 <a rel="noreferrer noopener" href="https://www.adafruit.com/products/1438" target="_blank">Adafruit Arduino Motor Shield</a>  

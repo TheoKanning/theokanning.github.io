@@ -4,23 +4,7 @@ date: 2015-04-10T23:41:57+00:00
 author: theo
 layout: post
 permalink: /american-ninja-warrior-season-6/
-us_og_image:
-  - ""
-us_header_id:
-  - __defaults__
-us_titlebar_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2015/03/spikes.jpg
+published: false
 categories:
   - Uncategorized
 ---

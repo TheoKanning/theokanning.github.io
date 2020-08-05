@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/2048-bot/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Random" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="2048 Bot" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Random" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-random  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="18 April 2015">18 April 2015</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/random/'>RANDOM</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">2048 Bot</h1>
@@ -148,23 +158,16 @@ into the {body} of the default.hbs template -->
 
             <section class="post-full-content">
                 <div class="kg-card-markdown">
-                    <p>A few weekends ago I made this little project to brush up on my Python skills. Sometimes it’s hard to go back and forth between C at work and Python at home since C is very verbose and Python seems to do everything for me, but that only adds to the fun 🙂</p>
+                    <p>This project solves the <a href="http://gabrielecirulli.github.io/2048/" target="_blank" rel="noopener noreferrer">2048</a> game in a browser window by reading in pixel values and searching the tree of possible boards.
+It consists of 3 main features: reading the board, searching possible future states, and evaluating board values.</p>
 
-<p>This project solves the <a href="http://gabrielecirulli.github.io/2048/" target="_blank" rel="noopener noreferrer">2048</a> game in a browser window by reading in pixel values and searching the tree of possible boards. It consists of 3 main features: reading the board, the search tree, and evaluation.</p>
-
-<h2 id="reading-the-board"><strong>Reading the Board</strong></h2>
+<h2 id="reading-the-board">Reading the Board</h2>
 
 <p>I had several options for reading the board, but I chose what I felt to be the simplest method. Using the Python Imaging Library my bot takes a screenshot of the game area in a pixel range that I measured by hand. Since each square value has a different color, its read one pixel from each of the 16 spaces and uses the RGB values to find the corresponding number. This gives all 16 square values, which is the only information necessary to determine the correct move.</p>
 
-<div id="attachment_180" style="width: 367px" class="wp-caption alignnone">
-  <a ref="magnificPopup" href="https://i1.wp.com/theokanning.com/////wp-content/uploads/2015/04/rgb.png?ssl=1"><img aria-describedby="caption-attachment-180" class="wp-image-180" src="https://i1.wp.com/theokanning.com/////wp-content/uploads/2015/04/rgb.png?resize=357%2C357&#038;ssl=1" alt="rgb" width="357" height="357" srcset="https://i1.wp.com/theokanning.com/wp-content/uploads/2015/04/rgb.png?w=500&amp;ssl=1 500w, https://i1.wp.com/theokanning.com/wp-content/uploads/2015/04/rgb.png?resize=150%2C150&amp;ssl=1 150w, https://i1.wp.com/theokanning.com/wp-content/uploads/2015/04/rgb.png?resize=300%2C300&amp;ssl=1 300w" sizes="(max-width: 357px) 100vw, 357px" data-recalc-dims="1" /></a>
-  
-  <p id="caption-attachment-180" class="wp-caption-text">
-    Sample RGB values
-  </p>
-</div>
+<p><img src="/assets/images/2015/2048/2048.png" alt="" /></p>
 
-<h2 id="searching"><strong>Searching</strong></h2>
+<h2 id="searching">Searching</h2>
 
 <p>This bot uses a simple search tree compared to my chess ai, although it still has its own complexities. It creates a search tree by searching all player and computer moves to a total depth of 5 moves. The computer “player” tries to minimize the score, and the bot tries to maximize it. By doing that, the algorithm finds the worst-case scenario combination of computer moves for each branch and picks the move that will minimize the damage to the overall score.</p>
 
@@ -229,19 +232,116 @@ into the {body} of the default.hbs template -->
     <div class="inner">
         <div class="read-next-feed">
             
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/random/">Random</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/coilgun/">Coilgun V2</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/chess-ai/">Chess AI</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/random/">
+                                
+                                    See all 2 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
+            
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
-            <a class="post-card-content-link" href="/american-ninja-warrior-season-7/">
+            <a class="post-card-content-link" href="/wifi-rover/">
                 <header class="post-card-header">
                     
+                        
+                            
+                                <span class="post-card-tags">Arduino</span>
+                            
+                        
+                    
 
-                    <h2 class="post-card-title">American Ninja Warrior Season 7</h2>
+                    <h2 class="post-card-title">Android-Controller Wifi Rover</h2>
                 </header>
                 <section class="post-card-excerpt">
                     
@@ -276,11 +376,17 @@ into the {body} of the default.hbs template -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/chess-ai/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Random</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Chess AI</h2>
@@ -425,6 +531,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

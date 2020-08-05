@@ -3,35 +3,16 @@ title: Building the TensorFlow Android Demo
 date: 2016-03-18T04:43:40+00:00
 author: theo
 layout: post
+class: post-template
 permalink: /building-the-tensorflow-android-demo/
-us_og_image:
-  - ""
-  - ""
-us_post_preview_layout:
-  - ""
-us_header_sticky_pos:
-  - ""
-us_titlebar_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2016/03/68747470733a2f2f7777772e74656e736f72666c6f772e6f72672f696d616765732f74665f6c6f676f5f7472616e73702e706e67-e1509592830565.png
-categories:
-  - Uncategorized
+excerpt: Building Google's mobile TensorFlow demo
+tags:
+  - machine learning
 ---
 ## **Dog == Diaper?**
 
-I recently tried out Google's TensorFlow [Android example](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/android), and it's one of the most entertaining tech demos I've seen. Basically, the app uses an image recognition model to classify whatever appears on your camera, and it does this all without sending the pictures to a server. I was honestly amazed when it identified a friend's dog as a Pembroke Corgi, but then it identified another dog as a diaper, so I guess we don't have to worry about our phones taking over the world just yet.
+I recently tried out Google's TensorFlow [Android example](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/android), and it's one of the coolest tech demos I've seen.
+Basically, the app uses an image recognition model to classify whatever appears on your camera, and it does this all without sending the pictures to a server. I was honestly amazed when it identified a friend's dog as a Pembroke Corgi, but then it identified another dog as a diaper, so I guess we don't have to worry about our phones taking over the world just yet.
 
 Anyway, I'm working on some image recognition myself, and I think putting a trained model into an app seems like a great start for some new projects. Unfortunately, the build process for this app ended up being more complicated than I expected, so it grew into a post of its own. Nevertheless, it can be done, and I hope I can condense some of the information I found and make things easier for someone else.
 

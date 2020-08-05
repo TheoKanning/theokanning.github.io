@@ -47,6 +47,7 @@
     <meta property="og:url" content="https://theokanning.github.io/my-first-attempt-at-imagenet/" />
     <meta property="og:image" content="https://theokanning.github.io/" />
     <meta property="article:publisher" content="https://www.facebook.com/" />
+    <meta property="article:tag" content="Machine Learning" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="My First Attempt at ImageNet" />
     <meta name="twitter:description" content="Science is Awesome" />
@@ -54,6 +55,8 @@
     <meta name="twitter:image" content="https://theokanning.github.io/" />
     <meta name="twitter:label1" content="Written by" />
     <meta name="twitter:data1" content="Theo Kanning" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Machine Learning" />
     <meta name="twitter:site" content="@" />
     <meta name="twitter:creator" content="@" />
     <meta property="og:image:width" content="2000" />
@@ -96,7 +99,7 @@
 
 
 </head>
-<body class="home-template">
+<body class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -134,11 +137,18 @@ into the {body} of the default.hbs template -->
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner">
 
-        <article class="post-full   no-image">
+        <article class="post-full  tag-machine-learning  no-image">
 
             <header class="post-full-header">
                 <section class="post-full-meta">
                     <time class="post-full-meta-date" datetime="26 April 2016">26 April 2016</time>
+                    
+                        <span class="date-divider">/</span>
+                        
+                            
+                               <a href='/tag/machine-learning/'>MACHINE LEARNING</a>
+                            
+                        
                     
                 </section>
                 <h1 class="post-full-title">My First Attempt at ImageNet</h1>
@@ -160,13 +170,6 @@ into the {body} of the default.hbs template -->
 
 <p>ImageNet has a handy api that gives you a list of image urls for each class id. However, these list were made year ago and have not been maintained well, so a lot of error handling is required to handle dead links! Many links successfully returned Flickr’s “This image has been moved” image, but I found that checking for a minimum file size of 5kB and attempting to load each image after saving did a great job of weeding out any corrupted or missing links.</p>
 
-<p>Here’s my code for downloading a single image. It’s a bit messier than I’d like, but I had to deal with every possibly error from thousands of links, so I guess it turned out alright.</p>
-
-<div class="gist-oembed" data-gist="986e83af3e640ec57dc7b84c8d097f5c.json" data-ts="8">
-</div>
-
-<p>Note that I resize the images as I download them to save space. This prevents me from doing a lot of data augmentation before training, so I’ll likely change this later once I start to address the overfitting that this first version shows.</p>
-
 <h2 id="loading-datasets"><strong>Loading Datasets</strong></h2>
 
 <p>Now that all the images are downloaded, they are split into training, validation, and test datasets. After splitting, each dataset is normalized by subtracting the training set mean and dividing by the training set std deviation.</p>
@@ -177,15 +180,9 @@ into the {body} of the default.hbs template -->
 
 <p>As a starting point, I copied my architecture almost entirely from the revolutionary <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf">AlexNet</a> classifier. I highly recommend reading about AlexNet since it accomplishes an incredible amount without using overly sophisticated techniques, and many of its features can be found in more complex networks.</p>
 
-<p>Anyway, the classifier has five convolutional layers and three fully-connected layers, and it has more than enough degress of freedom to fit the relatively tiny amount of training data that I have. Like I said earlier, I’ll have to work to reduce the overfitting this creates, but I found that creating an unnecessarily large model was a better first step.</p>
+<p><img src="/assets/images/2016/imagenet/alexnet.jpg" alt="" /></p>
 
-<div style="width: 560px" class="wp-caption aligncenter">
-  <img class="" src="https://i1.wp.com/www.eecs.berkeley.edu/~shhuang/img/alexnet_small.png?resize=550%2C172" width="550" height="172" data-recalc-dims="1" />
-  
-  <p class="wp-caption-text">
-    AlexNet's architecture. The two levels are implemented on separate GPUs, which I ignored for this model.
-  </p>
-</div>
+<p>Anyway, the classifier has five convolutional layers and three fully-connected layers, and it has more than enough degress of freedom to fit the relatively tiny amount of training data that I have. Like I said earlier, I’ll have to work to reduce the overfitting this creates, but I found that creating an unnecessarily large model was a better first step.</p>
 
 <h2 id="running-the-model"><strong>Running the Model</strong></h2>
 
@@ -244,16 +241,120 @@ into the {body} of the default.hbs template -->
     <div class="inner">
         <div class="read-next-feed">
             
+                
+                
+                
+                
+                    <article class="read-next-card"
+                        
+                            
+                        
+                    >
+                        <header class="read-next-card-header">
+                            <small class="read-next-card-header-sitetitle">&mdash; Theo Kanning &mdash;</small>
+                            
+                                <h3 class="read-next-card-header-title"><a href="/tag/machine-learning/">Machine learning</a></h3>
+                            
+                        </header>
+                        <div class="read-next-divider"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/></svg>
+</div>
+                        <div class="read-next-card-content">
+                            <ul>
+                                
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/backflip-simulation/">Neural Network Backflip Simulation</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/walking-simulation/">Walking with Genetic Algorithms and Neural Networks</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                    
+                                  
+                                
+                                  
+                                    
+                                        
+                                        
+                                            <li><a href="/building-the-tensorflow-android-demo/">Building the TensorFlow Android Demo</a></li>
+                                        
+                                    
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                                  
+                                
+                            </ul>
+                        </div>
+                        <footer class="read-next-card-footer">
+                            <a href="/tag/machine-learning/">
+                                
+                                    See all 3 posts  →
+                                
+                            </a>
+                        </footer>
+                    </article>
+                
+            
 
             <!-- If there's a next post, display it using the same markup included from - partials/post-card.hbs -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/walking-simulation/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Machine learning</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Walking with Genetic Algorithms and Neural Networks</h2>
@@ -291,11 +392,17 @@ into the {body} of the default.hbs template -->
             
                 
 
-    <article class="post-card  no-image">
+    <article class="post-card post-template no-image">
         
         <div class="post-card-content">
             <a class="post-card-content-link" href="/building-the-tensorflow-android-demo/">
                 <header class="post-card-header">
+                    
+                        
+                            
+                                <span class="post-card-tags">Machine learning</span>
+                            
+                        
                     
 
                     <h2 class="post-card-title">Building the TensorFlow Android Demo</h2>
@@ -440,6 +547,71 @@ into the {body} of the default.hbs template -->
 
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
+    
+        <script>
+
+// NOTE: Scroll performance is poor in Safari
+// - this appears to be due to the events firing much more slowly in Safari.
+//   Dropping the scroll event and using only a raf loop results in smoother
+//   scrolling but continuous processing even when not scrolling
+$(document).ready(function () {
+    // Start fitVids
+    var $postContent = $(".post-full-content");
+    $postContent.fitVids();
+    // End fitVids
+
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+
+    function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+
+    function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide floating header
+        if (lastScrollY >= trigger + triggerOffset) {
+            header.classList.add('floating-active');
+        } else {
+            header.classList.remove('floating-active');
+        }
+
+        progressBar.setAttribute('max', progressMax);
+        progressBar.setAttribute('value', lastScrollY);
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onResize, false);
+
+    update();
+});
+</script>
+
     
 
     <!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag -->

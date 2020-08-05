@@ -3,30 +3,11 @@ title: My First Attempt at ImageNet
 date: 2016-04-27T02:53:04+00:00
 author: theo
 layout: post
+class: post-template
 permalink: /my-first-attempt-at-imagenet/
-us_og_image:
-  - ""
-us_post_preview_layout:
-  - ""
-us_header_sticky_pos:
-  - ""
-us_titlebar_id:
-  - __defaults__
-us_sidebar_id:
-  - __defaults__
-us_sidebar_pos:
-  - right
-us_footer_id:
-  - __defaults__
-us_header_id:
-  - __defaults__
-us_content_id:
-  - __defaults__
-us_migration_version:
-  - "6.0"
-image: /wp-content/uploads/2016/04/thumbnail-e1509592873777.jpg
-categories:
-  - Uncategorized
+excerpt: Making a basic ImageNet classifier
+tags:
+  - machine learning
 ---
 ## **ImageNet**
 
@@ -40,13 +21,6 @@ After seeing Google's [TensorFlow](https://www.tensorflow.org/) demo on Android
 
 ImageNet has a handy api that gives you a list of image urls for each class id. However, these list were made year ago and have not been maintained well, so a lot of error handling is required to handle dead links! Many links successfully returned Flickr's &#8220;This image has been moved&#8221; image, but I found that checking for a minimum file size of 5kB and attempting to load each image after saving did a great job of weeding out any corrupted or missing links.
 
-Here's my code for downloading a single image. It's a bit messier than I'd like, but I had to deal with every possibly error from thousands of links, so I guess it turned out alright.
-
-<div class="gist-oembed" data-gist="986e83af3e640ec57dc7b84c8d097f5c.json" data-ts="8">
-</div>
-
-Note that I resize the images as I download them to save space. This prevents me from doing a lot of data augmentation before training, so I'll likely change this later once I start to address the overfitting that this first version shows.
-
 ## **Loading Datasets**
 
 Now that all the images are downloaded, they are split into training, validation, and test datasets. After splitting, each dataset is normalized by subtracting the training set mean and dividing by the training set std deviation.
@@ -57,15 +31,9 @@ My Dataset class is a modified version of the one in TensorFlow's [MNIST](https:
 
 As a starting point, I copied my architecture almost entirely from the revolutionary [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf) classifier. I highly recommend reading about AlexNet since it accomplishes an incredible amount without using overly sophisticated techniques, and many of its features can be found in more complex networks.
 
-Anyway, the classifier has five convolutional layers and three fully-connected layers, and it has more than enough degress of freedom to fit the relatively tiny amount of training data that I have. Like I said earlier, I'll have to work to reduce the overfitting this creates, but I found that creating an unnecessarily large model was a better first step.
+![](/assets/images/2016/imagenet/alexnet.jpg)
 
-<div style="width: 560px" class="wp-caption aligncenter">
-  <img class="" src="https://i1.wp.com/www.eecs.berkeley.edu/~shhuang/img/alexnet_small.png?resize=550%2C172" width="550" height="172" data-recalc-dims="1" />
-  
-  <p class="wp-caption-text">
-    AlexNet's architecture. The two levels are implemented on separate GPUs, which I ignored for this model.
-  </p>
-</div>
+Anyway, the classifier has five convolutional layers and three fully-connected layers, and it has more than enough degress of freedom to fit the relatively tiny amount of training data that I have. Like I said earlier, I'll have to work to reduce the overfitting this creates, but I found that creating an unnecessarily large model was a better first step.
 
 ## **Running the Model**
 
