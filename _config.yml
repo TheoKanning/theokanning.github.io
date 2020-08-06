@@ -4,6 +4,8 @@ description: Science is Awesome
 author: Theo Kanning
 baseurl: "/"
 url: "https://theokanning.github.io"
+twitter: theokanning
+linkedin: theokanning
 
 markdown: kramdown
 remote_theme: jekyller/jasper2
