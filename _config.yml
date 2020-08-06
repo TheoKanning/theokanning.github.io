@@ -12,6 +12,7 @@ remote_theme: jekyller/jasper2
 favicon: assets/images/global/favicon.png
 paginate: 10
 words_per_minute: 100
+google_analytics: UA-71323850-2
 plugins_dir: [_plugins]
 plugins:
   - jekyll-paginate
