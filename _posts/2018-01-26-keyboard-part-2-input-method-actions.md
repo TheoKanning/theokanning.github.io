@@ -11,8 +11,8 @@ tags:
 ---
 On to the second important part of the Android keyboard: Input Method Actions! Input Method Actions, or IME Actions as they’re sometimes called, are a way to change the effect of the carriage return button on the keyboard.
 
-{% include image.html
-url="https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/01/input-method-actions-1.gif?resize=500%2C889&ssl=1" %}
+![](/assets/images/2018/keyboard-2-ime/ime.gif)
+
 For example, if you’re making a search field, you would change the carriage return button to a search symbol to let the user know what will happen when the button is pressed. Here’s a quick example of some button options.
 
 The blue action button on the keyboard changes each time and allows the user to do different things. Setting Input Method Actions is easy, let’s give it a try!

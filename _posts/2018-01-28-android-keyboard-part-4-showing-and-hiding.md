@@ -11,8 +11,7 @@ tags:
 ---
 Now it's time for the final part of my Android Keyboard series, and one of the most challenging parts of UI development: showing and hiding the keyboard. What seems like a simple task can often become very complicated, but I'll show some examples of how to get the behavior you want, and explain some of the weirdness we see along the way.
 
-{% include image.html
-url="https://i1.wp.com/theokanning.com/////wp-content/uploads/2018/01/show-and-hide.gif?resize=500%2C889&ssl=1" %}
+![](/assets/images/2018/keyboard-4-show-hide/show-and-hide.gif)
 
 ## Input Method Manager
 

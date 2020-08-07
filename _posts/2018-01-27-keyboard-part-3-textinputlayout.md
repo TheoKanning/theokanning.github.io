@@ -11,8 +11,7 @@ tags:
 ---
 By now you've probably noticed the fancy moving hints above the text views in the last two posts. How does that work? The answer is incredibly simple: the TextInputLayout. Added as part of the Design Support Library, TextInputLayout wraps a text field and gives you a lot of nice design options that are very easy to set up. Here's an example of what they can do.
 
-{% include image.html
-url="https://i0.wp.com/theokanning.com/////wp-content/uploads/2018/01/textinputlayout.gif?resize=500%2C333&#038;ssl=1" %}
+![](/assets/images/2018/keyboard-3-textinputlayout/textinputlayout.gif)
 
 There are a couple things going on here:
 

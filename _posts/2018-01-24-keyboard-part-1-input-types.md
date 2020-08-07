@@ -12,8 +12,7 @@ tags:
 
 Let’s start off with one of the easiest keyboard features: Input Types. Specifying an Input Type allows you to control which characters the keyboard will display.
 
-{% include image.html
-url="https://i2.wp.com/theokanning.com/////wp-content/uploads/2018/01/input-types-1.gif?resize=500%2C889&ssl=1" %}
+![](/assets/images/2018/keyboard-1-input-types/input-types.gif)
 
 For example, if you need the user to enter a phone number, you should specify the `"phone"` Input Type and the keyboard will only display digits and valid phone number symbols.
 

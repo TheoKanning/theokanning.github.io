@@ -23,9 +23,7 @@ The VESC uses the USB Abstract Control Module protocol, which requires a special
 
 As usual, [JetsonHacks](https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/) has great instructions on how to build the kernel, but I had to modify their [scripts](https://github.com/TheoKanning/buildJetsonTX2Kernel) to work for 4.9.140. Here's a link to my compiled cdc-acm driver in case it helps someone.
 
-<div class="wp-block-file">
-  <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a>
-</div>
+[4.9.140 cdc-acm driver](/assets/images/2019/vesc/cdc-acm.ko)
 
 To install the cdc-acm driver, I copied it from the compiled kernel output into the `/lib/modules/4.9.140/kernel/drivers/usb/class` folder.
 

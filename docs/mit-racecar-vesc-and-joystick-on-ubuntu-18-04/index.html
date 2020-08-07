@@ -178,9 +178,7 @@ into the {body} of the default.hbs template -->
 
 <p>As usual, <a href="https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/">JetsonHacks</a> has great instructions on how to build the kernel, but I had to modify their <a href="https://github.com/TheoKanning/buildJetsonTX2Kernel">scripts</a> to work for 4.9.140. Here’s a link to my compiled cdc-acm driver in case it helps someone.</p>
 
-<div class="wp-block-file">
-  <a href="https://theokanning.com/wp-content/uploads/2019/05/cdc-acm.zip">4.9.140 cdc-acm driver</a>
-</div>
+<p><a href="/assets/images/2019/vesc/cdc-acm.ko">4.9.140 cdc-acm driver</a></p>
 
 <p>To install the cdc-acm driver, I copied it from the compiled kernel output into the <code class="highlighter-rouge">/lib/modules/4.9.140/kernel/drivers/usb/class</code> folder.</p>
 
