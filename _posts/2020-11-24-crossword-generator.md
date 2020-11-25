@@ -10,8 +10,8 @@ tags:
   - python
 ---
 
-Crosswords have been a great distraction this year, and I decided to spend even more time on them by making my own crossword creation tool.
-Its suggestions make grid filling much easier, and I also made a generator to fill in grids automatically.
+Crosswords have been a great distraction this year, and I decided to distract myself even more by making my own crossword editing tool.
+It provides helpful suggestions, and I also made an automatic grid generator in case I get stuck.
 
 Code on [Github](https://github.com/TheoKanning/crossword)
 
