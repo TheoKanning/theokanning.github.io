@@ -6,3 +6,4 @@ group :jekyll_plugins do
   gem "jekyll-remote-theme", "~> 0.4.1"
 end
 gem "slugify", "~> 1.0"
+gem "jekyll-feed", "~> 0.15.1"

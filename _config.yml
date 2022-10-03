@@ -16,6 +16,7 @@ google_analytics: UA-71323850-2
 plugins_dir: [_plugins]
 plugins:
   - jekyll-paginate
+  - jekyll-feed
 
 exclude:
   - build.sh
