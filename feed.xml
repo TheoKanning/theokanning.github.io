@@ -1,0 +1,967 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.7">Jekyll</generator><link href="https://theokanning.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://theokanning.github.io/" rel="alternate" type="text/html" /><updated>2022-10-03T16:10:17+00:00</updated><id>https://theokanning.github.io/feed.xml</id><title type="html">theokanning.com</title><author><name>Theo Kanning</name></author><entry><title type="html">Multi-Armed Bandit</title><link href="https://theokanning.github.io/kaggle-multi-armed-bandit/" rel="alternate" type="text/html" title="Multi-Armed Bandit" /><published>2021-02-23T00:07:33+00:00</published><updated>2021-02-23T00:07:33+00:00</updated><id>https://theokanning.github.io/multi-armed-bandit</id><content type="html" xml:base="https://theokanning.github.io/kaggle-multi-armed-bandit/">&lt;p&gt;I finished 23rd out of 792 teams in Kaggle’s 2020 &lt;a href=&quot;https://www.kaggle.com/c/santa-2020/overview&quot;&gt;Christmas Competition&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;My simple final result is only possible because of all of the time I spent experimenting and testing, but I’m glad I found something elegant.&lt;/p&gt;
+
+&lt;p&gt;Code on &lt;a href=&quot;https://github.com/TheoKanning/kaggle-2020-multi-armed-bandit&quot;&gt;Github&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;kaggle-2020-christmas-competition&quot;&gt;Kaggle 2020 Christmas Competition&lt;/h2&gt;
+&lt;p&gt;This challenge is a head-to-head version of the &lt;a href=&quot;https://en.wikipedia.org/wiki/Multi-armed_bandit problem&quot;&gt;multi-armed bandit&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Two agents have to select from one hundred bandits, each with a random probability of giving a reward.
+Every time a bandit is chosen, its likelihood of giving a reward decreases by 3%.
+Each agent can only see their total reward, the last action from each agent, and the step count.
+The agent with the highest reward after 2000 steps wins.&lt;/p&gt;
+
+&lt;h2 id=&quot;greedy-keras-regression-agent&quot;&gt;Greedy Keras Regression Agent&lt;/h2&gt;
+&lt;p&gt;Kaggle’s saved game data includes the true payout threshold for each bandit, and I trained a regressor that estimates the payout probability based on all the observed data for each bandit.
+My agent then predicts the payout rate for each bandit and selects the bandit with the highest expected rate.&lt;/p&gt;
+
+&lt;p&gt;Ultimately I think that a greedy regression approach will fail to get into the top 10 because it can only approximate the strongest agents, but someone else might prove me wrong.
+Many of the top teams added logic to confuse their opponents and avoid leaking information.&lt;/p&gt;
+
+&lt;h2 id=&quot;data&quot;&gt;Data&lt;/h2&gt;
+&lt;p&gt;I gathered episodes of 1200+ agents using this notebook:
+&lt;a href=&quot;&quot;&gt;https://www.kaggle.com/masatomatsui/santa-episode-scraper&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;My game parsing is based on this, but updated to include my new features:
+&lt;a href=&quot;&quot;&gt;https://www.kaggle.com/lebroschar/generate-training-data&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In total I had 45 million training rows, each with my 7 features and the true payout rate.&lt;/p&gt;
+
+&lt;p&gt;I noticed a significant increase in strength for every 5 million rows added, and I likely could have made my agent better with even more data.&lt;/p&gt;
+
+&lt;h2 id=&quot;features&quot;&gt;Features&lt;/h2&gt;
+&lt;p&gt;This challenge gives very little data to work with, but I improved my results by supplementing the available data with pull and win streaks.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;step number&lt;/li&gt;
+  &lt;li&gt;number of pulls&lt;/li&gt;
+  &lt;li&gt;number of opponent pulls&lt;/li&gt;
+  &lt;li&gt;reward - total reward for the agent&lt;/li&gt;
+  &lt;li&gt;streak - number of times the agent has pulled this in a row&lt;/li&gt;
+  &lt;li&gt;opponent streak - number of times the opponent has pulled in a row&lt;/li&gt;
+  &lt;li&gt;win streak - number of times this agent has given a reward in a row&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;model&quot;&gt;Model&lt;/h2&gt;
+&lt;p&gt;My Keras model takes all of the known info about a single bandit and estimates its probability.
+I chose to make a regressor for a single bandit rather than a classifier that takes the state of every bandit because relationships between bandits &lt;em&gt;shouldn’t&lt;/em&gt; matter, and because the actual payout probability from saved episodes makes a great regression target.&lt;/p&gt;
+
+&lt;p&gt;I used 7 input features, 3 hidden layers of 12 units, and one output unit with a sigmoid activation. 4 layers and 16 units also worked well. All of my models were under 1,000 parameters and trained very quickly.&lt;/p&gt;
+
+&lt;p&gt;Root mean error didn’t always correlate cleanly with actual performance, so I figured out the right network size through head-to-head simulation.&lt;/p&gt;
+
+&lt;h2 id=&quot;model-code&quot;&gt;Model Code&lt;/h2&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keras&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layers&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keras&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;models&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;Model&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keras&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;optimizers&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Adam&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;input_layer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'relu'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_layer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'relu'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'relu'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'sigmoid'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;Model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_layer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;outputs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;opt&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Adam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;learning_rate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.01&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;compile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;optimizer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;opt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'mean_squared_error'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         [(None, 7)]               0         
+_________________________________________________________________
+dense (Dense)                (None, 12)                96        
+_________________________________________________________________
+dense_1 (Dense)              (None, 12)                156       
+_________________________________________________________________
+dense_2 (Dense)              (None, 12)                156       
+_________________________________________________________________
+dense_3 (Dense)              (None, 1)                 13        
+=================================================================
+Total params: 421
+Trainable params: 421
+Non-trainable params: 0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;agent&quot;&gt;Agent&lt;/h2&gt;
+&lt;p&gt;My agent submission loads the keras model and track bandit state in a dataframe.
+To choose a bandit, the agent uses the model to predict the payout rate for each bandit and picks the bandit with the highest rate.&lt;/p&gt;
+
+&lt;p&gt;Most of the complexity and almost all of my development time was spent fine-tuning the model, not the agent code.&lt;/p&gt;
+
+&lt;h2 id=&quot;other-ideas-that-worked-for-me&quot;&gt;Other Ideas that Worked For Me&lt;/h2&gt;
+&lt;p&gt;DecisionTreeRegressors can also predict the real bandit probability quite well.
+I got the best results with &lt;code class=&quot;highlighter-rouge&quot;&gt;min_samples_leaf=100&lt;/code&gt; and no depth limit.&lt;/p&gt;
+
+&lt;p&gt;A Keras + Decision Tree Ensemble from the two models performed worse in my local testing but did well on the leaderboard.
+Maybe the ensemble is more robust against unknown opponents?
+I eventually dropped the ensemble idea when my Keras models became much more powerful than decision trees.&lt;/p&gt;
+
+&lt;h2 id=&quot;ideas-that-didnt-work&quot;&gt;Ideas that Didn’t Work&lt;/h2&gt;
+&lt;p&gt;I turned my regressor into a classifier by convolving my regression weights across all 100 bandits and then training it with policy gradients. My best classifier is currently at 970 on the LB, but my simple RL approach was never enough to beat my regressor.&lt;/p&gt;
+
+&lt;p&gt;I considered a DQN but decided against it because the “actions” in this environment work exactly the same in each state, so learning action values seemed like the wrong approach when the true bandit probabilities are known from stored game episodes.&lt;/p&gt;
+
+&lt;p&gt;Other sklearn regressors fit the dataset well - random forests even had lower error that decision trees - but only decision trees performed well in actual simulation.
+I’m not sure why random forests showed such a huge gap between dataset and environment performance.&lt;/p&gt;
+
+&lt;p&gt;These round robin results show decision trees easily beating random forests, gradient boosting, and linear regression.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021/multi-armed-bandit/round_robin.png&quot; alt=&quot;round_robin&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;sources&quot;&gt;Sources&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html&quot;&gt;Bayesian UCB&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://www.kaggle.com/ilialar/simple-multi-armed-bandit&quot;&gt;Thompson Sampling&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://www.kaggle.com/masatomatsui/santa-episode-scraper&quot;&gt;Training data collection&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://www.kaggle.com/lebroschar/1000-greedy-decision-tree-model&quot;&gt;Decision Tree Regressor&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://www.kaggle.com/nigelcarpenter/parallel-processing-agent-trials-using-ray&quot;&gt;Ray support&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://www.kaggle.com/a763337092/pull-vegas-slot-machines-add-weaken-rate-continue5&quot;&gt;Pull Vegas&lt;/a&gt;&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="python" /><summary type="html">A silver-medal winning entry to Kaggle's 2020 Christmas competition</summary></entry><entry><title type="html">Satisfactory Optimizer</title><link href="https://theokanning.github.io/satisfactory-optimizer/" rel="alternate" type="text/html" title="Satisfactory Optimizer" /><published>2021-01-22T00:22:53+00:00</published><updated>2021-01-22T00:22:53+00:00</updated><id>https://theokanning.github.io/satisfactory-optimizer</id><content type="html" xml:base="https://theokanning.github.io/satisfactory-optimizer/">&lt;p&gt;Using Google’s &lt;a href=&quot;https://developers.google.com/optimization&quot;&gt;OR-Tools&lt;/a&gt; to find optimal production ratios 
+in &lt;a href=&quot;http://www.satisfactorygame.com&quot;&gt;Satisfactory&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Code on &lt;a href=&quot;http://github.com/theokanning/satisfactoryoptimizer&quot;&gt;Github&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Data taken from &lt;a href=&quot;https://github.com/greeny/SatisfactoryTools/tree/dev/data&quot;&gt;SatisfactoryTools&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;satisfactory&quot;&gt;Satisfactory&lt;/h2&gt;
+&lt;p&gt;Satisfactory is a game of automation.
+You start by building machines to extract raw resources, then you combine resources and items into increasingly complex products.
+A Miner produces Iron Ore, and then a Smelter turns Iron Ore into Iron Ingots etc.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2021/satisfactory/screenshot.jpeg&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.satisfactorygame.com&quot;&gt;source&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;recipes&quot;&gt;Recipes&lt;/h2&gt;
+&lt;p&gt;Each construction machine takes input items and creates new items based on a specified recipe.
+For example, the default Iron Ingot recipe turns 30 Iron Ore into 30 Iron Ingots every minute.&lt;/p&gt;
+
+&lt;p&gt;More advanced items can have up to four input items, and each recipe has unique input/output ratios, speeds, and by-products to consider.
+Here’s a chart showing the steps to build a late-game item.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2021/satisfactory/flowchart.png&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.reddit.com/r/SatisfactoryGame/comments/b7zv8h/satisfactory_production_flowchart_with_alternate/&quot;&gt;source&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Quite a lot to remember when building a factory!&lt;/p&gt;
+
+&lt;h2 id=&quot;alternate-recipes&quot;&gt;Alternate Recipes&lt;/h2&gt;
+&lt;p&gt;To add even more complexity, many items have alternate recipes that may boost production depending on which starting resources are more plentiful.
+For example, there are three Iron Ingot recipes:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Iron Ingot: 30 Iron Ore to 30 Iron Ingots&lt;/li&gt;
+  &lt;li&gt;Pure Iron Ingot: 35 Iron Ore and 20 Water to 65 Iron Ingots&lt;/li&gt;
+  &lt;li&gt;Iron Alloy Ingot: 20 Iron Ore and 20 Copper Ore to 50 Iron Ingots&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Which recipe is the best? It depends on which resources are nearby.
+If you have excess water/copper, and a shortage of iron, then the alternates will help.&lt;/p&gt;
+
+&lt;p&gt;This Satisfactory Optimizer takes all alternate recipes into account and gives an optimal factory setup based on your available materials.&lt;/p&gt;
+
+&lt;h2 id=&quot;dependencies&quot;&gt;Dependencies&lt;/h2&gt;
+&lt;p&gt;Install OR-tools with Pipenv&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;pipenv install&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;linear-optimization&quot;&gt;Linear Optimization&lt;/h2&gt;
+&lt;p&gt;I modelled the recipe production ratios as a &lt;a href=&quot;https://www.analyticsvidhya.com/blog/2017/02/lintroductory-guide-on-linear-programming-explained-in-simple-english/&quot;&gt;linear programming&lt;/a&gt; problem.&lt;br /&gt;
+A linear programming problem consists of &lt;em&gt;decision variables&lt;/em&gt;, &lt;em&gt;constraints&lt;/em&gt;, and an &lt;em&gt;objective function&lt;/em&gt;.&lt;br /&gt;
+The optimizer modifies the decision variables to maximize the objective function while satisfying its constraints.&lt;/p&gt;
+
+&lt;h3 id=&quot;decision-variables&quot;&gt;Decision Variables&lt;/h3&gt;
+&lt;p&gt;We need to know how many machines should produce each recipe.
+Therefore, the recipe assignments are the decision variables.&lt;/p&gt;
+
+&lt;p&gt;x&lt;sub&gt;r&lt;/sub&gt; = # of machines producing recipe &lt;em&gt;r&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;x&lt;sub&gt;r&lt;/sub&gt; is a non-negative real number.&lt;/p&gt;
+
+&lt;h3 id=&quot;objective-function&quot;&gt;Objective Function&lt;/h3&gt;
+&lt;p&gt;We want to create as many desirable products as possible, so the objective function is the score of each component multiplied by the total produced.
+In order to eliminate extraneous recipes that don’t contribute to the final score, each recipe incurs a small penalty.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2021/satisfactory/objective.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;where s&lt;sub&gt;c&lt;/sub&gt; is the score for component &lt;em&gt;c&lt;/em&gt;,&lt;br /&gt;
+n&lt;sub&gt;cr&lt;/sub&gt; is the quantity of &lt;em&gt;c&lt;/em&gt; produced by a single machine with recipe &lt;em&gt;r&lt;/em&gt;,&lt;br /&gt;
+and &lt;em&gt;p&lt;/em&gt; is a small, positive penalty.&lt;/p&gt;
+
+&lt;p&gt;n&lt;sub&gt;cr&lt;/sub&gt; will be negative if &lt;em&gt;r&lt;/em&gt; consumes &lt;em&gt;c&lt;/em&gt; as an input.&lt;/p&gt;
+
+&lt;h3 id=&quot;constraints&quot;&gt;Constraints&lt;/h3&gt;
+&lt;p&gt;For this problem, the only constraint is that each component has a non-negative quantity, otherwise the optimizer could use recipes without having prerequisite materials.&lt;/p&gt;
+
+&lt;p&gt;For each component &lt;em&gt;c&lt;/em&gt;,&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2021/satisfactory/constraint.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;where input&lt;sub&gt;c&lt;/sub&gt; is the specified input amount for component &lt;em&gt;c&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;or-tools&quot;&gt;OR-Tools&lt;/h2&gt;
+&lt;p&gt;Now that recipe optimization is modelled as a linear programming problem, it’s time to plug it into OR-Tools.
+Since this is a linear programming problem, I used the &lt;a href=&quot;https://developers.google.com/optimization/lp/glop&quot;&gt;GLOP&lt;/a&gt; linear solver.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;from ortools.linear_solver import pywraplp
+
+solver = pywraplp.Solver.CreateSolver('GLOP')
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;decision-variables-1&quot;&gt;Decision Variables&lt;/h3&gt;
+&lt;p&gt;The solver needs to know about each decision variable x&lt;sub&gt;r&lt;/sub&gt;, so I created a dictionary with a variable for each recipe.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;recipe_vars = = dict([(r.name, solver.NumVar(0, 100, r.name)) for r in recipes])
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The value of each variable is between 0 and an arbitrary max value, I chose 100.&lt;/p&gt;
+
+&lt;h3 id=&quot;objective-function-1&quot;&gt;Objective Function&lt;/h3&gt;
+&lt;p&gt;To calculate the objective, I calculate the total score of the outputs for each recipe and add them together.
+I also subtract a small recipe cost to remove extraneous recipes.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;objective = solver.Objective()
+for i, recipe in enumerate(recipes):
+    recipe_contribution = sum([recipe.component_net_quantity(c) * s for c, s in outputs.items()])
+    recipe_contribution -= 0.01
+    objective.SetCoefficient(recipe_vars[recipe.name], recipe_contribution)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;constraints-1&quot;&gt;Constraints&lt;/h3&gt;
+&lt;p&gt;Each component is constrained such that its total value from all recipes and inputs is non-negative.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for component in components:
+    min_value = -inputs[component] if component in inputs else 0
+    ct = solver.Constraint(min_value, 10000, component)
+
+    # add the contribution of each recipe
+    for i, recipe in enumerate(recipes):
+        ct.SetCoefficient(recipe_vars[recipe.name], recipe.component_net_quantity(component))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;usage&quot;&gt;Usage&lt;/h2&gt;
+&lt;p&gt;Example resource calculation in &lt;code class=&quot;highlighter-rouge&quot;&gt;satisfactory.py&lt;/code&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Load recipes from the data file. For simplicity this example only uses default recipes.&lt;/li&gt;
+  &lt;li&gt;Specify the available resources in units/minute.&lt;/li&gt;
+  &lt;li&gt;Give a positive score to components you want to create.&lt;/li&gt;
+  &lt;li&gt;Send the recipes, inputs, and outputs to the optimizer&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;recipes = load_recipes()
+default_recipes = [r for r in recipes if not r.alternate]
+
+inputs = {
+    &quot;Iron Ore&quot;: 60
+}
+
+outputs = {
+    &quot;Reinforced Iron Plate&quot;: 1
+}
+
+optimizer = Optimizer(default_recipes, inputs, outputs)
+optimizer.optimize()
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then run&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pipenv run python satisfactory.py
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Solution:
+Objective value: 4.93
+
+Recipes Used:
+Iron Ingot: 2.00
+Reinforced Iron Plate: 1.00
+Iron Plate: 1.50
+Iron Rod: 1.00
+Screw: 1.50
+
+Inputs Remaining:
+Iron Ore: 0.00
+
+Produced Components:
+Reinforced Iron Plate: 5.00
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Recipes Used&lt;/code&gt; shows how many machines need to run each recipe.&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;Inputs Remaining&lt;/code&gt; shows which resources run out first and limit production.&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;Produced Components&lt;/code&gt; shows all the produced components, not just those with a score.&lt;/p&gt;
+
+&lt;h2 id=&quot;advanced-example&quot;&gt;Advanced Example&lt;/h2&gt;
+&lt;p&gt;I originally made this to optimize my fuel setup because oil refining has lots of by-products and complex alternate recipes.
+Let’s see how it does on a more complicated example.&lt;/p&gt;
+
+&lt;p&gt;Assume 300 oil per minute, all recipes are unlocked, and we want to produce as much energy as possible.
+In order to optmize energy production, set each output’s score to its in-game energy value.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inputs = {
+    &quot;Crude Oil&quot;: 300,
+    &quot;Water&quot;: 800,
+    &quot;Coal&quot;: 533.33,
+    &quot;Sulfur&quot;: 533.33
+}
+outputs = {
+    &quot;Fuel&quot;: 600,
+    &quot;Turbofuel&quot;: 2000
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This result matches the optimal fuel setup &lt;a href=&quot;https://satisfactory.gamepedia.com/Tutorial:Setting_up_Fuel_Power&quot;&gt;guide&lt;/a&gt;!&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Recipes Used:
+Alternate: Diluted Packaged Fuel: 13.33
+Alternate: Compacted Coal: 21.33
+Alternate: Heavy Oil Residue: 10.00
+Turbofuel: 35.56
+Packaged Water: 13.33
+Unpackage Fuel: 13.33
+
+Inputs Remaining:
+Crude Oil: 0.00
+Water: 0.00
+Coal: 0.00
+Sulfur: 0.00
+
+Produced Components:
+Polymer Resin: 200.00
+Turbofuel: 666.66
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;next-steps&quot;&gt;Next Steps&lt;/h2&gt;
+&lt;p&gt;Next I could update this take power consumption into account, but with my optimal fuel setup I don’t think I’ll run out of power for a while.&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="python" /><summary type="html">Using OR-Tools to find ideal recipe ratios in Satisfactory</summary></entry><entry><title type="html">Crossword Generator</title><link href="https://theokanning.github.io/crossword-generator/" rel="alternate" type="text/html" title="Crossword Generator" /><published>2020-11-25T00:22:53+00:00</published><updated>2020-11-25T00:22:53+00:00</updated><id>https://theokanning.github.io/crossword-generator</id><content type="html" xml:base="https://theokanning.github.io/crossword-generator/">&lt;p&gt;Crosswords have been a great distraction this year, and I decided to distract myself even more by making my own crossword editing tool.
+It provides helpful suggestions, and I also made an automatic grid generator in case I get stuck.&lt;/p&gt;
+
+&lt;p&gt;Code on &lt;a href=&quot;https://github.com/TheoKanning/crossword&quot;&gt;Github&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;gui-tool&quot;&gt;GUI Tool&lt;/h2&gt;
+&lt;p&gt;The PyQt5 GUI allows the user to create a crossword grid and add words.
+It supports across/down text entry, automatic suggestions, and radial block symmetry.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2020/crossword/ui.png&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;dictionary&quot;&gt;Dictionary&lt;/h2&gt;
+&lt;p&gt;The automatic suggestions come from the dictionary at &lt;a href=&quot;xwordinfo.com&quot;&gt;xwordinfo.com&lt;/a&gt;.
+Since it’s not free, I can’t include it in the repo, but it’s a single text file formatted like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;aaa;50
+aaaa;25
+aaabattery;60
+aaabonds;60
+aaacell;50
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Each line is a word and its score. Better words have a higher score.&lt;/p&gt;
+
+&lt;h3 id=&quot;dictionary-speed&quot;&gt;Dictionary Speed&lt;/h3&gt;
+&lt;p&gt;The crossword dictionary has over 200,000 words, so a regex search over the entire file takes 30ms, good enough for the UI but not fast enough for generation.&lt;/p&gt;
+
+&lt;p&gt;With a couple simple tricks I increased the speed from 30 to 1,800 searches per second.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Split the dictionary based on word length&lt;/li&gt;
+  &lt;li&gt;Store dictionaries in memory instead of reading from the file each time&lt;/li&gt;
+  &lt;li&gt;Add &lt;code class=&quot;highlighter-rouge&quot;&gt;@lru_cache&lt;/code&gt; decorator to save the last 32 searches&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;automatic-generation&quot;&gt;Automatic Generation&lt;/h2&gt;
+&lt;p&gt;I’ve always liked optimization problems, so I created an automatic crossword generator to fill in a grid using words in the dictionary.&lt;/p&gt;
+
+&lt;h3 id=&quot;backtracking-algorithm&quot;&gt;Backtracking Algorithm&lt;/h3&gt;
+&lt;p&gt;The backtracking algorithm solves contraint optimization problems such as the 8 queens puzzle, sudokus, or crosswords.
+It works by guessing and then backtracking when it finds a contradiction.&lt;/p&gt;
+
+&lt;p&gt;Here are the basic steps:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;is_complete&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;# every square is filled in, so return True
+&lt;/span&gt;        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;get_target_square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;get_valid_words&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_word&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;success&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;# continue to the next word
+&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;remove_word&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# none of the words worked, so backtrack one level and try again
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This algorithm will eventually try every word in every position, so it will always find a solution if one exists.
+However, a brute force search will take a prohibitive amount of time.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, there’s a near-infinite number of valid solutions, and the backtracking algorithm works great as long as it finds contradictions quickly.&lt;/p&gt;
+
+&lt;h3 id=&quot;picking-a-target&quot;&gt;Picking a Target&lt;/h3&gt;
+&lt;p&gt;First the backtracking algorithm has to choose a target square and direction.
+Rather than searching randomly across the grid, the algorithm should focus on a small area and finish it before moving on.
+Bad target selection can lead to very inefficient search trees!&lt;/p&gt;
+
+&lt;p&gt;For example, if the generator partially fills out the top left, then finishes the top right, then returns to the top left
+and immediately finds a contradiction, it will have to fill in the top right each time it tries a new word on the left.
+It’s much more efficient to find contradictions earlier.&lt;/p&gt;
+
+&lt;p&gt;This is my target sorting logic:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;prefer targets that are almost filled in&lt;/li&gt;
+  &lt;li&gt;take the top ten targets resort them by how many words would fit in them, fewest first&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Once I added the top 10 searching, the generator filled a 15x15 grid in 200 nodes instead of 150,000!&lt;/p&gt;
+
+&lt;h3 id=&quot;choosing-a-word&quot;&gt;Choosing a word&lt;/h3&gt;
+&lt;p&gt;Compared to choosing a target, picking which word to guess is relatively simple.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;search dictionary for all compatible words&lt;/li&gt;
+  &lt;li&gt;filter out words that would cause an immediate contradiction somewhere&lt;/li&gt;
+  &lt;li&gt;take them in order because they’re sorted by score&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;next-steps&quot;&gt;Next Steps&lt;/h2&gt;
+&lt;p&gt;The generator can fill in crossword grids easily, but it can’t replicate the creativity and fun of hand-made crosswords.
+Ideally, I could add the generator to the UI tool so that it can fill in tricky corners for me, and I’ll handle the rest.&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="python" /><summary type="html">A crossword UI and generator written in Python</summary></entry><entry><title type="html">Clickbait Headline Generator</title><link href="https://theokanning.github.io/clickbait-generator/" rel="alternate" type="text/html" title="Clickbait Headline Generator" /><published>2020-06-09T18:54:22+00:00</published><updated>2020-06-09T18:54:22+00:00</updated><id>https://theokanning.github.io/clickbait-generator</id><content type="html" xml:base="https://theokanning.github.io/clickbait-generator/">&lt;p&gt;Generating high-quality text with LSTMs is very difficult, but clickbait headlines are inherently low quality. An simple LSTM should have no trouble generating them!&lt;/p&gt;
+
+&lt;p&gt;Code on &lt;a href=&quot;https://github.com/TheoKanning/clickbait-generator&quot;&gt;Github&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;data&quot;&gt;Data&lt;/h2&gt;
+&lt;h3 id=&quot;source&quot;&gt;Source&lt;/h3&gt;
+&lt;p&gt;I used a database of clickbait headlines collected by the team behind &lt;a href=&quot;https://github.com/bhargaviparanjape/clickbait&quot;&gt;Stop Clickbait: Detecting and Preventing Clickbaits in Online News Media&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;The database contains 17,000 headlines from the following august publications:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;BuzzFeed&lt;/li&gt;
+  &lt;li&gt;Upworthy&lt;/li&gt;
+  &lt;li&gt;ViralNova&lt;/li&gt;
+  &lt;li&gt;Thatscoop&lt;/li&gt;
+  &lt;li&gt;Scoopwhoop&lt;/li&gt;
+  &lt;li&gt;ViralStories&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;preprocessing&quot;&gt;Preprocessing&lt;/h3&gt;
+&lt;p&gt;In order to feed the data into the model, I read the entire 17,000 headline dataset as a single string and split it into 20-word samples.&lt;/p&gt;
+
+&lt;h2 id=&quot;model&quot;&gt;Model&lt;/h2&gt;
+&lt;p&gt;My model was a two-layer LSTM with 256 units and 20% dropout.
+I experimented with using GloVe embeddings, but I found that clickbait headlines have too many made up words that don’t exist in GloVe.
+Manually training embeddings gave much better results.&lt;/p&gt;
+
+&lt;p&gt;I made the actual model using tf2 and keras.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample_length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vocab_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;input_layer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample_length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,))&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Embedding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vocab_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample_length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_layer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LSTM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;256&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dropout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;return_sequences&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LSTM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;256&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dropout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'relu'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vocab_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'softmax'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_layer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;outputs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;/h2&gt;
+&lt;p&gt;See for yourself! Here are some of the best headlines it’s generated so far:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;we know your zodiac sign based on your zodiac sign&lt;/li&gt;
+  &lt;li&gt;the 17 most important canadian celebrity moments of 2015&lt;/li&gt;
+  &lt;li&gt;here’s how to make a vampire&lt;/li&gt;
+  &lt;li&gt;can you guess your favorite ’90s movie based on your favorite kitten&lt;/li&gt;
+  &lt;li&gt;are you more a canadian or taylor swift or oprah&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These could easily pass for headlines on any of the esteemed websites listed above.&lt;/p&gt;
+
+&lt;h2 id=&quot;next-steps&quot;&gt;Next Steps&lt;/h2&gt;
+&lt;p&gt;The easiest way to improve this would be to add more samples.
+I couldn’t find a bigger dataset online, but a simple web scraper would be able to get thousands more with only moderate effort.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;p&gt;Inspired by Lars Eidnes’ &lt;a href=&quot;https://larseidnes.com/2015/10/13/auto-generating-clickbait-with-recurrent-neural-networks/&quot;&gt;blog post&lt;/a&gt;&lt;br /&gt;
+“Stop Clickbait: Detecting and Preventing Clickbaits in Online News Media” &lt;a href=&quot;https://github.com/bhargaviparanjape/clickbait&quot;&gt;link&lt;/a&gt;&lt;br /&gt;
+Excellent RNN intro by Andrej Karpathy &lt;a href=&quot;http://karpathy.github.io/2015/05/21/rnn-effectiveness/&quot;&gt;link&lt;/a&gt;&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="machine learning" /><summary type="html">As LSTM model that generates clickbait headlines</summary></entry><entry><title type="html">Mapping with the MIT Racecar</title><link href="https://theokanning.github.io/mapping-with-the-mit-racecar/" rel="alternate" type="text/html" title="Mapping with the MIT Racecar" /><published>2019-08-20T01:55:24+00:00</published><updated>2019-08-20T01:55:24+00:00</updated><id>https://theokanning.github.io/mapping-with-the-mit-racecar</id><content type="html" xml:base="https://theokanning.github.io/mapping-with-the-mit-racecar/">&lt;p&gt;Now that the lidar works, it’s time to map my apartment! I made the map by driving the racecar around in teleop mode, recording the lidar with &lt;code class=&quot;highlighter-rouge&quot;&gt;rosbag&lt;/code&gt;, and generating the map offline. Here’s how it works.&lt;/p&gt;
+
+&lt;h2 id=&quot;lidar-preprocessing&quot;&gt;Lidar Preprocessing&lt;/h2&gt;
+
+&lt;p&gt;In early iterations of my experiments, I noticed that the lidar recorded collisions with the racecar frame.
+This led to the mapping algorithm leaving a little trail of obstacles as the racecar moved. Very unprofessional.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2019/mapping/lidar_interference.png&quot; alt=&quot;Note the two sets of black dots in the open and the red lidar points on the robot&quot; /&gt;
+    &lt;figcaption&gt;Note the two sets of black dots in the open and the red lidar points on the robot&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;To fix this, I added a box filter using the &lt;a href=&quot;https://wiki.ros.org/laser_filters&quot;&gt;laser_filters&lt;/a&gt; package. A box filter removes any scans within a specific rectangle, so I filtered out all scans within the racecar itself. Then I updated the lidar node to publish to &lt;code class=&quot;highlighter-rouge&quot;&gt;scan_raw&lt;/code&gt;, and created a filter node to read that topic and publish to &lt;code class=&quot;highlighter-rouge&quot;&gt;scan&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Here are the changes I made:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yml&quot; data-lang=&quot;yml&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# sensors.yml&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;laser_filter&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;tf_message_filter_target_frame&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;laser&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;scan_filter_chain&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;box&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;laser_filters/LaserScanBoxFilter&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;box_frame&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;base_link&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;min_x&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;-0.05&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;max_x&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.15&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;min_y&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;-0.15&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;max_y&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.15&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;min_z&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;-0.2&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;max_z&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;0.2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;# sensors.launch.xml
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!-- laser filter --&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;node&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;pkg=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;laser_filters&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan_to_scan_filter_chain&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;laser_filter&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;remap&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;from=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;to=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan_raw&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;remap&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;from=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan_filtered&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;to=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;scan&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/node&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;gathering-data&quot;&gt;Gathering Data&lt;/h2&gt;
+
+&lt;p&gt;Once the lidar data looked good, I recorded a run through my apartment to generate a map. High pitch angles can warp 2D lidar data, so I focused on making the robot move smoothly. I used &lt;code class=&quot;highlighter-rouge&quot;&gt;rosbag&lt;/code&gt; to record the lidar data.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;rosbag record -O apartment.bag /scan&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;I didn’t have to record the &lt;code class=&quot;highlighter-rouge&quot;&gt;tf&lt;/code&gt; topic because the mapping launch file includes the static transform publishers. In fact, mapping failed when I recorded &lt;code class=&quot;highlighter-rouge&quot;&gt;tf&lt;/code&gt; because the &lt;code class=&quot;highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; needs to generate its own &lt;code class=&quot;highlighter-rouge&quot;&gt;odom&lt;/code&gt; frame data.&lt;/p&gt;
+
+&lt;h2 id=&quot;mapping&quot;&gt;Mapping&lt;/h2&gt;
+
+&lt;p&gt;The actual mapping process uses three different packages: &lt;a href=&quot;https://wiki.ros.org/laser_scan_matcher&quot;&gt;laser_scan_matcher&lt;/a&gt;, &lt;a href=&quot;https://wiki.ros.org/hector_mapping&quot;&gt;hector_mapping&lt;/a&gt;, and &lt;a href=&quot;http://%20http//wiki.ros.org/gmapping&quot;&gt;gmapping&lt;/a&gt;. Note that the static transforms are included too.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2019/mapping/rosgraph.png&quot; alt=&quot;Note that the hector namespace only publishes frames&quot; /&gt;
+    &lt;figcaption&gt;Note that the hector namespace only publishes frames&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;First, &lt;code class=&quot;highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; compares the lidar scan history to estimate the robot’s movement and publish a &lt;code class=&quot;highlighter-rouge&quot;&gt;scan_match&lt;/code&gt; frame. This works pretty well with just lidar even though the docs recommend adding an IMU or a separate odometry estimate.&lt;/p&gt;
+
+&lt;p&gt;Second, &lt;code class=&quot;highlighter-rouge&quot;&gt;hector_mapping&lt;/code&gt; takes the lidar data and &lt;code class=&quot;highlighter-rouge&quot;&gt;scan_match&lt;/code&gt; frame and creates its own odom estimate on the &lt;code class=&quot;highlighter-rouge&quot;&gt;hector_map&lt;/code&gt; frame. This second layer creates a slightly better odometry estimate.&lt;/p&gt;
+
+&lt;p&gt;Last, &lt;code class=&quot;highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; takes the refined &lt;code class=&quot;highlighter-rouge&quot;&gt;hector_map&lt;/code&gt; odometry estimate and generates a map from the lidar data. Using multiple mapping systems allows &lt;code class=&quot;highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; to work with a high quality odometry estimate and make the best map possible.&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2019/mapping/map.png&quot; alt=&quot;My apartment look really weird from 10 inches off the ground&quot; /&gt;
+    &lt;figcaption&gt;My apartment look really weird from 10 inches off the ground&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;next-steps&quot;&gt;Next Steps&lt;/h2&gt;
+
+&lt;p&gt;Even though I made a great map of my apartment, the mapping launch file still doesn’t use the IMU. Since it explicitly remaps the &lt;code class=&quot;highlighter-rouge&quot;&gt;imu&lt;/code&gt; topic, I assume that updating it to use the IMU correctly is part of the actual MIT class. I keep seeing weird quirks like that in this repo, and I’m never sure what’s deliberate and what’s part of an assignment.&lt;/p&gt;
+
+&lt;p&gt;I considered getting rid of &lt;code class=&quot;highlighter-rouge&quot;&gt;hector_mapping&lt;/code&gt; completely. The &lt;code class=&quot;highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; seems to generate a great odometry estimate on its own, and &lt;code class=&quot;highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; works great by itself. Using fewer packages and tuning them better would be easier to understand too.&lt;/p&gt;
+
+&lt;h2 id=&quot;notes-on-installing-packages&quot;&gt;Notes on Installing Packages&lt;/h2&gt;
+
+&lt;p&gt;Most of the packages I used aren’t officially supported on Melodic yet (they all worked fine for me!), I had to clone their git repos and build them locally.&lt;/p&gt;
+
+&lt;h3 id=&quot;hector_mapping-gmapping-and-laser_filters&quot;&gt;hector_mapping, gmapping, and laser_filters&lt;/h3&gt;
+
+&lt;p&gt;The MIT racecar uses a combination of &lt;code class=&quot;highlighter-rouge&quot;&gt;hector_mapping&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;gmapping&lt;/code&gt;, neither of which is officially supported on Melodic.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;cd ~/racecar_ws
+git clone https://github.com/ros-perception/slam_gmapping.git
+git clone https://github.com/ros-perception/openslam_gmapping.git
+git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
+git clone https://github.com/ros-perception/laser_filters.git
+cd ..
+rosdep install --from-paths src --ignore-src -r -y&lt;/pre&gt;
+
+&lt;h3 id=&quot;laser_scan_matcher&quot;&gt;laser_scan_matcher&lt;/h3&gt;
+
+&lt;p&gt;I had to install &lt;code class=&quot;highlighter-rouge&quot;&gt;laser_scan_matcher&lt;/code&gt; from source as well, and I built its csm dependency following the instructions &lt;a href=&quot;https://github.com/ccny-ros-pkg/scan_tools/issues/63&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;cd ~/racecar_ws
+git clone https://github.com/ccny-ros-pkg/scan_tools.git
+git clone https://github.com/AndreaCensi/csm.git
+cd csm
+cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local . 
+make 
+sudo make install&lt;/pre&gt;</content><author><name>Theo Kanning</name></author><category term="robotics" /><summary type="html">Mapping my apartment with ROS and the MIT Racecar</summary></entry><entry><title type="html">Using the RPLIDAR A1 on the MIT Racecar</title><link href="https://theokanning.github.io/using-the-rplidar-a1-on-the-mit-racecar/" rel="alternate" type="text/html" title="Using the RPLIDAR A1 on the MIT Racecar" /><published>2019-05-26T17:58:09+00:00</published><updated>2019-05-26T17:58:09+00:00</updated><id>https://theokanning.github.io/using-the-rplidar-a1-on-the-mit-racecar</id><content type="html" xml:base="https://theokanning.github.io/using-the-rplidar-a1-on-the-mit-racecar/">&lt;p&gt;Using the A1 lidar with ROS is easy! RoboPeak provides a ROS driver that worked out-of-the-box, and I only made slight modifications to the Racecar code. Here’s what I did.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-rplidar-a1&quot;&gt;The RPLIDAR A1&lt;/h2&gt;
+&lt;p&gt;The MIT Racecar normally has a Hokuyo UST-10LX lidar, but I decided to save $1,000 and use an RPLIDAR A1 instead.
+The A1 has good enough accuracy for me, but if I ever want to upgrade I can get an A2 or A3 for a couple hundred dollars more.&lt;/p&gt;
+
+&lt;h2 id=&quot;connecting-to-the-a1&quot;&gt;Connecting to the A1&lt;/h2&gt;
+
+&lt;p&gt;The A1 typically appears as &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/ttyUSB0&lt;/code&gt;, but I gave it a more readable, consistent name using udev rules. By adding the following line to my rules file (any rules file will work, but I have one for racecar-specific rules), the A1 will always appear as &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/rplidar&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# etc/udev/rules.d/10-racecar.rules
+KERNEL==&quot;ttyUSB*&quot;, ATTRS{idVendor}==&quot;10c4&quot;, ATTRS{idProduct}==&quot;ea60&quot;, MODE:=&quot;0777&quot;, SYMLINK+=&quot;rplidar&quot;&lt;/pre&gt;
+
+&lt;p&gt;I found the vendor and product id via &lt;code class=&quot;highlighter-rouge&quot;&gt;lsusb&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ros-package&quot;&gt;ROS Package&lt;/h2&gt;
+
+&lt;p&gt;The A1 driver node connects to the lidar and converts its data into &lt;code class=&quot;highlighter-rouge&quot;&gt;LaserScan&lt;/code&gt; messages. A Hokuyo will publish the same &lt;code class=&quot;highlighter-rouge&quot;&gt;LaserScan&lt;/code&gt; message, just with more data points included, so any navigation system using a lidar will work with either.&lt;/p&gt;
+
+&lt;p&gt;First, I cloned the ROS package to my catkin workspace&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;cd ~/racecar_ws/src
+git clone https://github.com/robopeak/rplidar_ros&lt;/pre&gt;
+
+&lt;p&gt;and added the rplidar dependencies to my &lt;code class=&quot;highlighter-rouge&quot;&gt;CMakeLists.txt&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;package.xml&lt;/code&gt; files.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# CMakeLists.txt
+catkin_package(
+    CATKIN_DEPENDS
+    rplidar
+    ...
+
+# package.xml
+&lt;run_depend&gt;rplidar&lt;/run_depend&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Then I updated the racecar launch files to start the RPLIDAR node instead of the Hokuyo node. I turned on angle compensation to reduce shaking, and it works really well!&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# sensors.launch
+&lt;!-- laser --&gt;
+&lt;node pkg=&quot;rplidar_ros&quot; type=&quot;rplidarNode&quot; name=&quot;laser_node&quot;&gt;
+  &lt;param name=&quot;angle_compensate&quot; value=&quot;true&quot; /&gt;
+&lt;/node&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;I also told the node to use the new symlink I created earlier.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# sensors.yaml
+laser_node:
+  serial_port: /dev/rplidar&lt;/pre&gt;
+
+&lt;h2 id=&quot;updating-tf-data&quot;&gt;Updating TF data&lt;/h2&gt;
+
+&lt;p&gt;In order to build a map of an environment, a mapping package like &lt;code class=&quot;highlighter-rouge&quot;&gt;gmapping&lt;/code&gt; needs to know the position of the lidar relative to the racecar base link. ROS uses a handy library called &lt;code class=&quot;highlighter-rouge&quot;&gt;tf2&lt;/code&gt; to publish static coordinate frame transform data like this.&lt;/p&gt;
+
+&lt;p&gt;The default racecar project already defines the default coordinate transforms between the &lt;code class=&quot;highlighter-rouge&quot;&gt;base_link&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;laser&lt;/code&gt; frames.. Since the A1 doesn’t fit in the existing lidar slot, I had to moveit up 2cm and back 2cm. The exact measurements will depend on your setup.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# static_transforms.launch.xml
+&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;base_link_to_laser&quot; args=&quot;0.265 0.0 0.147 0.0 0.0 0.0 1.0 /base_link /laser&quot; /&gt;
+&lt;/pre&gt;
+
+&lt;h2 id=&quot;seeing-lidar-data&quot;&gt;Seeing lidar data&lt;/h2&gt;
+
+&lt;p&gt;The A1 driver includes a handy launch file to visualize the lidar data. This command starts the lidar and shows its scan data in rviz.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;roslaunch rplidar_ros view_rplidar.launch&lt;/pre&gt;
+&lt;figure class=&quot;wp-block-image&quot;&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2019/rplidar/rviz.png&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;br /&gt;
+
+Now that the lidar works in teleop mode, the next step is to use `gmapping` to build a map of my apartment. See you soon!
+&lt;/figure&gt;</content><author><name>Theo Kanning</name></author><category term="robotics" /><summary type="html">Using the RPLIDAR A1 instead of the expensize Hokuyo UST-10LX</summary></entry><entry><title type="html">MIT Racecar VESC and Joystick on Ubuntu 18.04</title><link href="https://theokanning.github.io/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/" rel="alternate" type="text/html" title="MIT Racecar VESC and Joystick on Ubuntu 18.04" /><published>2019-05-19T02:27:34+00:00</published><updated>2019-05-19T02:27:34+00:00</updated><id>https://theokanning.github.io/mit-racecar-vesc-and-joystick-on-ubuntu-18-04</id><content type="html" xml:base="https://theokanning.github.io/mit-racecar-vesc-and-joystick-on-ubuntu-18-04/">&lt;p&gt;After building the MIT Racecar in my last post, I started installing all of the peripherals so I could run it in teleop mode. Unfortunately, using a new Jetson image meant that I couldn’t use the pre-compiled drivers online. Here’s how I managed to get the VESC and joystick working.&lt;/p&gt;
+
+&lt;h2 id=&quot;vesc-firmware&quot;&gt;VESC Firmware&lt;/h2&gt;
+
+&lt;p&gt;After buying the VESC from Maytech, I updated the firmware according to the &lt;a href=&quot;https://www.jetsonhacks.com/2018/02/13/racecar-j-programming-the-electronic-speed-controller/&quot;&gt;instructions&lt;/a&gt; on JetsonHacks (I had to use the instalBLDCTool script). The MIT Racecar requires a specific firmware build that allows controlling the servo via the controller, and fortunately JetsonHacks provides a copy of it.&lt;/p&gt;
+
+&lt;p&gt;Also, the new VESC-Tool that replaced BLDCTool will not accept the firmware version that JetsonHacks has available. If you want to compile the servo-out change into a newer version of the firmware, then the VESC-Tool should work.&lt;/p&gt;
+
+&lt;h2 id=&quot;connecting-to-the-vesc&quot;&gt;Connecting to the VESC&lt;/h2&gt;
+
+&lt;p&gt;The VESC uses the USB Abstract Control Module protocol, which requires a special cdc_acm driver. I couldn’t find a compiled version for kernel version 4.9.140, so I had to build the 4.9.140 kernel on the Jetson and include the cdc-acm module.&lt;/p&gt;
+
+&lt;p&gt;As usual, &lt;a href=&quot;https://www.jetsonhacks.com/2017/03/25/build-kernel-and-modules-nvidia-jetson-tx2/&quot;&gt;JetsonHacks&lt;/a&gt; has great instructions on how to build the kernel, but I had to modify their &lt;a href=&quot;https://github.com/TheoKanning/buildJetsonTX2Kernel&quot;&gt;scripts&lt;/a&gt; to work for 4.9.140. Here’s a link to my compiled cdc-acm driver in case it helps someone.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/assets/images/2019/vesc/cdc-acm.ko&quot;&gt;4.9.140 cdc-acm driver&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;To install the cdc-acm driver, I copied it from the compiled kernel output into the &lt;code class=&quot;highlighter-rouge&quot;&gt;/lib/modules/4.9.140/kernel/drivers/usb/class&lt;/code&gt; folder.&lt;/p&gt;
+
+&lt;p&gt;I had to add the following line to &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/modules&lt;/code&gt; to load cdc-acm automatically.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# /etc/modules
+cdc-acm&lt;/pre&gt;
+
+&lt;p&gt;And the following line to &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/udev/rules.d/10-racecar.rules&lt;/code&gt; (or any rules file) to make the VESC consistently appear as &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/vesc&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# /etc/udev/rules.d/10-racecar.rules
+ACTION==&quot;add&quot;, ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;5740&quot;, SYMLINK+=&quot;vesc&quot;&lt;/pre&gt;
+
+&lt;h2 id=&quot;connection-to-the-joystick&quot;&gt;Connection to the Joystick&lt;/h2&gt;
+
+&lt;p&gt;In order to use the Logitech F710 joystick, I had to install xboxdrv and run it on startup in daemon mode.&lt;/p&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;sudo apt-get install xboxdrv&lt;/pre&gt;
+
+&lt;pre class=&quot;wp-block-preformatted&quot;&gt;# /etc/init/xboxdrv.conf&lt;br /&gt;exec xboxdrv -D -d --silent&lt;/pre&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;That’s everything required to run the racecar in teleop mode! Build the catkin workspace then run &lt;code class=&quot;highlighter-rouge&quot;&gt;roslaunch racecar teleop.launch&lt;/code&gt; to drive it around!&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="robotics" /><summary type="html">Getting the racecar ready to drive by setting up the speed controller and joystick</summary></entry><entry><title type="html">MIT Racecar Build</title><link href="https://theokanning.github.io/mit-racecar-build/" rel="alternate" type="text/html" title="MIT Racecar Build" /><published>2019-05-05T21:30:40+00:00</published><updated>2019-05-05T21:30:40+00:00</updated><id>https://theokanning.github.io/mit-racecar-build</id><content type="html" xml:base="https://theokanning.github.io/mit-racecar-build/">&lt;p&gt;Ever since taking Udacity’s Robotics Nanodegree last year, I’ve wanted to try to build the &lt;a href=&quot;http://fast.scripts.mit.edu/racecar/hardware/&quot;&gt;MIT Racecar&lt;/a&gt;, a powerful robotics development platform based on an actual MIT class. Its real strength is the number of helpful resources online (most notably &lt;a href=&quot;http://www.jetsonhacks.com&quot;&gt;Jetson Hacks&lt;/a&gt;&lt;a href=&quot;https://racecarj.com/&quot;&gt;J&lt;/a&gt;) that make the undertaking much easier.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2019/racecar/racecar.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The full racecar is a pretty serious project; it includes a Hokuyo lidar and two(!) 3D cameras. I decided to get a much cheaper lidar and skip the 3D cameras for now.&lt;/p&gt;
+
+&lt;p&gt;JetsonHacks already has great videos on how to assemble the racecar, so I won’t go into detail about that. However, I did have some difficulty finding a battery to power the Jetson, and I’ll share my solution here.&lt;/p&gt;
+
+&lt;h2 id=&quot;standard-parts&quot;&gt;Standard Parts&lt;/h2&gt;
+
+&lt;p&gt;Most of the parts I used were straight off of the JetsonHacks &lt;a href=&quot;https://www.jetsonhacks.com/racecar-j/&quot;&gt;tutorials&lt;/a&gt;. These include:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;TRAXXAS Slash 4×4 Platinum Truck – &lt;a href=&quot;https://traxxas.com/products/models/electric/6804Rslash4x4platinum&quot;&gt;traxxas&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Jetson TX2 – &lt;a href=&quot;https://developer.nvidia.com/embedded/buy/jetson-tx2&quot;&gt;nvidia&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;VESC (Speed Controller) – &lt;a href=&quot;https://www.alibaba.com/product-detail/Maytech-VESC-4-12-Motor-controller_60532388864.html&quot;&gt;alibaba&lt;/a&gt; – Made by Maytech&lt;/li&gt;
+  &lt;li&gt;USB 3.0 Hub – &lt;a href=&quot;https://www.amazon.com/AmazonBasics-Port-2-5A-power-adapter/dp/B00DQFGH80&quot;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Mounting Hardware – &lt;a href=&quot;https://racecarj.com/products/mechanical-hardware&quot;&gt;racecarj&lt;/a&gt; – Technically you could buy these screws on your own, but I didn’t feel like it&lt;/li&gt;
+  &lt;li&gt;Spring Upgrade – &lt;a href=&quot;https://racecarj.com/products/spring-upgrade&quot;&gt;racecarj&lt;/a&gt; – Necessary or the car will scrape the ground with all the added weight&lt;/li&gt;
+  &lt;li&gt;Sparkfun 9DoF IMU – &lt;a href=&quot;https://www.sparkfun.com/products/14001&quot;&gt;sparkfun&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;3000 mAh NiMH Battery – Any hobby store will have this&lt;/li&gt;
+  &lt;li&gt;E-Stop Button – &lt;a href=&quot;https://www.amazon.com/gp/product/B00SDX0GD2/ref=ppx_yo_dt_b_asin_title_o02_s00?ie=UTF8&amp;amp;psc=1&quot;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I also used 3M dual-lock tape to hold everything down.&lt;/p&gt;
+
+&lt;h2 id=&quot;modifications&quot;&gt;Modifications&lt;/h2&gt;
+
+&lt;h4 id=&quot;lidar&quot;&gt;Lidar&lt;/h4&gt;
+
+&lt;p&gt;Since the Hokuyo lidar costs well over $1,000, I decided to buy the $100 RPLIDAR-A1 (&lt;a href=&quot;http://www.slamtec.com/en/lidar/a1&quot;&gt;slamtech.com&lt;/a&gt;) instead. It has a much smaller range, but I think it will work fine for now. If I have to upgrade later I’ll probably go for the A2.&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2019/racecar/lidar.jpg&quot; alt=&quot;The A1 barely has room, even with two extra standoffs&quot; /&gt;
+    &lt;figcaption&gt;The A1 barely has room, even with two extra standoffs&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Because the A1 doesn’t fit into the hole in the frame, it actually sticks up higher than the Hokuyo, and I had to add extra standoffs to move the top level up.&lt;/p&gt;
+
+&lt;h4 id=&quot;battery&quot;&gt;Battery&lt;/h4&gt;
+
+&lt;p&gt;The Jetson needs a separate battery to power it and all of the USB devices. JetsonHacks recommends the Energizer XP18000AB, which has a 19V output for the Jetson and a 12V output for the USB hub. Unfortunately, I couldn’t find it for sale anywhere online, or any other power pack with 19V and 12V outputs, so I had to get creative.&lt;figure class=&quot;wp-block-image is-resized&quot;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2019/racecar/battery.jpg&quot; alt=&quot;My battery setup. I've updated it to power both the Jetson and usb hub via a barrel jack splitter.&quot; /&gt;
+    &lt;figcaption&gt;My battery setup. I've updated it to power both the Jetson and usb hub via a barrel jack splitter.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;My solution was to buy a PowerAdd Pilot Pro (&lt;a href=&quot;https://www.amazon.com/gp/product/B00DN0KBXU/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&amp;amp;psc=1&quot;&gt;amazon&lt;/a&gt;), and get a barrel jack splitter to power both the usb hub and jetson with 12V.
+I originally powered the usb hub with a usb to barrel jack cord, but it wasn’t supplying enough power and the lidar would randomly stop working.&lt;/p&gt;
+
+&lt;h4 id=&quot;frame&quot;&gt;Frame&lt;/h4&gt;
+
+&lt;p&gt;I received a free RacecarJ frame from another Udacity ND student, but it didn’t exactly match the two versions available online. I’m not sure if I got a prototype or what, but I’m not complaining.&lt;/p&gt;
+
+&lt;p&gt;I had to drill a few holes in it to mount the lidar and and IMU, but it wasn’t a big deal.&lt;/p&gt;
+
+&lt;h2 id=&quot;thats-all&quot;&gt;That’s All&lt;/h2&gt;
+
+&lt;p&gt;I had to drill a few holes and get creative with zip ties to mount everything together, but overall it was really enjoyable. Now let’s see if I can get it running!&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="robotics" /><summary type="html">Assembling the MIT Racecar and adding some modifications of my own</summary></entry><entry><title type="html">Dexter the Balancing Robot</title><link href="https://theokanning.github.io/balancing-robot/" rel="alternate" type="text/html" title="Dexter the Balancing Robot" /><published>2019-03-16T16:17:39+00:00</published><updated>2019-03-16T16:17:39+00:00</updated><id>https://theokanning.github.io/balancing-robot</id><content type="html" xml:base="https://theokanning.github.io/balancing-robot/">&lt;p&gt;Introducing Dexter: the cutest balancing robot ever made.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2019/dexter/dexter.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;dexter&quot;&gt;Dexter&lt;/h2&gt;
+
+&lt;p&gt;Dexter is a two-wheeled balancing robot controlled by an Android App. I originally created Dexter as a modified version of the &lt;a href=&quot;https://theokanning.com/wifi-rover/&quot;&gt;wifi-rover&lt;/a&gt; project that I made a few years ago, but this time I was looking for a bigger challenge.&lt;/p&gt;
+
+&lt;h2 id=&quot;hardware&quot;&gt;Hardware&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Teensy LC Microncontroller &lt;a href=&quot;https://www.pjrc.com/teensy/teensyLC.html&quot;&gt;pjrc&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;MPU-6050 IMU &lt;a href=&quot;https://www.sparkfun.com/products/11028&quot;&gt;sparkfun&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;2 A4988 Stepper Drivers &lt;a href=&quot;https://www.pololu.com/product/1182&quot;&gt;pololu&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;HC-05 Bluetooth Module &lt;a href=&quot;https://www.amazon.com/LeaningTech-HC-05-Module-Pass-Through-Communication/dp/B00INWZRNC&quot;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;2 Stepper Motors &lt;a href=&quot;https://www.sparkfun.com/products/9238&quot;&gt;sparkfun&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;1300 mAh 3S LiPo Battery&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The Teensy LC was a good fit for this project because it has 3 hardware serial lines and multiple timers. Dexter uses serial to communicate with the HC-05, and the stepper drivers each require a 16 bit timer to work.&lt;/p&gt;
+
+&lt;p&gt;I don’t know the exact model number of the motors I used, but they look pretty standard.&lt;/p&gt;
+
+&lt;p&gt;I also added some iron weight on top for added stability.&lt;/p&gt;
+
+&lt;h2 id=&quot;custom-frame-and-pcb&quot;&gt;Custom Frame and PCB&lt;/h2&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;3D Printed Frame&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Custom Circuit Board&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/images/2019/dexter/frame.jpg&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/images/2019/dexter/pcb.jpg&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;I designed the 3D-printed frame using Fusion 360, and designed the custom circuit board in Eagle.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/assets/images/2019/dexter/dexter.step&quot;&gt;Frame STP File&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/assets/images/2019/dexter/dexter.dbl&quot;&gt;PCB Eagle Design Block&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;imu&quot;&gt;IMU&lt;/h2&gt;
+
+&lt;p&gt;The MPU-6050 IMU includes a gyroscope and accelerometer, and I combined the measured angle from the accelerometer with the rate from the gyro using a basic filter. A more advanced Kalman filter would be more accurate, but IMU accuracy was not a limiting factor.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pitch = 0.99 * (pitch + G_y * dt) - 0.01 * atan2(A_x, A_z)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The rate from the gyroscope reacts quickly to changes in pitch, and the small correction from the accelerometer prevents drifting over time. The accelerometer is very sensitive to quick movements, so it can’t be used by itself.&lt;/p&gt;
+
+&lt;p&gt;IMU code was taken from the Arduino example (&lt;a href=&quot;https://playground.arduino.cc/Main/MPU-6050#sketch&quot;&gt;link&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 id=&quot;motor-drivers&quot;&gt;Motor Drivers&lt;/h2&gt;
+
+&lt;p&gt;The Teensy controls the A4988 motor drivers by sending pulses; each time the Teensy sends a pulse, the driver takes one step. To send pulses, I used the &lt;code class=&quot;highlighter-rouge&quot;&gt;TimerOne&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;TimerThree&lt;/code&gt; libraries. These libraries trigger a callback funciton at a specified frequency, and in the callback function I send a pulse by toggling the trigger pin on and off.&lt;/p&gt;
+
+&lt;p&gt;Both motors were operated in 1/8 microstepping mode for smoother motion.&lt;/p&gt;
+
+&lt;h2 id=&quot;pid-control&quot;&gt;PID Control&lt;/h2&gt;
+
+&lt;p&gt;Dexter uses two cascading controllers. First, the ground speed PI controller calculates the desired angle based on the speed error. Second, the angle PD controller calculates the output steps per second to reach the desired angle. Since these motors don’t have encoders, the only way to measure the current ground speed is to use the steps per second value calculated by the angle controller.&lt;/p&gt;
+
+&lt;p&gt;To tune Dexter, I added a basic &lt;a href=&quot;https://www.youtube.com/watch?v=2uQ2BSzDvXs&quot;&gt;Twiddle&lt;/a&gt; function. If Dexter receives the letter “t” over bluetooth, he will drive forward for a few seconds, stop, drive back, and report the total error during the trip. All of the PID constants can be changed over bluetooth and optimized to reduce the twiddle error.&lt;/p&gt;
+
+&lt;h2 id=&quot;android-app&quot;&gt;Android App&lt;/h2&gt;
+
+&lt;p&gt;The included Android app steers Dexter by reading the accelerometer. In order to tune the PID constants, I used a bluetooth terminal app (&lt;a href=&quot;https://play.google.com/store/apps/details?id=com.giumig.apps.bluetoothserialmonitor&amp;amp;hl=en_US&quot;&gt;Play Store Link&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 id=&quot;github&quot;&gt;Github&lt;/h2&gt;
+
+&lt;p&gt;Android and Arduino source code &lt;a href=&quot;https://github.com/TheoKanning/Dexter&quot;&gt;link&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;&lt;a href=&quot;https://github.com/TheoKanning/Dexter#sources&quot;&gt;&lt;/a&gt;References&lt;/h2&gt;
+
+&lt;p&gt;I found both of these examples to be extremely helpful&lt;br /&gt;
+&lt;a href=&quot;https://github.com/jjrobots/B-ROBOT_EVO2/tree/master/Arduino/BROBOT_EVO2&quot;&gt;jjrobots B-robot EVO 2&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;http://www.brokking.net/yabr_main.html&quot;&gt;Brokking YABR&lt;/a&gt;&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="arduino" /><summary type="html">Introducing Dexter: the cutest balancing robot ever made.</summary></entry><entry><title type="html">Creating a Teleop Bot with ROS</title><link href="https://theokanning.github.io/creating-a-teleop-bot-with-ros/" rel="alternate" type="text/html" title="Creating a Teleop Bot with ROS" /><published>2018-12-23T17:15:34+00:00</published><updated>2018-12-23T17:15:34+00:00</updated><id>https://theokanning.github.io/creating-a-teleop-bot-with-ros</id><content type="html" xml:base="https://theokanning.github.io/creating-a-teleop-bot-with-ros/">&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2018/blink-192/blink-192.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;blink-192&quot;&gt;Blink-192&lt;/h2&gt;
+
+&lt;p&gt;This robot, code-named Blink-192, uses the Robot Operating System (ROS) to do two things: first, it reacts to keystrokes on a computer and drives around; second, it streams video from a raspberry pi camera back to said computer.&lt;/p&gt;
+
+&lt;p&gt;Blink-192 is a great example of how ROS can help with any robotics project. ROS connects Blink-192 to a desktop to stream video and receive steering commands with minimal setup and networking.&lt;/p&gt;
+
+&lt;p&gt;All source code is available on &lt;a href=&quot;https://github.com/TheoKanning/Blink-192&quot;&gt;Github.&lt;/a&gt;&lt;br /&gt;
+This project is based on the Teleop-bot example from Programming Robots with ROS (&lt;a href=&quot;http://shop.oreilly.com/product/0636920024736.do&quot;&gt;O’Reilly Media).&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;hardware&quot;&gt;Hardware&lt;/h2&gt;
+
+&lt;p&gt;Blink-192 uses the following hardware:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Raspberry Pi 3&lt;/li&gt;
+  &lt;li&gt;Waveshare Alphabot – &lt;a href=&quot;https://www.waveshare.com/alphabot-robot.htm&quot;&gt;Waveshare&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Raspberry Pi Camera 2&lt;/li&gt;
+  &lt;li&gt;7.4V LiPo Battery&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;software&quot;&gt;Software&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Raspberry Pi Ubuntu Image – &lt;a href=&quot;https://downloads.ubiquityrobotics.com/pi.html&quot;&gt;Ubiquity Robotics&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Pi Camera ROS Node – &lt;a href=&quot;https://github.com/UbiquityRobotics/raspicam_node﻿&quot;&gt;Github&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This specific Ubuntu image isn’t required, but it comes with ROS pre-installed a creates a wifi access point automatically.&lt;/p&gt;
+
+&lt;h2 id=&quot;ros-basics&quot;&gt;ROS Basics&lt;/h2&gt;
+
+&lt;p&gt;ROS has become a nearly ubiquitous part of any serious robotics project. I first learned about it as part of the Udacity Robotics Engineer &lt;a href=&quot;https://www.udacity.com/course/robotics-software-engineer--nd209&quot;&gt;Nanodegree&lt;/a&gt; program last Summer, and I couldn’t wait to get started on my own project.&lt;/p&gt;
+
+&lt;p&gt;Despite its name, ROS isn’t actually an operating system; it runs on Ubuntu. It’s more of a messaging system that sends messages between different parts of a robot. Let’s take a deeper look at how to develop a project using ROS.&lt;/p&gt;
+
+&lt;h4 id=&quot;nodes&quot;&gt;Nodes&lt;/h4&gt;
+
+&lt;p&gt;A &lt;em&gt;node&lt;/em&gt; is defined as any executable that uses ROS to communicate. ROS will manage the lifecycle and messaging of any python script that’s run as a node, so using ROS will easily allow you to run multiple scripts simultaneously.&lt;/p&gt;
+
+&lt;h4 id=&quot;topics&quot;&gt;Topics&lt;/h4&gt;
+
+&lt;p&gt;A &lt;em&gt;topic&lt;/em&gt; is a messaging bus that ROS nodes use to exchange messages. Topics follow the publish/subscribe pattern (similar to Rx and Kafka), so each node can subscribe to any data topics it requires, and then publish whatever it wants.&lt;/p&gt;
+
+&lt;h2 id=&quot;blink-192-ros-setup&quot;&gt;Blink-192 ROS Setup&lt;figure class=&quot;wp-block-image&quot;&gt;&lt;/figure&gt;&lt;/h2&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+    &lt;img src=&quot;/assets/images/2018/blink-192/rosgraph.png&quot; alt=&quot;Blink-192 ROS graph: Nodes are ovals, topics are rectangles&quot; /&gt;
+    &lt;figcaption&gt;Blink-192 ROS graph: Nodes are ovals, topics are rectangles&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Blink-192 works using four different nodes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;keyboard_driver&lt;/code&gt; – Reads keystrokes and publishes them to the &lt;code class=&quot;highlighter-rouge&quot;&gt;/keys&lt;/code&gt; topic&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;keys_to_twist&lt;/code&gt; – Subscribes to &lt;code class=&quot;highlighter-rouge&quot;&gt;/keys&lt;/code&gt; and publishes a velocity command to &lt;code class=&quot;highlighter-rouge&quot;&gt;/cmd_vel&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;motors&lt;/code&gt; – Subscribes to &lt;code class=&quot;highlighter-rouge&quot;&gt;/cmd_vel&lt;/code&gt; and controls motors&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;raspicam_node&lt;/code&gt; – Publishes video stream to &lt;code class=&quot;highlighter-rouge&quot;&gt;/raspicam_node/image&lt;/code&gt; topic&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Every node except &lt;code class=&quot;highlighter-rouge&quot;&gt;keyboard_driver&lt;/code&gt; runs on Blink-192; &lt;code class=&quot;highlighter-rouge&quot;&gt;keyboard_driver&lt;/code&gt; runs on the desktop.&lt;/p&gt;
+
+&lt;h2 id=&quot;instructions&quot;&gt;Instructions&lt;/h2&gt;
+
+&lt;p&gt;In order to control Blink-192, ROS needs to know to network between two computers. Since Blink-192 has its own wifi access point, this is relatively straightforward.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Connect to wifi access point, my SSID starts with blink-192 – &lt;a href=&quot;https://downloads.ubiquityrobotics.com/pi.html&quot;&gt;Ubiquity&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Get desktop ip address using &lt;code class=&quot;highlighter-rouge&quot;&gt;ip addr show&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;export ROS_MASTER_URI=http://blink-192.local:11311&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;export ROS_IP=&amp;lt;ip address&amp;gt;&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;roslaunch blink-192 desktop.launch&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Ssh into Blink-192, and run &lt;code class=&quot;highlighter-rouge&quot;&gt;roslaunch blink-192 robot.launch&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Start driving!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;ROS_MASTER_URI&lt;/code&gt; variable tells the desktop where to find the ROS master node that it should use, and &lt;code class=&quot;highlighter-rouge&quot;&gt;ROS_IP&lt;/code&gt; tells the ROS master how to connect back to it. Launch files are a convenient way of running multiple nodes at once.&lt;/p&gt;
+
+&lt;p&gt;That’s it! ROS handles all of the communication back-and-forth between Blink-192 and the desktop.&lt;/p&gt;
+
+&lt;p&gt;This is just one example of how ROS can make robotics projects easier. ROS also includes tools for simulation, visualization, parameters, and much much more. Because ROS uses common message types, you can easily add nodes that other people have written as well.&lt;/p&gt;
+
+&lt;p&gt;For more info, check out &lt;a href=&quot;http://www.ros.org/is-ros-for-me/&quot;&gt;http://www.ros.org/is-ros-for-me/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://shop.oreilly.com/product/0636920024736.do&quot;&gt;Programming Robots with ROS&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://www.udacity.com/course/robotics-software-engineer--nd209&quot;&gt;Udacity Robotics Nanodegree&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;http://www.ros.org&quot;&gt;ROS Homepage&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;https://github.com/TheoKanning/Blink-192&quot;&gt;Blink-192 Github Repo&lt;/a&gt;&lt;/p&gt;</content><author><name>Theo Kanning</name></author><category term="robotics" /><summary type="html">This robot uses ROS to drive around and stream video.</summary></entry></feed>
